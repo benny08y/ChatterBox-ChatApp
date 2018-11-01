@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import tcss450.uw.edu.chatapp.model.Credentials;
+import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.OnLoginFragmentInteractionListener,
         RegisterFragment.OnRegisterFragmentInteractionListener{
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
     }
 
 
-    //Login Fragment
+    //Login Fragment Interface Methods
     @Override
     public void onLoginAttempt(Credentials credentials) {
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
@@ -49,8 +50,29 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
                 .commit();
     }
 
+    //Register Fragment Interface Methods
     @Override
     public void onRegisterAttempt(Credentials credentials) {
+        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+        intent.putExtra(HOME_LOGIN_EMAIL, credentials.getEmail());
+        intent.putExtra(HOME_LOGIN_PASSWORD, credentials.getPassword());
+        MainActivity.this.startActivity(intent);
+    }
 
+    //Wait Fragment Interface Methods
+    @Override
+    public void onWaitFragmentInteractionShow() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.main_container, new WaitFragment(), "WAIT")
+                .addToBackStack(null)
+                .commit();
+    }
+    @Override
+    public void onWaitFragmentInteractionHide() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .remove(getSupportFragmentManager().findFragmentByTag("WAIT"))
+                .commit();
     }
 }
