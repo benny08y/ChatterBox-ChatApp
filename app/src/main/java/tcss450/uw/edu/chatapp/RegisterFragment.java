@@ -15,6 +15,8 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Objects;
+
 import tcss450.uw.edu.chatapp.model.Credentials;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
@@ -31,7 +33,7 @@ public class RegisterFragment extends Fragment {
     private OnRegisterFragmentInteractionListener mListener;
     private String myEmail;
     private String mNickname;
-    private String myFisrtName;
+    private String myFirstName;
     private String myLastName;
     private String myPassword;
     private String myRepeatPassword;
@@ -63,19 +65,19 @@ public class RegisterFragment extends Fragment {
     private void attemptRegistration(View v) {
         final EditText email = getActivity().findViewById(R.id.fragRegister_email_editText);
         final EditText nickname = getActivity().findViewById(R.id.fragRegister_nickname_editText);
-        final EditText fisrtName = getActivity().findViewById(R.id.fragRegister_firstName_editText);
+        final EditText firstName = getActivity().findViewById(R.id.fragRegister_firstName_editText);
         final EditText lastName = getActivity().findViewById(R.id.fragRegister_lastName_editText3);
         final EditText password = getActivity().findViewById(R.id.fragRegister_password_editText);
         final EditText repeatPassword = getActivity().findViewById(R.id.fragRegister_repeatPass_editText2);
 
         myEmail = email.getText().toString();
         mNickname = nickname.getText().toString();
-        myFisrtName = fisrtName.getText().toString();
+        myFirstName = firstName.getText().toString();
         myLastName = lastName.getText().toString();
         myPassword = password.getText().toString();
         myRepeatPassword = repeatPassword.getText().toString();
 
-        if (!isValidUsername()) {
+        if (!isValidEmail()) {
             email.setError("You must enter a valid email address");
         }
         if (!isSixCharPassword()) {
@@ -85,21 +87,21 @@ public class RegisterFragment extends Fragment {
             password.setError("Passwords must match");
         }
         if (mNickname.isEmpty()){
-            nickname.setError("Please enter a username");
+            nickname.setError("Please enter a nickname");
         }
-        if (myFisrtName.isEmpty()){
-            fisrtName.setError("Please enter your first name");
+        if (myFirstName.isEmpty()){
+            firstName.setError("Please enter your first name");
         }
         if (myLastName.isEmpty()){
             lastName.setError("Please enter your last name");
         }
 
-        if (isValidUsername() && isMatchingPassword() && isSixCharPassword() && !isEmptyField()){
+        if (isValidEmail() && isMatchingPassword() && isSixCharPassword() && !isEmptyField()){
 
             Credentials.Builder builder = new Credentials.Builder(myEmail.toString(), myPassword.toString());
-            builder.addFirstName(myFisrtName.toString());
+            builder.addFirstName(myFirstName.toString());
             builder.addLastName(myLastName.toString());
-            builder.addUsername(mNickname.toString());
+            builder.addNickname(mNickname.toString());
             Credentials credentials = builder.build();
 
 
@@ -151,7 +153,7 @@ public class RegisterFragment extends Fragment {
                 mListener.onRegisterAttempt(mCredentials);
             } else {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
-                ((TextView) getView().findViewById(R.id.fragRegister_email_editText))
+                ((TextView) Objects.requireNonNull(getView()).findViewById(R.id.fragRegister_email_editText))
                         .setError("Registration Unsuccessful");
             }
         } catch (JSONException e) {
@@ -161,18 +163,18 @@ public class RegisterFragment extends Fragment {
                     + System.lineSeparator()
                     + e.getMessage());
             mListener.onWaitFragmentInteractionHide();
-            ((TextView) getView().findViewById(R.id.fragRegister_email_editText))
+            ((TextView) Objects.requireNonNull(getView()).findViewById(R.id.fragRegister_email_editText))
                     .setError("Registration Unsuccessful");
         }
     }
 
     //Helper Methods for register validation
-    private boolean isValidUsername(){
+    private boolean isValidEmail(){
         return !myEmail.isEmpty()&& myEmail.contains("@");
     }
     private boolean isEmptyField(){
         return mNickname.isEmpty() &&
-                myFisrtName.isEmpty() &&
+                myFirstName.isEmpty() &&
                 myLastName.isEmpty();
     }
     private boolean isSixCharPassword(){

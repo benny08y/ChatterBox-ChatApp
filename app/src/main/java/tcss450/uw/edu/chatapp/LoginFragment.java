@@ -29,6 +29,7 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
 
     private OnLoginFragmentInteractionListener mListener;
     private Credentials mCredentials;
+
     public LoginFragment() {
     }
 

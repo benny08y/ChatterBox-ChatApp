@@ -19,12 +19,12 @@ import java.io.Serializable;
 public class Credentials implements Serializable {
     private static final long serialVersionUID = -1634677417576883013L;
 
-    private final String mUsername;
+    private final String mEmail;
     private final String mPassword;
 
     private String mFirstName;
     private String mLastName;
-    private String mEmail;
+    private String mNickname;
 
     /**
      * Helper class for building Credentials.
@@ -33,12 +33,12 @@ public class Credentials implements Serializable {
      */
     public static class Builder {
 
-        private final String mPassword;
         private final String mEmail;
+        private final String mPassword;
 
         private String mFirstName = "";
         private String mLastName = "";
-        private String mUsername = "";
+        private String mNickname = "";
 
 
         /**
@@ -77,12 +77,12 @@ public class Credentials implements Serializable {
         }
 
         /**
-         * Add an optional Uuername.
-         * @param val an optional Uuername
+         * Add an optional nickname.
+         * @param val an optional nickname
          * @return
          */
-        public Builder addUsername(final String val) {
-            mUsername = val;
+        public Builder addNickname(final String val) {
+            mNickname = val;
             return this;
         }
 
@@ -97,19 +97,20 @@ public class Credentials implements Serializable {
      * @param builder the builder used to construct this object
      */
     private Credentials(final Builder builder) {
-        mUsername = builder.mUsername;
+        mNickname = builder.mNickname;
         mPassword = builder.mPassword;
         mFirstName = builder.mFirstName;
         mLastName = builder.mLastName;
         mEmail = builder.mEmail;
+
     }
 
     /**
-     * Get the Username.
-     * @return the username
+     * Get the nickname.
+     * @return the nickname
      */
-    public String getUsername() {
-        return mUsername;
+    public String getNickname() {
+        return mNickname;
     }
 
     /**
@@ -157,11 +158,11 @@ public class Credentials implements Serializable {
         //build the JSONObject
         JSONObject msg = new JSONObject();
         try {
-            msg.put("username", getUsername());
             msg.put("password", mPassword);
             msg.put("first", getFirstName());
             msg.put("last", getLastName());
             msg.put("email", getEmail());
+            msg.put("nickname", getNickname());
         } catch (JSONException e) {
             Log.wtf("CREDENTIALS", "Error creating JSON: " + e.getMessage());
         }
