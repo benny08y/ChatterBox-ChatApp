@@ -68,10 +68,10 @@ public class RegisterFragment extends Fragment {
                     mNickname.setError("Please enter a username");
                 }
                 if (myFisrtName.getText().toString().isEmpty()){
-                    myFisrtName.setError("Please enter you first name");
+                    myFisrtName.setError("Please enter your first name");
                 }
                 if (myLastName.getText().toString().isEmpty()){
-                    myLastName.setError("Please enter you last name");
+                    myLastName.setError("Please enter your last name");
                 }
 
                 if (isValidUsername() && isMatchingPassword() && isSixCharPassword() && !isEmptyField()){
