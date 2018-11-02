@@ -9,10 +9,12 @@ import tcss450.uw.edu.chatapp.model.Credentials;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.OnLoginFragmentInteractionListener,
-        RegisterFragment.OnRegisterFragmentInteractionListener{
+        RegisterFragment.OnRegisterFragmentInteractionListener,
+        WaitFragment.OnFragmentInteractionListener {
 
     public static final String HOME_LOGIN_EMAIL = "email";
     public static final String HOME_LOGIN_PASSWORD = "password";
+    public static final String HOME_LOGIN_USERNAME = "username";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +35,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
     @Override
     public void onLoginAttempt(Credentials credentials) {
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-        intent.putExtra(HOME_LOGIN_EMAIL, credentials.getEmail());
+        intent.putExtra(HOME_LOGIN_EMAIL, credentials.getUsername());
         intent.putExtra(HOME_LOGIN_PASSWORD, credentials.getPassword());
+        System.out.println(credentials.getEmail() + ", " + credentials.getPassword());
         MainActivity.this.startActivity(intent);
     }
     @Override
@@ -56,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
         intent.putExtra(HOME_LOGIN_EMAIL, credentials.getEmail());
         intent.putExtra(HOME_LOGIN_PASSWORD, credentials.getPassword());
-        MainActivity.this.startActivity(intent);
+        intent.putExtra(HOME_LOGIN_USERNAME, credentials.getUsername());
+        startActivity(intent);
     }
 
     //Wait Fragment Interface Methods
