@@ -18,13 +18,14 @@ import android.view.MenuItem;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
+import tcss450.uw.edu.chatapp.chats.MessageFragment;
+import tcss450.uw.edu.chatapp.chats.dummy.DummyContent;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
-import tcss450.uw.edu.chatapp.model.Credentials;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ChatsFragment.OnChatListFragmentInteractionListener,
-        ContactsFragment.OnListFragmentInteractionListener {
+        ContactsFragment.OnListFragmentInteractionListener, MessageFragment.OnMessageListFragmentInteractionListener {
 
     private LandingPageFragment mLandPageFrag;
 
@@ -131,11 +132,24 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onChatListFragmentInteraction(Chats.DummyItem item) {
+        MessageFragment messageFragment = new MessageFragment();
 
+        // TODO: use chat item to find and generate previous Message items, if any
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_home_container, messageFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
     public void onListFragmentInteraction(Contacts.DummyItem item) {
+
+    }
+
+    @Override
+    public void onMessageListFragmentInteraction(DummyContent.DummyItem item) {
 
     }
 }
