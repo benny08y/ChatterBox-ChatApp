@@ -28,6 +28,7 @@ public class HomeActivity extends AppCompatActivity
         ContactsFragment.OnListFragmentInteractionListener, MessageFragment.OnMessageListFragmentInteractionListener {
 
     private LandingPageFragment mLandPageFrag;
+    private VerificationFragment mVerificationFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +57,17 @@ public class HomeActivity extends AppCompatActivity
         if(savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
                 mLandPageFrag = new LandingPageFragment();
-                Bundle bundle = new Bundle();
-                mLandPageFrag.setArguments(bundle);
+//                Bundle bundle = new Bundle();
+//                mLandPageFrag.setArguments(bundle);
+//
+//                getSupportFragmentManager().beginTransaction()
+//                        .add(R.id.content_home_container, mLandPageFrag)
+//                        .commit();
+
+                mVerificationFragment = new VerificationFragment();
 
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.content_home_container, mLandPageFrag)
+                        .add(R.id.content_home_container, mVerificationFragment)
                         .commit();
             }
         }
