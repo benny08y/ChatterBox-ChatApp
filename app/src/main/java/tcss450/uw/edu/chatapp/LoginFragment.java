@@ -1,6 +1,7 @@
 package tcss450.uw.edu.chatapp;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,11 +33,9 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
 
     private OnLoginFragmentInteractionListener mListener;
     private Credentials mCredentials;
+    private String mFirebaseToken;
 
-    public LoginFragment() {
-    }
-
-
+    public LoginFragment() {    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -44,7 +46,7 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attemptLogin(v);
+                attemptLogin();
             }
         });
         b = v.findViewById(R.id.register_button);
@@ -58,17 +60,41 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
         return v;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences prefs =
+                getActivity().getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        //retrieve the stored credentials from SharedPrefs
+        if (prefs.contains(getString(R.string.keys_prefs_email)) &&
+                prefs.contains(getString(R.string.keys_prefs_password))) {
+            final String email = prefs.getString(getString(R.string.keys_prefs_email), "");
+            final String password = prefs.getString(getString(R.string.keys_prefs_password), "");
+            //Load the two login EditTexts with the credentials found in SharedPrefs
+            getFirebaseToken(email, password);
+        }
+    }
+
+    private void doLogin(String email, String password){
+        EditText emailEdit = getActivity().findViewById(R.id.fragLogin_email_editTxt);
+        emailEdit.setText(email);
+        EditText passwordEdit = getActivity().findViewById(R.id.fragLogin_password_editTxt);
+        passwordEdit.setText(password);
+        attemptLogin();
+    }
+
     public void loginButton(View v){
         Credentials credentials = new Credentials.Builder(
                 "email",
                 "password")
                 .build();
-
         mListener.onLoginAttempt(credentials);
     }
 
-    private void attemptLogin(final View theButton) {
-        EditText email = getActivity().findViewById(R.id.fragLogin_user_editTxt);
+    private void attemptLogin() {
+        EditText email = getActivity().findViewById(R.id.fragLogin_email_editTxt);
         EditText password = getActivity().findViewById(R.id.fragLogin_password_editTxt);
         boolean hasError = false;
         if (email.getText().length() == 0) {
@@ -107,6 +133,40 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
         }
     }
 
+    private void getFirebaseToken(final String email, final String password) {
+        mListener.onWaitFragmentInteractionShow();
+
+        //add this app on this device to listen for the topic all
+        FirebaseMessaging.getInstance().subscribeToTopic("all");
+
+        //the call to getInstanceId happens asynchronously. task is an onCompleteListener
+        //similar to a promise in JS.
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM: ", "getInstanceId failed", task.getException());
+                        mListener.onWaitFragmentInteractionHide();
+                        return;
+                    }
+
+                    // Get new Instance ID token
+                    mFirebaseToken = task.getResult().getToken();
+                    Log.d("FCM: ", mFirebaseToken);
+                    //the helper method that initiates login service
+                    doLogin(email, password);
+                });
+        //no code here. wait for the Task to complete.
+    }
+    private void saveCredentials(final Credentials credentials) {
+        SharedPreferences prefs =
+                getActivity().getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        //Store the credentials in SharedPrefs
+        prefs.edit().putString(getString(R.string.keys_prefs_email), credentials.getEmail()).apply();
+        prefs.edit().putString(getString(R.string.keys_prefs_password), credentials.getPassword()).apply();
+    }
+
     private void handleErrorsInTask(String result) {
         Log.e("ASYNCT_TASK_ERROR", result);
     }
@@ -124,10 +184,11 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
             //mListener.onWaitFragmentInteractionHide();
             if (success) {
                 //Login was successful. Inform the Activity so it can do its thing.
+                saveCredentials(mCredentials);
                 mListener.onLoginAttempt(mCredentials);
             } else {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
-                ((TextView) getView().findViewById(R.id.fragLogin_user_editTxt))
+                ((TextView) getView().findViewById(R.id.fragLogin_email_editTxt))
                         .setError("Login Unsuccessful");
             }
         } catch (JSONException e) {
@@ -135,7 +196,7 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
                     + System.lineSeparator()
                     + e.getMessage());
             //mListener.onWaitFragmentInteractionHide();
-            ((TextView) getView().findViewById(R.id.fragLogin_user_editTxt))
+            ((TextView) getView().findViewById(R.id.fragLogin_email_editTxt))
                     .setError("Login Unsuccessful");
         }
     }
@@ -163,6 +224,8 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
             mListener.onLoginAttempt(mCredentials);
         }
     }
+
+
 
 
     /**
