@@ -41,12 +41,13 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_login, container, false);
-
+        EditText emailEdit = v.findViewById(R.id.fragLogin_email_editTxt);
+        EditText passwordEdit = v.findViewById(R.id.fragLogin_password_editTxt);
         Button b = (Button) v.findViewById(R.id.login_button);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attemptLogin();
+                getFirebaseToken(emailEdit.getText().toString(), passwordEdit.getText().toString());
             }
         });
         b = v.findViewById(R.id.register_button);
@@ -75,6 +76,31 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
             //Load the two login EditTexts with the credentials found in SharedPrefs
             getFirebaseToken(email, password);
         }
+    }
+
+    private void getFirebaseToken(final String email, final String password) {
+        mListener.onWaitFragmentInteractionShow();
+
+        //add this app on this device to listen for the topic all
+        FirebaseMessaging.getInstance().subscribeToTopic("all");
+
+        //the call to getInstanceId happens asynchronously. task is an onCompleteListener
+        //similar to a promise in JS.
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM: ", "getInstanceId failed", task.getException());
+                        mListener.onWaitFragmentInteractionHide();
+                        return;
+                    }
+
+                    // Get new Instance ID token
+                    mFirebaseToken = task.getResult().getToken();
+                    Log.d("FCM: ", mFirebaseToken);
+                    //the helper method that initiates login service
+                    doLogin(email, password);
+                });
+        //no code here. wait for the Task to complete.
     }
 
     private void doLogin(String email, String password){
@@ -118,9 +144,15 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
                     .scheme("https")
                     .appendPath(getString(R.string.ep_base_url))
                     .appendPath(getString(R.string.ep_login))
+                    .appendPath(getString(R.string.ep_with_token))
                     .build();
             //build the JSONObject
             JSONObject msg = credentials.asJSONObject();
+            try {
+                msg.put("token", mFirebaseToken);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             mCredentials = credentials;
             //instantiate and execute the AsyncTask.
             //Feel free to add a handler for onPreExecution so that a progress bar
@@ -133,30 +165,6 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
         }
     }
 
-    private void getFirebaseToken(final String email, final String password) {
-        mListener.onWaitFragmentInteractionShow();
-
-        //add this app on this device to listen for the topic all
-        FirebaseMessaging.getInstance().subscribeToTopic("all");
-
-        //the call to getInstanceId happens asynchronously. task is an onCompleteListener
-        //similar to a promise in JS.
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.w("FCM: ", "getInstanceId failed", task.getException());
-                        mListener.onWaitFragmentInteractionHide();
-                        return;
-                    }
-
-                    // Get new Instance ID token
-                    mFirebaseToken = task.getResult().getToken();
-                    Log.d("FCM: ", mFirebaseToken);
-                    //the helper method that initiates login service
-                    doLogin(email, password);
-                });
-        //no code here. wait for the Task to complete.
-    }
     private void saveCredentials(final Credentials credentials) {
         SharedPreferences prefs =
                 getActivity().getSharedPreferences(
@@ -171,9 +179,7 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
         Log.e("ASYNCT_TASK_ERROR", result);
     }
 
-    private void handleLoginOnPre() {
-        mListener.onWaitFragmentInteractionShow();
-    }
+    private void handleLoginOnPre() {    }
 
     private void handleLoginOnPost(String result) {
         //mListener.onWaitFragmentInteractionHide();
