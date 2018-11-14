@@ -147,7 +147,7 @@ public class RegisterFragment extends Fragment {
             Log.d("JSON result",result);
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
-            mListener.onWaitFragmentInteractionHide();
+            //mListener.onWaitFragmentInteractionHide();
             if (success) {
                 //Login was successful. Inform the Activity so it can do its thing.
                 mListener.onRegisterAttempt(mCredentials);
@@ -155,6 +155,7 @@ public class RegisterFragment extends Fragment {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
                 ((TextView) Objects.requireNonNull(getView()).findViewById(R.id.fragRegister_email_editText))
                         .setError("Registration Unsuccessful");
+                mListener.onWaitFragmentInteractionHide();
             }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
@@ -162,9 +163,9 @@ public class RegisterFragment extends Fragment {
             Log.e("JSON_PARSE_ERROR", result
                     + System.lineSeparator()
                     + e.getMessage());
-            mListener.onWaitFragmentInteractionHide();
             ((TextView) Objects.requireNonNull(getView()).findViewById(R.id.fragRegister_email_editText))
                     .setError("Registration Unsuccessful");
+            mListener.onWaitFragmentInteractionHide();
         }
     }
 
