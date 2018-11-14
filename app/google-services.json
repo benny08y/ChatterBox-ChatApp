@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "718155032799",
+    "firebase_url": "https://tcss450-chatapp-team2.firebaseio.com",
+    "project_id": "tcss450-chatapp-team2",
+    "storage_bucket": "tcss450-chatapp-team2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718155032799:android:7057f4dc608270ec",
+        "android_client_info": {
+          "package_name": "tcss450.uw.edu.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718155032799-cml37btv2275bag6r8rqrdlsad3srd5q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_36-xw4WRorivddI1KbfvwEsjZxCfLPs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

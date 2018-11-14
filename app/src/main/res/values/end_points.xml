@@ -3,4 +3,7 @@
     <string name="ep_base_url">final-project-450.herokuapp.com</string>
     <string name="ep_login">login</string>
     <string name="ep_register">register</string>
+    <string name="ep_with_token">with_token</string>
+    <string name="ep_messaging_base">messaging</string>
+    <string name="ep_messaging_send">send</string>
 </resources>
