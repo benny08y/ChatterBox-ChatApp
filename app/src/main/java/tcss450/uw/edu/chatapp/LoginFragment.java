@@ -112,16 +112,13 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
     }
 
     private void handleLoginOnPre() {
-        mListener.onWaitFragmentInteractionShow();
     }
 
     private void handleLoginOnPost(String result) {
-        //mListener.onWaitFragmentInteractionHide();
         try {
             Log.d("JSON result",result);
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
-            //mListener.onWaitFragmentInteractionHide();
             if (success) {
                 //Login was successful. Inform the Activity so it can do its thing.
                 mListener.onLoginAttempt(mCredentials);
@@ -134,7 +131,6 @@ public class LoginFragment extends Fragment  implements View.OnClickListener {
             Log.e("JSON_PARSE_ERROR", result
                     + System.lineSeparator()
                     + e.getMessage());
-            //mListener.onWaitFragmentInteractionHide();
             ((TextView) getView().findViewById(R.id.fragLogin_email_editTxt))
                     .setError("Login Unsuccessful");
         }

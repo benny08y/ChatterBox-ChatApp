@@ -26,7 +26,6 @@ import java.io.IOException;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
-import tcss450.uw.edu.chatapp.chats.dummy.DummyContent;
 import tcss450.uw.edu.chatapp.chats.dummy.MessageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
@@ -36,19 +35,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         ChatsFragment.OnChatListFragmentInteractionListener,ContactsFragment.OnListFragmentInteractionListener,
         WaitFragment.OnFragmentInteractionListener {
 
-    private LandingPageFragment mLandPageFrag;
-    private VerificationFragment mVerificationFragment;
-    private FloatingActionButton mfab;
+    private FloatingActionButton mFab;
+    Bundle thisBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mfab = (FloatingActionButton) findViewById(R.id.fab);
-        mfab.setOnClickListener(new View.OnClickListener() {
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -62,33 +61,33 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("args");
+        thisBundle = bundle;
+
+        LandingPageFragment landingPageFragment = new LandingPageFragment();
+        landingPageFragment.setArguments(bundle);
 
         if(savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
-                mLandPageFrag = new LandingPageFragment();
-                Bundle bundle = new Bundle();
-//                mLandPageFrag.setArguments(bundle);
-//                getSupportFragmentManager().beginTransaction()
-//                        .add(R.id.content_home_container, mLandPageFrag)
-//                        .commit();
-                mVerificationFragment = new VerificationFragment();
 
                 Fragment fragment;
+
                 if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), false)) {
-                    fragment = new MessageFragment();
+                    fragment = new LandingPageFragment();
                 } else {
                     fragment = new LandingPageFragment();
                     fragment.setArguments(bundle);
                 }
+
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.content_home_container, mVerificationFragment)
+                        .add(R.id.content_home_container, fragment)
                         .commit();
             }
         }
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -128,13 +127,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            mfab.show();
-            loadFragment(mLandPageFrag);
+            mFab.show();
+            loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
-            mfab.hide();
+            mFab.hide();
             loadFragment(new ChatsFragment());
         } else if (id == R.id.nav_contacts) {
-            mfab.hide();
+            mFab.hide();
             loadFragment(new ContactsFragment());
         } else if (id == R.id.nav_logout) {
             logout();
@@ -189,9 +188,20 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onWaitFragmentInteractionShow() {    }
+    public void onWaitFragmentInteractionShow() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.content_home_container, new WaitFragment(), "WAIT")
+                .addToBackStack(null)
+                .commit();
+    }
     @Override
-    public void onWaitFragmentInteractionHide() {    }
+    public void onWaitFragmentInteractionHide() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .remove(getSupportFragmentManager().findFragmentByTag("WAIT"))
+                .commit();
+    }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
     // we have something that allows us to do that.
@@ -199,7 +209,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            onWaitFragmentInteractionShow();
         }
         @Override
         protected Void doInBackground(Void... voids) {
