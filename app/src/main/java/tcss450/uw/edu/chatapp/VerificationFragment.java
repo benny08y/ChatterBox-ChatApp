@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import tcss450.uw.edu.chatapp.model.Credentials;
 
@@ -27,8 +28,16 @@ public class VerificationFragment extends Fragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_verification, container, false);
+        View v = inflater.inflate(R.layout.fragment_verification, container, false);
+
+        Button resend_button = v.findViewById(R.id.verification_resend_button);
+        resend_button.setOnClickListener(this);
+        Button login_button = v.findViewById(R.id.verification_login_button);
+        login_button.setOnClickListener(this);
+
+        return v;
     }
 
     @Override
@@ -54,8 +63,10 @@ public class VerificationFragment extends Fragment implements View.OnClickListen
             switch (v.getId()) {
                 case R.id.verification_resend_button:
                     mListener.onResendClicked();
+                    break;
                 case R.id.verification_login_button:
                     mListener.onLoginClicked();
+                    break;
                 default:
                     Log.wtf("", "Didn't expect to see me...");
             }
