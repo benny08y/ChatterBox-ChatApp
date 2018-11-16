@@ -104,7 +104,6 @@ public class RegisterFragment extends Fragment {
             builder.addNickname(mNickname.toString());
             Credentials credentials = builder.build();
 
-
             Uri uri = new Uri.Builder()
                     .scheme("https")
                     .appendPath(getString(R.string.ep_base_url))

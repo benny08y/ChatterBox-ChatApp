@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
     public static final String HOME_LOGIN_PASSWORD = "password";
     private boolean mLoadFromChatNotification = false;
     private static final String TAG = MainActivity.class.getSimpleName();
+    private Credentials mCredentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +72,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
     @Override
     public void onRegisterAttempt(Credentials credentials) {
 
+        mCredentials = credentials;
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("credentials", credentials);
+        VerificationFragment verificationFragment = new VerificationFragment();
+        verificationFragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_container, new VerificationFragment())
+                .replace(R.id.main_container, verificationFragment)
                 .addToBackStack(null)
                 .commit();
 
@@ -102,10 +109,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
                 .commit();
     }
 
-    @Override
-    public void onResendClicked() {
-        // TODO: resend verification email
-    }
+    //    @Override
+//    public void onResendClicked() {
+//        // TODO: resend verification email
+//    }
     @Override
     public void onLoginClicked() {
         getSupportFragmentManager()

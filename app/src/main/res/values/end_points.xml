@@ -6,4 +6,5 @@
     <string name="ep_with_token">with_token</string>
     <string name="ep_messaging_base">messaging</string>
     <string name="ep_messaging_send">send</string>
+    <string name="ep_verification">verification</string>
 </resources>
