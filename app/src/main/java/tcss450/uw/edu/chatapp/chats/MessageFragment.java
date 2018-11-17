@@ -1,4 +1,4 @@
-package tcss450.uw.edu.chatapp.chats.dummy;
+package tcss450.uw.edu.chatapp.chats;
 
 
 import android.content.BroadcastReceiver;

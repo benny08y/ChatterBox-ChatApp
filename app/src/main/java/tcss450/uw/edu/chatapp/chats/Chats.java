@@ -1,5 +1,6 @@
 package tcss450.uw.edu.chatapp.chats;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,62 +12,70 @@ import java.util.Map;
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class Chats {
+public class Chats implements Serializable {
 
-    /**
-     * An array of sample (dummy) items.
-     */
-    public static final List<DummyItem> ITEMS = new ArrayList<DummyItem>();
+    private final String mEmail;
+    private final String mNickname;
+    private final String mLastMessage;
+    private final String mTimeStamp;
+    private final int mChatID;
 
-    /**
-     * A map of sample (dummy) items, by ID.
-     */
-    public static final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
+    public static class Builder {
+        private String mEmail = "";
+        private final String mNickname;
+        private  String mTimeStamp = "";
+        private final int mChatID;
+        private  String mLastMessage= "";
 
-    private static final int COUNT = 25;
 
-    static {
-        // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDummyItem(i));
+        public Builder(String nickname, int chatID) {
+            this.mNickname = nickname;
+            this.mChatID = chatID;
+        }
+
+        public Chats.Builder addEmail(final String val) {
+            mEmail = val;
+            return this;
+        }
+
+        public Chats.Builder addTimestamp(final String val) {
+            mTimeStamp = val;
+            return this;
+        }
+
+        public Chats.Builder addLastMessage(final String val) {
+            mLastMessage = val;
+            return this;
+        }
+
+        public Chats build() {
+            return new Chats(this);
         }
     }
 
-    private static void addItem(DummyItem item) {
-        ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+    private Chats(final Builder builder) {
+        this.mEmail = builder.mEmail;
+        this.mNickname = builder.mNickname;
+        this.mTimeStamp = builder.mTimeStamp;
+        this.mChatID = builder.mChatID;
+        this.mLastMessage = builder.mLastMessage;
     }
 
-    private static DummyItem createDummyItem(int position) {
-        return new DummyItem(String.valueOf(position), "Item " + position, makeDetails(position));
+    public String getEmail() {
+        return mEmail;
     }
 
-    private static String makeDetails(int position) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
-        return builder.toString();
+    public String getNickname() {
+        return mNickname;
     }
 
-    /**
-     * A dummy item representing a piece of content.
-     */
-    public static class DummyItem {
-        public final String id;
-        public final String content;
-        public final String details;
+    public String getTimeStamp() {
+        return mTimeStamp;
+    }
 
-        public DummyItem(String id, String content, String details) {
-            this.id = id;
-            this.content = content;
-            this.details = details;
-        }
+    public String getLastMessage() { return mLastMessage; }
 
-        @Override
-        public String toString() {
-            return content;
-        }
+    public int getChatID()  {
+        return mChatID;
     }
 }
