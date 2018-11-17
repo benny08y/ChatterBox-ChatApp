@@ -11,6 +11,6 @@
     <string name="ep_messaging_send">send</string>
 
     <string name="ep_chats_base">chats</string>
-    <string name="ep_getallchats">getAll</string>
+    <string name="ep_getallchats">getAllChats</string>
     <string name="ep_newchat">newchat</string>
 </resources>

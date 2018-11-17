@@ -136,16 +136,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_contacts) {
             mFab.hide();
             loadFragment(new ContactsFragment());
-//            Uri uri = new Uri.Builder()
-//                    .scheme("https")
-//                    .appendPath(getString(R.string.ep_base_url))
-//                    .appendPath(getString(R.string.ep_chats_base))
-//                    .appendPath(getString(R.string.ep_getallchats))
-//                    .build();
-//            new GetAsyncTask.Builder(uri.toString())
-//                    .onPreExecute(this::onWaitFragmentInteractionShow)
-//                    .onPostExecute(this::handleChatsGetOnPostExecute)
-//                    .build().execute();
+            Uri uri = new Uri.Builder()
+                    .scheme("https")
+                    .appendPath(getString(R.string.ep_base_url))
+                    .appendPath(getString(R.string.ep_chats_base))
+                    .appendPath(getString(R.string.ep_getallchats))
+                    .build();
+            new GetAsyncTask.Builder(uri.toString())
+                    .onPreExecute(this::onWaitFragmentInteractionShow)
+                    .onPostExecute(this::handleChatsGetOnPostExecute)
+                    .build().execute();
         } else if (id == R.id.nav_logout) {
             logout();
         }
@@ -171,8 +171,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     List<Chats> chats = new ArrayList<>();
                     for(int i = 0; i < data.length(); i++) {
                         JSONObject jsonChats = data.getJSONObject(i);
-                        chats.add(new Chats.Builder(jsonChats.getString("ChatID"),
-                                jsonChats.getInt("Name"))
+                        chats.add(new Chats.Builder(jsonChats.getString("email"),
+                                jsonChats.getString("firstname"), jsonChats.getString("lastname"))
                                 .build());
                     }
                     Chats[] chatsAsArray = new Chats[chats.size()];

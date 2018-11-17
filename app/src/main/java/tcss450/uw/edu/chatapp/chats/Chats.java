@@ -15,26 +15,35 @@ import java.util.Map;
 public class Chats implements Serializable {
 
     private final String mEmail;
+    private final String mFirstName;
+    private final String mLastName;
     private final String mNickname;
     private final String mLastMessage;
     private final String mTimeStamp;
     private final int mChatID;
 
     public static class Builder {
-        private String mEmail = "";
-        private final String mNickname;
+        private final String mEmail;
+        private final String mFirstName;
+        private final String mLastName;
+        private String mNickname="";
         private  String mTimeStamp = "";
-        private final int mChatID;
+        private int mChatID=0;
         private  String mLastMessage= "";
 
-
-        public Builder(String nickname, int chatID) {
-            this.mNickname = nickname;
-            this.mChatID = chatID;
+        public Builder(String email, String firstName, String lastName) {
+            this.mEmail = email;
+            this.mFirstName = firstName;
+            this.mLastName = lastName;
         }
 
-        public Chats.Builder addEmail(final String val) {
-            mEmail = val;
+        public Chats.Builder addChatID(final int val) {
+            mChatID = val;
+            return this;
+        }
+
+        public Chats.Builder addNickname(final String val) {
+            mNickname = val;
             return this;
         }
 
@@ -55,6 +64,8 @@ public class Chats implements Serializable {
 
     private Chats(final Builder builder) {
         this.mEmail = builder.mEmail;
+        this.mFirstName = builder.mFirstName;
+        this.mLastName = builder.mLastName;
         this.mNickname = builder.mNickname;
         this.mTimeStamp = builder.mTimeStamp;
         this.mChatID = builder.mChatID;
@@ -63,6 +74,14 @@ public class Chats implements Serializable {
 
     public String getEmail() {
         return mEmail;
+    }
+
+    public String getFirstname() {
+        return mFirstName;
+    }
+
+    public String getLastname() {
+        return mLastName;
     }
 
     public String getNickname() {
