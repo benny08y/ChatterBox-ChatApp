@@ -58,8 +58,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Uri uri = new Uri.Builder()
+                        .scheme("https")
+                        .appendPath(getString(R.string.ep_base_url))
+                        .appendPath(getString(R.string.ep_chats_base))
+                        .appendPath(getString(R.string.ep_newchat))
+                        .build();
+                loadFragment(new MessageFragment());
             }
         });
 
@@ -96,6 +101,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         .commit();
             }
         }
+
     }
 
     @Override
@@ -115,19 +121,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -146,7 +139,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 //            Uri uri = new Uri.Builder()
 //                    .scheme("https")
 //                    .appendPath(getString(R.string.ep_base_url))
-//                    .appendPath(getString(R.string.ep_messaging_base))
+//                    .appendPath(getString(R.string.ep_chats_base))
 //                    .appendPath(getString(R.string.ep_getallchats))
 //                    .build();
 //            new GetAsyncTask.Builder(uri.toString())
