@@ -3,6 +3,7 @@ package tcss450.uw.edu.chatapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,13 +23,20 @@ import android.view.MenuItem;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
-import tcss450.uw.edu.chatapp.chats.dummy.MessageFragment;
+import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
+import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -135,6 +143,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_contacts) {
             mFab.hide();
             loadFragment(new ContactsFragment());
+//            Uri uri = new Uri.Builder()
+//                    .scheme("https")
+//                    .appendPath(getString(R.string.ep_base_url))
+//                    .appendPath(getString(R.string.ep_messaging_base))
+//                    .appendPath(getString(R.string.ep_getallchats))
+//                    .build();
+//            new GetAsyncTask.Builder(uri.toString())
+//                    .onPreExecute(this::onWaitFragmentInteractionShow)
+//                    .onPostExecute(this::handleChatsGetOnPostExecute)
+//                    .build().execute();
         } else if (id == R.id.nav_logout) {
             logout();
         }
@@ -142,6 +160,52 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void handleChatsGetOnPostExecute(final String result) {
+        Log.e("ENTERED 1", "ON POST EXECUTED");
+        //parse JSON
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("response")) {
+                Log.e("ENTERED 2", "JSON HAS A RESPONSE");
+
+                JSONObject response = root.getJSONObject("response");
+                if (response.has("data")) {
+                    Log.e("ENTERED 3", "HAS DATA");
+
+                    JSONArray data = response.getJSONArray("data");
+                    List<Chats> chats = new ArrayList<>();
+                    for(int i = 0; i < data.length(); i++) {
+                        JSONObject jsonChats = data.getJSONObject(i);
+                        chats.add(new Chats.Builder(jsonChats.getString("ChatID"),
+                                jsonChats.getInt("Name"))
+                                .build());
+                    }
+                    Chats[] chatsAsArray = new Chats[chats.size()];
+                    chatsAsArray = chats.toArray(chatsAsArray);
+                    Bundle args = new Bundle();
+                    args.putSerializable( ChatsFragment.ARG_CHATS , chatsAsArray);
+                    Fragment frag = new ChatsFragment();
+                    frag.setArguments(args);
+                    onWaitFragmentInteractionHide();
+                    loadFragment(frag);
+                } else {
+                    Log.e("ERROR!", "No data array");
+                    //notify user
+                    onWaitFragmentInteractionHide();
+                }
+            } else {
+                Log.e("ERROR!", "No response");
+                //notify user
+                onWaitFragmentInteractionHide();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("ERROR!", e.getMessage());
+            //notify user
+            onWaitFragmentInteractionHide();
+        }
     }
 
     private void logout() {
@@ -153,12 +217,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         prefs.edit().remove(getString(R.string.keys_prefs_password)).apply();
         prefs.edit().remove(getString(R.string.keys_prefs_email)).apply();
         //close the app
-        finishAndRemoveTask();
+//        finishAndRemoveTask();
         //or close this activity and bring back the Login
-        //Intent i = new Intent(this, MainActivity.class);
-        //startActivity(i);
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
         //End this Activity and remove it from the Activity back stack.
-        //finish();
+        finish();
     }
 
     private void loadFragment(Fragment frag) {
@@ -170,11 +234,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onChatListFragmentInteraction(Chats.DummyItem item) {
+    public void onChatListFragmentInteraction(Chats item) {
         MessageFragment messageFragment = new MessageFragment();
-
-        // TODO: use chat item to find and generate previous Message items, if any
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_home_container, messageFragment)
@@ -202,6 +263,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 .remove(getSupportFragmentManager().findFragmentByTag("WAIT"))
                 .commit();
     }
+
+
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
     // we have something that allows us to do that.
