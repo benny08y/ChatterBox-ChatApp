@@ -33,6 +33,7 @@ import java.util.List;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
+import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
@@ -241,6 +242,7 @@ public class HomeActivity extends AppCompatActivity implements
                     chats.add(new Chats.Builder(jsonChats.getString("email"),
                     jsonChats.getString("firstname"), jsonChats.getString("lastname"))
                             .addChatID(jsonChats.getInt("chatid"))
+                            .addNickname(jsonChats.getString("username"))
                     .build());
                 }
                 Chats[] chatsAsArray = new Chats[chats.size()];
