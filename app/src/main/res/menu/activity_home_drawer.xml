@@ -17,9 +17,14 @@
             android:icon="@drawable/ic_people_outline_black_24dp"
             android:title="Contacts" />
         <item
+            android:id="@+id/nav_weather"
+            android:icon="@drawable/ic_exit_to_app_black_24dp"
+            android:title="Weather" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
             android:title="Logout" />
+
 
     </group>
 
