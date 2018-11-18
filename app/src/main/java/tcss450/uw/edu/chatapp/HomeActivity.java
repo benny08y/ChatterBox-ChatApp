@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -20,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -33,10 +33,11 @@ import java.util.List;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
-import tcss450.uw.edu.chatapp.chats.dummy.MessageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
+import tcss450.uw.edu.chatapp.chats.MessageFragment;
+import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 public class HomeActivity extends AppCompatActivity implements
@@ -46,25 +47,32 @@ public class HomeActivity extends AppCompatActivity implements
         WaitFragment.OnFragmentInteractionListener,
         ContactPageFragment.OnContactPageFragmentInteractionListener {
 
-    private LandingPageFragment mLandPageFrag;
-    private VerificationFragment mVerificationFragment;
-    private FloatingActionButton mfab;
+    private FloatingActionButton mFab;
+    Bundle thisBundle;
+    private String mEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mfab = (FloatingActionButton) findViewById(R.id.fab);
-        mfab.setOnClickListener(new View.OnClickListener() {
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Uri uri = new Uri.Builder()
+                        .scheme("https")
+                        .appendPath(getString(R.string.ep_base_url))
+                        .appendPath(getString(R.string.ep_chats_base))
+                        .appendPath(getString(R.string.ep_newchat))
+                        .build();
+                loadFragment(new MessageFragment());
             }
         });
+        mFab.hide();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -73,32 +81,35 @@ public class HomeActivity extends AppCompatActivity implements
         toggle.syncState();
 
         Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("args");
+        mEmail = intent.getStringExtra(MainActivity.HOME_LOGIN_EMAIL);
+        Log.v("EMAIL", mEmail);
+        thisBundle = bundle;
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
+        TextView t = (TextView) headerView.findViewById(R.id.header_curEmail);
+        t.setText(mEmail);
+
+        LandingPageFragment landingPageFragment = new LandingPageFragment();
+        landingPageFragment.setArguments(bundle);
 
         if(savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
-                mLandPageFrag = new LandingPageFragment();
-                Bundle bundle = new Bundle();
-//                mLandPageFrag.setArguments(bundle);
-//                getSupportFragmentManager().beginTransaction()
-//                        .add(R.id.content_home_container, mLandPageFrag)
-//                        .commit();
-                mVerificationFragment = new VerificationFragment();
-
                 Fragment fragment;
                 if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), false)) {
-                    fragment = new MessageFragment();
+                    fragment = new LandingPageFragment();
                 } else {
                     fragment = new LandingPageFragment();
                     fragment.setArguments(bundle);
                 }
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.content_home_container, mVerificationFragment)
+                        .add(R.id.content_home_container, fragment)
                         .commit();
             }
         }
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -118,19 +129,6 @@ public class HomeActivity extends AppCompatActivity implements
         return true;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -138,13 +136,32 @@ public class HomeActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            mfab.show();
-            loadFragment(mLandPageFrag);
+            mFab.hide();
+            loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
-            mfab.hide();
-            loadFragment(new ChatsFragment());
+            mFab.show();
+//            loadFragment(new ChatsFragment());
+            Uri uri = new Uri.Builder()
+                    .scheme("https")
+                    .appendPath(getString(R.string.ep_base_url))
+                    .appendPath(getString(R.string.ep_chats_base))
+                    .appendPath(getString(R.string.ep_getallchats))
+                    .build();
+            JSONObject messageJson = new JSONObject();
+            try {
+                messageJson.put("email", mEmail);
+                Log.e("IN_JSON", "post body email");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.e("IN_JSON", "didnt put email");
+            }
+            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                    .onPreExecute(this::onWaitFragmentInteractionShow)
+                    .onPostExecute(this::handleChatsPostExecute)
+                    .onCancelled(error -> Log.e("SEND_TAG", error))
+                    .build().execute();
         } else if (id == R.id.nav_contacts) {
-            mfab.hide();
+            mFab.hide();
 //            loadFragment(new ContactsFragment());
 
             Uri uri = new Uri.Builder()
@@ -209,6 +226,40 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
+    private void handleChatsPostExecute(final String result) {
+        Log.e("ERROR!", "ON POST EXECUTED");
+        //parse JSON
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("success") && root.getBoolean("success")) {
+                Log.e("ERROR!", "JSON HAS A RESPONSE");
+
+                JSONArray data = root.getJSONArray("data");
+                List<Chats> chats = new ArrayList<>();
+                for(int i = 0; i < data.length(); i++) {
+                    JSONObject jsonChats = data.getJSONObject(i);
+                    chats.add(new Chats.Builder(jsonChats.getString("email"),
+                    jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                            .addChatID(jsonChats.getInt("chatid"))
+                    .build());
+                }
+                Chats[] chatsAsArray = new Chats[chats.size()];
+                chatsAsArray = chats.toArray(chatsAsArray);
+                Bundle args = new Bundle();
+                args.putSerializable( ChatsFragment.ARG_CHATS , chatsAsArray);
+                ChatsFragment frag = new ChatsFragment();
+                frag.setArguments(args);
+                onWaitFragmentInteractionHide();
+                loadFragment(frag);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("ERROR!", e.getMessage());
+            //notify user
+            onWaitFragmentInteractionHide();
+        }
+    }
+
     private void logout() {
         SharedPreferences prefs =
                 getSharedPreferences(
@@ -218,7 +269,7 @@ public class HomeActivity extends AppCompatActivity implements
         prefs.edit().remove(getString(R.string.keys_prefs_password)).apply();
         prefs.edit().remove(getString(R.string.keys_prefs_email)).apply();
         //close the app
-        //finishAndRemoveTask();
+//        finishAndRemoveTask();
         //or close this activity and bring back the Login
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
@@ -235,11 +286,10 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onChatListFragmentInteraction(Chats.DummyItem item) {
+    public void onChatListFragmentInteraction(Chats item) {
+        mFab.hide();
         MessageFragment messageFragment = new MessageFragment();
-
-        // TODO: use chat item to find and generate previous Message items, if any
-
+        messageFragment.setChat(item);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_home_container, messageFragment)
@@ -293,7 +343,6 @@ public class HomeActivity extends AppCompatActivity implements
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            onWaitFragmentInteractionShow();
         }
         @Override
         protected Void doInBackground(Void... voids) {

@@ -8,21 +8,20 @@ import android.widget.TextView;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment.OnChatListFragmentInteractionListener;
-import tcss450.uw.edu.chatapp.chats.Chats.DummyItem;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
  * specified {@link OnChatListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<Chats> mValues;
     private final OnChatListFragmentInteractionListener mListener;
 
-    public MyChatsRecyclerViewAdapter(List<DummyItem> items, OnChatListFragmentInteractionListener listener) {
+    public MyChatsRecyclerViewAdapter(List<Chats> items, OnChatListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -37,8 +36,9 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-//        holder.mContactName.setText(mValues.get(position).id);
-//        holder.mLastMessage.setText(mValues.get(position).content);
+        holder.mContactName.setText(mValues.get(position).getFirstname() + " "
+                + mValues.get(position).getLastname());
+//        holder.mLastMessage.setText(mValues.get(position).getLastMessage());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,14 +60,14 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mContactName;
-        public final TextView mLastMessage;
-        public DummyItem mItem;
+//        public final TextView mLastMessage;
+        public Chats mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mContactName = (TextView) view.findViewById(R.id.chat_contactName);
-            mLastMessage = (TextView) view.findViewById(R.id.chat_lastMsg);
+//            mLastMessage = (TextView) view.findViewById(R.id.chat_lastMsg);
         }
 
         @Override

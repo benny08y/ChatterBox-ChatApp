@@ -10,8 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.chats.Chats.DummyItem;
 
 /**
  * A fragment representing a list of Items.
@@ -21,18 +24,18 @@ import tcss450.uw.edu.chatapp.chats.Chats.DummyItem;
  */
 public class ChatsFragment extends Fragment  {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnChatListFragmentInteractionListener mListener;
+
+    public static final String ARG_CHATS = "list of chats";
+    private List<Chats> mChatsList;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ChatsFragment() {
-    }
+    public ChatsFragment() {    }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
@@ -47,9 +50,10 @@ public class ChatsFragment extends Fragment  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            mChatsList = new ArrayList<Chats>(
+                    Arrays.asList((Chats[]) getArguments().getSerializable(ARG_CHATS)));
+//            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
     }
 
@@ -57,8 +61,6 @@ public class ChatsFragment extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats_list, container, false);
-
-        // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
@@ -67,7 +69,7 @@ public class ChatsFragment extends Fragment  {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyChatsRecyclerViewAdapter(Chats.ITEMS, mListener));
+            recyclerView.setAdapter(new MyChatsRecyclerViewAdapter(mChatsList, mListener));
         }
         return view;
     }
@@ -102,6 +104,6 @@ public class ChatsFragment extends Fragment  {
      */
     public interface OnChatListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onChatListFragmentInteraction(DummyItem item);
+        void onChatListFragmentInteraction(Chats item);
     }
 }

@@ -9,18 +9,21 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:outlineProvider="bounds">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_orange_light">
 
             <TextView
                 android:id="@+id/chat_contactName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="49dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginStart="104dp"
+                android:layout_marginTop="8dp"
                 android:text="Contact Name"
                 android:textAppearance="?attr/textAppearanceListItem"
                 app:layout_constraintStart_toEndOf="@+id/chat_contact_icon"
@@ -31,22 +34,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="36dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:layout_weight="1"
-                android:text="Last Message"
                 android:textAppearance="?attr/textAppearanceListItem"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.297"
                 app:layout_constraintStart_toEndOf="@+id/chat_contact_icon"
-                app:layout_constraintTop_toBottomOf="@+id/chat_contactName" />
+                app:layout_constraintTop_toBottomOf="@+id/chat_contactName"
+                app:layout_constraintVertical_bias="1.0" />
 
             <TextView
                 android:id="@+id/chat_contact_icon"
-                android:layout_width="89dp"
-                android:layout_height="64dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Contact Icon"
+                android:layout_marginBottom="16dp"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

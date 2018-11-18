@@ -104,7 +104,6 @@ public class RegisterFragment extends Fragment {
             builder.addNickname(mNickname.toString());
             Credentials credentials = builder.build();
 
-
             Uri uri = new Uri.Builder()
                     .scheme("https")
                     .appendPath(getString(R.string.ep_base_url))
@@ -117,8 +116,6 @@ public class RegisterFragment extends Fragment {
                     .onPostExecute(this::handleRegistrationOnPost)
                     .onCancelled(this::handleErrorsInTask)
                     .build().execute();
-
-            //mListener.onRegisterAttempt(mCredentials);
         }
     }
 
@@ -134,7 +131,6 @@ public class RegisterFragment extends Fragment {
      * Handle the setup of the UI before the HTTP call to the webservice.
      */
     private void handleRegistrationOnPre() {
-        mListener.onWaitFragmentInteractionShow();
     }
 
     /**
@@ -147,7 +143,6 @@ public class RegisterFragment extends Fragment {
             Log.d("JSON result",result);
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
-            mListener.onWaitFragmentInteractionHide();
             if (success) {
                 //Login was successful. Inform the Activity so it can do its thing.
                 mListener.onRegisterAttempt(mCredentials);
@@ -162,7 +157,6 @@ public class RegisterFragment extends Fragment {
             Log.e("JSON_PARSE_ERROR", result
                     + System.lineSeparator()
                     + e.getMessage());
-            mListener.onWaitFragmentInteractionHide();
             ((TextView) Objects.requireNonNull(getView()).findViewById(R.id.fragRegister_email_editText))
                     .setError("Registration Unsuccessful");
         }

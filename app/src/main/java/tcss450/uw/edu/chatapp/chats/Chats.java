@@ -1,5 +1,6 @@
 package tcss450.uw.edu.chatapp.chats;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,62 +12,89 @@ import java.util.Map;
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class Chats {
+public class Chats implements Serializable {
 
-    /**
-     * An array of sample (dummy) items.
-     */
-    public static final List<DummyItem> ITEMS = new ArrayList<DummyItem>();
+    private final String mEmail;
+    private final String mFirstName;
+    private final String mLastName;
+    private final String mNickname;
+    private final String mLastMessage;
+    private final String mTimeStamp;
+    private final int mChatID;
 
-    /**
-     * A map of sample (dummy) items, by ID.
-     */
-    public static final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
+    public static class Builder {
+        private final String mEmail;
+        private final String mFirstName;
+        private final String mLastName;
+        private String mNickname="";
+        private  String mTimeStamp = "";
+        private int mChatID=0;
+        private  String mLastMessage= "";
 
-    private static final int COUNT = 25;
+        public Builder(String email, String firstName, String lastName) {
+            this.mEmail = email;
+            this.mFirstName = firstName;
+            this.mLastName = lastName;
+        }
 
-    static {
-        // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDummyItem(i));
+        public Chats.Builder addChatID(final int val) {
+            mChatID = val;
+            return this;
+        }
+
+        public Chats.Builder addNickname(final String val) {
+            mNickname = val;
+            return this;
+        }
+
+        public Chats.Builder addTimestamp(final String val) {
+            mTimeStamp = val;
+            return this;
+        }
+
+        public Chats.Builder addLastMessage(final String val) {
+            mLastMessage = val;
+            return this;
+        }
+
+        public Chats build() {
+            return new Chats(this);
         }
     }
 
-    private static void addItem(DummyItem item) {
-        ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+    private Chats(final Builder builder) {
+        this.mEmail = builder.mEmail;
+        this.mFirstName = builder.mFirstName;
+        this.mLastName = builder.mLastName;
+        this.mNickname = builder.mNickname;
+        this.mTimeStamp = builder.mTimeStamp;
+        this.mChatID = builder.mChatID;
+        this.mLastMessage = builder.mLastMessage;
     }
 
-    private static DummyItem createDummyItem(int position) {
-        return new DummyItem(String.valueOf(position), "Item " + position, makeDetails(position));
+    public String getEmail() {
+        return mEmail;
     }
 
-    private static String makeDetails(int position) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
-        return builder.toString();
+    public String getFirstname() {
+        return mFirstName;
     }
 
-    /**
-     * A dummy item representing a piece of content.
-     */
-    public static class DummyItem {
-        public final String id;
-        public final String content;
-        public final String details;
+    public String getLastname() {
+        return mLastName;
+    }
 
-        public DummyItem(String id, String content, String details) {
-            this.id = id;
-            this.content = content;
-            this.details = details;
-        }
+    public String getNickname() {
+        return mNickname;
+    }
 
-        @Override
-        public String toString() {
-            return content;
-        }
+    public String getTimeStamp() {
+        return mTimeStamp;
+    }
+
+    public String getLastMessage() { return mLastMessage; }
+
+    public int getChatID()  {
+        return mChatID;
     }
 }
