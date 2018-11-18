@@ -3,6 +3,7 @@ package tcss450.uw.edu.chatapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,19 +23,28 @@ import android.view.MenuItem;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
-import tcss450.uw.edu.chatapp.chats.dummy.DummyContent;
 import tcss450.uw.edu.chatapp.chats.dummy.MessageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
+import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
-public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        ChatsFragment.OnChatListFragmentInteractionListener,ContactsFragment.OnListFragmentInteractionListener,
-        WaitFragment.OnFragmentInteractionListener {
+public class HomeActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        ChatsFragment.OnChatListFragmentInteractionListener,
+        ContactsFragment.OnContactListFragmentInteractionListener,
+        WaitFragment.OnFragmentInteractionListener,
+        ContactPageFragment.OnContactPageFragmentInteractionListener {
 
     private LandingPageFragment mLandPageFrag;
     private VerificationFragment mVerificationFragment;
@@ -135,7 +145,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             loadFragment(new ChatsFragment());
         } else if (id == R.id.nav_contacts) {
             mfab.hide();
-            loadFragment(new ContactsFragment());
+//            loadFragment(new ContactsFragment());
+
+            Uri uri = new Uri.Builder()
+                    .scheme("https")
+                    .appendPath(getString(R.string.ep_base_url))
+                    .appendPath(getString(R.string.ep_contacts))
+                    .appendPath(getString(R.string.ep_contacts_getAllContacts))
+                    .build();
+            new GetAsyncTask.Builder(uri.toString())
+                    .onPreExecute(this::onWaitFragmentInteractionShow)
+                    .onPostExecute(this::handleContactsGetOnPostExecute)
+                    .build().execute();
         } else if (id == R.id.nav_logout) {
             logout();
         }
@@ -143,6 +164,49 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void handleContactsGetOnPostExecute(final String result) {
+        //parse JSON
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("response")) {
+                JSONObject response = root.getJSONObject("response");
+                if (response.has("data")) {
+                    JSONArray data = response.getJSONArray("data");
+                    List<Contacts> contacts = new ArrayList<>();
+                    for(int i = 0; i < data.length(); i++) {
+                        JSONObject jsonContacts = data.getJSONObject(i);
+                        contacts.add(new Contacts.Builder(jsonContacts.getString("nickname"),
+                                jsonContacts.getString("email"))
+                                .addFirstName(jsonContacts.getString("firstName"))
+                                .addLastName(jsonContacts.getString("lastName"))
+                                .build());
+                    }
+                    Contacts[] contactsAsArray = new Contacts[contacts.size()];
+                    contactsAsArray = contacts.toArray(contactsAsArray);
+                    Bundle args = new Bundle();
+                    args.putSerializable(ContactsFragment.ARG_CONTACTS_LIST, contactsAsArray);
+                    Fragment frag = new ContactsFragment();
+                    frag.setArguments(args);
+                    onWaitFragmentInteractionHide();
+                    loadFragment(frag);
+                } else {
+                    Log.e("ERROR!", "No data array");
+                    //notify user
+                    onWaitFragmentInteractionHide();
+                }
+            } else {
+                Log.e("ERROR!", "No response");
+                //notify user
+                onWaitFragmentInteractionHide();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("ERROR!", e.getMessage());
+            //notify user
+            onWaitFragmentInteractionHide();
+        }
     }
 
     private void logout() {
@@ -154,12 +218,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         prefs.edit().remove(getString(R.string.keys_prefs_password)).apply();
         prefs.edit().remove(getString(R.string.keys_prefs_email)).apply();
         //close the app
-        finishAndRemoveTask();
+        //finishAndRemoveTask();
         //or close this activity and bring back the Login
-        //Intent i = new Intent(this, MainActivity.class);
-        //startActivity(i);
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
         //End this Activity and remove it from the Activity back stack.
-        //finish();
+        finish();
     }
 
     private void loadFragment(Fragment frag) {
@@ -184,14 +248,44 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onListFragmentInteraction(Contacts.DummyItem item) {
-
+    public void onWaitFragmentInteractionShow() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.content_home_container, new WaitFragment(), "WAIT")
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
-    public void onWaitFragmentInteractionShow() {    }
+    public void onWaitFragmentInteractionHide() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .remove(getSupportFragmentManager().findFragmentByTag("WAIT"))
+                .commit();
+    }
+
     @Override
-    public void onWaitFragmentInteractionHide() {    }
+    public void onContactListFragmentInteraction(Contacts contact) {
+        ContactPageFragment contactPageFragment = new ContactPageFragment();
+
+        Bundle args = new Bundle();
+        args.putString("nickname", contact.getNickname());
+        args.putString("email", contact.getEmail());
+        args.putString("firstName", contact.getFirstName());
+        args.putString("lastName", contact.getLastName());
+
+        contactPageFragment.setArguments(args);
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_home_container, contactPageFragment)
+                .addToBackStack(null);
+        transaction.commit();
+    }
+
+    @Override
+    public void onContactPageFragmentInteraction(String email) {
+        //open a new chat here
+    }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
     // we have something that allows us to do that.

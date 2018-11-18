@@ -2,12 +2,14 @@
 <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list"
     android:name="tcss450.uw.edu.chatapp.ContactsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:scrollbars="vertical"
     app:layoutManager="LinearLayoutManager"
     tools:context=".contacts.ContactsFragment"
-    tools:listitem="@layout/fragment_contacts" />
+    tools:listitem="@layout/fragment_contacts">
+
+</android.support.v7.widget.RecyclerView>

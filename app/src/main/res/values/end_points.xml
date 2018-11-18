@@ -6,4 +6,7 @@
     <string name="ep_with_token">with_token</string>
     <string name="ep_messaging_base">messaging</string>
     <string name="ep_messaging_send">send</string>
+    <string name="ep_contacts">contacts</string>
+    <string name="ep_contacts_getAllContacts">getAllContacts</string>
+
 </resources>
