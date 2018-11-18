@@ -37,6 +37,7 @@ import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
+import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -45,6 +46,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private FloatingActionButton mFab;
     Bundle thisBundle;
+    private String mEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 loadFragment(new MessageFragment());
             }
         });
+        mFab.hide();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -79,6 +82,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("args");
+        mEmail = intent.getStringExtra(MainActivity.HOME_LOGIN_EMAIL);
+        Log.v("EMAIL", mEmail);
         thisBundle = bundle;
 
         LandingPageFragment landingPageFragment = new LandingPageFragment();
@@ -128,24 +133,33 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            mFab.show();
+            mFab.hide();
             loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
-            mFab.hide();
-            loadFragment(new ChatsFragment());
-        } else if (id == R.id.nav_contacts) {
-            mFab.hide();
-            loadFragment(new ContactsFragment());
+            mFab.show();
+//            loadFragment(new ChatsFragment());
             Uri uri = new Uri.Builder()
                     .scheme("https")
                     .appendPath(getString(R.string.ep_base_url))
                     .appendPath(getString(R.string.ep_chats_base))
                     .appendPath(getString(R.string.ep_getallchats))
                     .build();
-            new GetAsyncTask.Builder(uri.toString())
+            JSONObject messageJson = new JSONObject();
+            try {
+                messageJson.put("email", mEmail);
+                Log.e("IN_JSON", "post body email");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.e("IN_JSON", "didnt put email");
+            }
+            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
                     .onPreExecute(this::onWaitFragmentInteractionShow)
-                    .onPostExecute(this::handleChatsGetOnPostExecute)
+                    .onPostExecute(this::handleChatsPostExecute)
+                    .onCancelled(error -> Log.e("SEND_TAG", error))
                     .build().execute();
+        } else if (id == R.id.nav_contacts) {
+            mFab.hide();
+            loadFragment(new ContactsFragment());
         } else if (id == R.id.nav_logout) {
             logout();
         }
@@ -155,43 +169,30 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void handleChatsGetOnPostExecute(final String result) {
-        Log.e("ENTERED 1", "ON POST EXECUTED");
+    private void handleChatsPostExecute(final String result) {
+        Log.e("ERROR!", "ON POST EXECUTED");
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
-            if (root.has("response")) {
-                Log.e("ENTERED 2", "JSON HAS A RESPONSE");
+            if (root.has("success") && root.getBoolean("success")) {
+                Log.e("ERROR!", "JSON HAS A RESPONSE");
 
-                JSONObject response = root.getJSONObject("response");
-                if (response.has("data")) {
-                    Log.e("ENTERED 3", "HAS DATA");
-
-                    JSONArray data = response.getJSONArray("data");
-                    List<Chats> chats = new ArrayList<>();
-                    for(int i = 0; i < data.length(); i++) {
-                        JSONObject jsonChats = data.getJSONObject(i);
-                        chats.add(new Chats.Builder(jsonChats.getString("email"),
-                                jsonChats.getString("firstname"), jsonChats.getString("lastname"))
-                                .build());
-                    }
-                    Chats[] chatsAsArray = new Chats[chats.size()];
-                    chatsAsArray = chats.toArray(chatsAsArray);
-                    Bundle args = new Bundle();
-                    args.putSerializable( ChatsFragment.ARG_CHATS , chatsAsArray);
-                    Fragment frag = new ChatsFragment();
-                    frag.setArguments(args);
-                    onWaitFragmentInteractionHide();
-                    loadFragment(frag);
-                } else {
-                    Log.e("ERROR!", "No data array");
-                    //notify user
-                    onWaitFragmentInteractionHide();
+                JSONArray data = root.getJSONArray("data");
+                List<Chats> chats = new ArrayList<>();
+                for(int i = 0; i < data.length(); i++) {
+                    JSONObject jsonChats = data.getJSONObject(i);
+                    chats.add(new Chats.Builder(jsonChats.getString("email"),
+                    jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                    .build());
                 }
-            } else {
-                Log.e("ERROR!", "No response");
-                //notify user
+                Chats[] chatsAsArray = new Chats[chats.size()];
+                chatsAsArray = chats.toArray(chatsAsArray);
+                Bundle args = new Bundle();
+                args.putSerializable( ChatsFragment.ARG_CHATS , chatsAsArray);
+                ChatsFragment frag = new ChatsFragment();
+                frag.setArguments(args);
                 onWaitFragmentInteractionHide();
+                loadFragment(frag);
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
     @Override
     public void onLoginAttempt(Credentials credentials) {
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-//        intent.putExtra(HOME_LOGIN_EMAIL, credentials.getUsername());
+        intent.putExtra(HOME_LOGIN_EMAIL, credentials.getEmail());
         intent.putExtra(HOME_LOGIN_PASSWORD, credentials.getPassword());
         intent.putExtra(getString(R.string.keys_intent_notifification_msg), mLoadFromChatNotification);
         MainActivity.this.startActivity(intent);
