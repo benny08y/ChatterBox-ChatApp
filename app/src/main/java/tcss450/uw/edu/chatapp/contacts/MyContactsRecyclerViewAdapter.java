@@ -7,22 +7,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.contacts.ContactsFragment.OnListFragmentInteractionListener;
-import tcss450.uw.edu.chatapp.contacts.Contacts.DummyItem;
+import tcss450.uw.edu.chatapp.contacts.ContactsFragment.OnContactListFragmentInteractionListener;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
+ * {@link RecyclerView.Adapter} that can display a {@link Contacts} and makes a call to the
+ * specified {@link OnContactListFragmentInteractionListener}.
  */
 public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContactsRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final List<Contacts> mValues;
+    private final OnContactListFragmentInteractionListener mListener;
 
-    public MyContactsRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyContactsRecyclerViewAdapter(List<Contacts> items, ContactsFragment.OnContactListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -37,8 +35,8 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-//        holder.mIdView.setText(mValues.get(position).id);
-//        holder.mContentView.setText(mValues.get(position).content);
+        holder.nicknameView.setText(mValues.get(position).getNickname());
+        holder.emailView.setText(mValues.get(position).getEmail());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +44,7 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onContactListFragmentInteraction(holder.mItem);
                 }
             }
         });
@@ -59,20 +57,15 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
+        public final TextView nicknameView;
+        public final TextView emailView;
+        public Contacts mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            nicknameView = view.findViewById(R.id.contact_fragment_nickname);
+            emailView = view.findViewById(R.id.contact_fragment_email);
         }
     }
 }
