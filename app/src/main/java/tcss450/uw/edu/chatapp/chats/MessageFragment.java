@@ -30,13 +30,12 @@ import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 public class MessageFragment extends Fragment {
     private static final String TAG = "CHAT_FRAG";
 
-    private static final String CHAT_ID = "1";
-
     private TextView mMessageOutputTextView;
     private EditText mMessageInputEditText;
     private String mEmail;
     private String mSendUrl;
     private FirebaseMessageReciever mFirebaseMessageReciever;
+    private Chats mChats;
 
     public MessageFragment() {    }
 
@@ -46,6 +45,8 @@ public class MessageFragment extends Fragment {
         View rootLayout = inflater.inflate(R.layout.fragment_message, container, false);
         mMessageOutputTextView = rootLayout.findViewById(R.id.text_chat_message_display);
         mMessageInputEditText = rootLayout.findViewById(R.id.edit_chat_message_input);
+        TextView msg_contactname = rootLayout.findViewById(R.id.message_contactname);
+        msg_contactname.setText(mChats.getFirstname()+" "+mChats.getLastname());
         rootLayout.findViewById(R.id.button_chat_send).setOnClickListener(this::handleSendClick);
         return rootLayout;
     }
@@ -89,13 +90,17 @@ public class MessageFragment extends Fragment {
         }
     }
 
+    public void setChat(Chats theChat){
+        mChats = theChat;
+    }
+
     private void handleSendClick(final View theButton) {
         String msg = mMessageInputEditText.getText().toString();
         JSONObject messageJson = new JSONObject();
         try {
             messageJson.put("email", mEmail);
             messageJson.put("message", msg);
-            messageJson.put("chatId", CHAT_ID);
+            messageJson.put("chatId", mChats.getChatID());
         } catch (JSONException e) {
             e.printStackTrace();
         }

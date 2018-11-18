@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -77,30 +78,30 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("args");
         mEmail = intent.getStringExtra(MainActivity.HOME_LOGIN_EMAIL);
         Log.v("EMAIL", mEmail);
         thisBundle = bundle;
 
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
+        TextView t = (TextView) headerView.findViewById(R.id.header_curEmail);
+        t.setText(mEmail);
+
         LandingPageFragment landingPageFragment = new LandingPageFragment();
         landingPageFragment.setArguments(bundle);
 
         if(savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
-
                 Fragment fragment;
-
                 if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), false)) {
                     fragment = new LandingPageFragment();
                 } else {
                     fragment = new LandingPageFragment();
                     fragment.setArguments(bundle);
                 }
-
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.content_home_container, fragment)
                         .commit();
@@ -183,6 +184,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     JSONObject jsonChats = data.getJSONObject(i);
                     chats.add(new Chats.Builder(jsonChats.getString("email"),
                     jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                            .addChatID(jsonChats.getInt("chatid"))
                     .build());
                 }
                 Chats[] chatsAsArray = new Chats[chats.size()];
@@ -229,7 +231,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onChatListFragmentInteraction(Chats item) {
+        mFab.hide();
         MessageFragment messageFragment = new MessageFragment();
+        messageFragment.setChat(item);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_home_container, messageFragment)
