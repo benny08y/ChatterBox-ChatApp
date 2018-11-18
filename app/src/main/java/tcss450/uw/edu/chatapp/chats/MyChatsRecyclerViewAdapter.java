@@ -36,9 +36,9 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mContactName.setText(mValues.get(position).getFirstname() + " "
-                + mValues.get(position).getLastname());
-        holder.mEmail.setText(mValues.get(position).getEmail() + " ChatID:" + mValues.get(position).getChatID());
+        holder.mContactName.setText( mValues.get(position).getNickname() + " ("
+                +mValues.get(position).getFirstname() + " "+ mValues.get(position).getLastname() +")");
+        holder.mEmail.setText(mValues.get(position).getEmail());
 //        holder.mLastMessage.setText(mValues.get(position).getLastMessage());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

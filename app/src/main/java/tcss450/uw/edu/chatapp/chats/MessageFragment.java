@@ -9,25 +9,34 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.utils.MyFirebaseMessagingService;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
+import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MessageFragment extends Fragment {
+public class MessageFragment extends Fragment implements WaitFragment.OnFragmentInteractionListener {
     private static final String TAG = "CHAT_FRAG";
 
     private TextView mMessageOutputTextView;
@@ -46,7 +55,14 @@ public class MessageFragment extends Fragment {
         mMessageOutputTextView = rootLayout.findViewById(R.id.text_chat_message_display);
         mMessageInputEditText = rootLayout.findViewById(R.id.edit_chat_message_input);
         TextView msg_contactname = rootLayout.findViewById(R.id.message_contactname);
-        msg_contactname.setText(mChats.getFirstname()+" "+mChats.getLastname());
+        msg_contactname.setText( mChats.getNickname()+ " (" +mChats.getFirstname()+" "+mChats.getLastname()+")");
+        ScrollView scrollView = rootLayout.findViewById(R.id.scrollView_msg_display);
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
         rootLayout.findViewById(R.id.button_chat_send).setOnClickListener(this::handleSendClick);
         return rootLayout;
     }
@@ -71,6 +87,42 @@ public class MessageFragment extends Fragment {
                 .appendPath(getString(R.string.ep_messaging_send))
                 .build()
                 .toString();
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_messaging_base))
+                .appendPath(getString(R.string.ep_messaging_getAll))
+                .build();
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put("chatId", mChats.getChatID());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                .onPostExecute(this::getMessagesPostExecute)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
+    }
+
+    private void getMessagesPostExecute(final String result) {
+        try {
+            JSONObject root = new JSONObject(result);
+            JSONArray data = root.getJSONArray("messages");
+            for (int i =data.length()-1; i >= 0; i--){
+                JSONObject jsonMsg = data.getJSONObject(i);
+                if(jsonMsg.has("message") && jsonMsg.has("email")) {
+                    String sender = jsonMsg.getString("email");
+                    String msg = jsonMsg.getString("message");
+                    mMessageOutputTextView.append(sender + ":" + msg);
+                    mMessageOutputTextView.append(System.lineSeparator());
+                    mMessageOutputTextView.append(System.lineSeparator());
+                    Log.i("FCM Chat Frag", sender + " " + msg);
+                }
+            }
+        } catch (JSONException e) {
+            Log.e("JSON PARSE", e.toString());
+        }
     }
 
     @Override
@@ -123,6 +175,18 @@ public class MessageFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onWaitFragmentInteractionShow() {
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.content_home_container, new WaitFragment(), "WAIT")
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onWaitFragmentInteractionHide() {    }
 
     /**
      * A BroadcastReceiver setup to listen for messages sent from
