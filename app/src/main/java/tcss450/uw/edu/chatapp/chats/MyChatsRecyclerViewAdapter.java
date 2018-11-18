@@ -38,6 +38,7 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
         holder.mItem = mValues.get(position);
         holder.mContactName.setText(mValues.get(position).getFirstname() + " "
                 + mValues.get(position).getLastname());
+        holder.mEmail.setText(mValues.get(position).getEmail() + " ChatID:" + mValues.get(position).getChatID());
 //        holder.mLastMessage.setText(mValues.get(position).getLastMessage());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +61,7 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mContactName;
+        public final TextView mEmail;
 //        public final TextView mLastMessage;
         public Chats mItem;
 
@@ -67,6 +69,7 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
             super(view);
             mView = view;
             mContactName = (TextView) view.findViewById(R.id.chat_contactName);
+            mEmail = (TextView) view.findViewById(R.id.chat_email);
 //            mLastMessage = (TextView) view.findViewById(R.id.chat_lastMsg);
         }
 
