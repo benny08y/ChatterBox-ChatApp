@@ -163,6 +163,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             loadFragment(new ContactsFragment());
         } else if (id == R.id.nav_logout) {
             logout();
+        } else if (id == R.id.nav_weather) {
+            loadFragment(new WeatherFragment());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
