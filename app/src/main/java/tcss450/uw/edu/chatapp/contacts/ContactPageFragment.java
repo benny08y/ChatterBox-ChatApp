@@ -67,7 +67,7 @@ public class ContactPageFragment extends Fragment {
 
     public void onFabPressed(String email) {
         if (mListener != null) {
-            startNewChat();
+//            startNewChat();
 //            mListener.onContactPageFragmentInteraction(email);
         }
     }
