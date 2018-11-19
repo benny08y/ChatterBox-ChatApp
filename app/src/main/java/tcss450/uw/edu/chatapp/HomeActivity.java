@@ -1,7 +1,9 @@
 package tcss450.uw.edu.chatapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -38,6 +40,7 @@ import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
+import tcss450.uw.edu.chatapp.utils.MyFirebaseMessagingService;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
@@ -51,6 +54,9 @@ public class HomeActivity extends AppCompatActivity implements
     private FloatingActionButton mFab;
     Bundle thisBundle;
     private String mEmail;
+    private ArrayList<Chats> mChats;
+    private String mSender;
+    private FirebaseMessageReciever mFirebaseMessageReciever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +102,20 @@ public class HomeActivity extends AppCompatActivity implements
                 Fragment fragment;
                 if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), false)) {
                     fragment = new LandingPageFragment();
+//                    for (int i =0 ; i< mChats.size(); i++){
+//                        Chats currChat = mChats.get(i);
+//                        if(currChat.getEmail().equals(mSender)){
+//                            mFab.hide();
+//                            MessageFragment messageFragment = new MessageFragment();
+//                            messageFragment.setChat(currChat);
+//                            messageFragment.setName(currChat.getNickname()+ " (" +currChat.getFirstname()+" "+currChat.getLastname()+")");
+//                            getSupportFragmentManager()
+//                                    .beginTransaction()
+//                                    .replace(R.id.content_home_container, messageFragment)
+//                                    .addToBackStack(null)
+//                                    .commit();
+//                        }
+//                    }
                 } else {
                     fragment = new LandingPageFragment();
                     fragment.setArguments(bundle);
@@ -105,7 +125,6 @@ public class HomeActivity extends AppCompatActivity implements
                         .commit();
             }
         }
-
     }
 
     private void getContacts(){
@@ -155,7 +174,6 @@ public class HomeActivity extends AppCompatActivity implements
             mFab.hide();
             loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
-            mFab.show();
             Uri uri = new Uri.Builder()
                     .scheme("https")
                     .appendPath(getString(R.string.ep_base_url))
@@ -228,21 +246,22 @@ public class HomeActivity extends AppCompatActivity implements
                 Log.e("ERROR!", "JSON HAS A RESPONSE");
 
                 JSONArray data = root.getJSONArray("data");
-                List<Chats> chats = new ArrayList<>();
+                mChats = new ArrayList<>();
                 for(int i = 0; i < data.length(); i++) {
                     JSONObject jsonChats = data.getJSONObject(i);
-                    chats.add(new Chats.Builder(jsonChats.getString("email"),
+                    mChats.add(new Chats.Builder(jsonChats.getString("email"),
                     jsonChats.getString("firstname"), jsonChats.getString("lastname"))
                             .addChatID(jsonChats.getInt("chatid"))
                             .addNickname(jsonChats.getString("username"))
                     .build());
                 }
-                Chats[] chatsAsArray = new Chats[chats.size()];
-                chatsAsArray = chats.toArray(chatsAsArray);
+                Chats[] chatsAsArray = new Chats[mChats.size()];
+                chatsAsArray = mChats.toArray(chatsAsArray);
                 Bundle args = new Bundle();
                 args.putSerializable( ChatsFragment.ARG_CHATS , chatsAsArray);
                 ChatsFragment frag = new ChatsFragment();
                 frag.setArguments(args);
+                frag.setFab(mFab);
                 onWaitFragmentInteractionHide();
                 loadFragment(frag);
             }
@@ -339,6 +358,23 @@ public class HomeActivity extends AppCompatActivity implements
                 .commit();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mFirebaseMessageReciever == null) {
+            mFirebaseMessageReciever = new FirebaseMessageReciever();
+        }
+        IntentFilter iFilter = new IntentFilter(MyFirebaseMessagingService.RECEIVED_NEW_MESSAGE);
+        registerReceiver(mFirebaseMessageReciever, iFilter);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mFirebaseMessageReciever != null){
+            unregisterReceiver(mFirebaseMessageReciever);
+        }
+    }
+
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
     // we have something that allows us to do that.
     class DeleteTokenAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -375,6 +411,27 @@ public class HomeActivity extends AppCompatActivity implements
              startActivity(i);
              //Ends this Activity and removes it from the Activity back stack.
 //             finish();
+        }
+    }
+
+    private class FirebaseMessageReciever extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i("FCM Chat Frag", "start onRecieve");
+            if(intent.hasExtra("DATA")) {
+                String data = intent.getStringExtra("DATA");
+                JSONObject jObj = null;
+                try {
+                    jObj = new JSONObject(data);
+                    if(jObj.has("message") && jObj.has("sender")) {
+                        mSender = jObj.getString("sender");
+                        String msg = jObj.getString("message");
+                        Log.i("FCM Chat Frag", mSender + " " + msg);
+                    }
+                } catch (JSONException e) {
+                    Log.e("JSON PARSE", e.toString());
+                }
+            }
         }
     }
 }
