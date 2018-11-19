@@ -197,7 +197,7 @@ public class HomeActivity extends AppCompatActivity implements
                 List<Contacts> contacts = new ArrayList<>();
                 for(int i = 0; i < data.length(); i++) {
                     JSONObject jsonContacts = data.getJSONObject(i);
-                    contacts.add(new Contacts.Builder(jsonContacts.getString("Username"),
+                    contacts.add(new Contacts.Builder(jsonContacts.getString("nickname"),
                         jsonContacts.getString("email"))
                         .addFirstName(jsonContacts.getString("firstName"))
                         .addLastName(jsonContacts.getString("lastName"))
