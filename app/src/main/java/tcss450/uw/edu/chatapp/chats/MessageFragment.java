@@ -45,6 +45,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
     private String mSendUrl;
     private FirebaseMessageReciever mFirebaseMessageReciever;
     private Chats mChats;
+    private String mName;
 
     public MessageFragment() {    }
 
@@ -55,7 +56,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
         mMessageOutputTextView = rootLayout.findViewById(R.id.text_chat_message_display);
         mMessageInputEditText = rootLayout.findViewById(R.id.edit_chat_message_input);
         TextView msg_contactname = rootLayout.findViewById(R.id.message_contactname);
-        msg_contactname.setText( mChats.getNickname()+ " (" +mChats.getFirstname()+" "+mChats.getLastname()+")");
+        msg_contactname.setText(mName);
         ScrollView scrollView = rootLayout.findViewById(R.id.scrollView_msg_display);
         scrollView.post(new Runnable() {
             @Override
@@ -94,15 +95,17 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                 .appendPath(getString(R.string.ep_messaging_getAll))
                 .build();
         JSONObject messageJson = new JSONObject();
-        try {
-            messageJson.put("chatId", mChats.getChatID());
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if(mChats != null ) {
+            try {
+                messageJson.put("chatId", mChats.getChatID());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                    .onPostExecute(this::getMessagesPostExecute)
+                    .onCancelled(error -> Log.e("SEND_TAG", error))
+                    .build().execute();
         }
-        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                .onPostExecute(this::getMessagesPostExecute)
-                .onCancelled(error -> Log.e("SEND_TAG", error))
-                .build().execute();
     }
 
     private void getMessagesPostExecute(final String result) {
@@ -144,6 +147,9 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
 
     public void setChat(Chats theChat){
         mChats = theChat;
+    }
+    public void setName(String name){
+        mName = name;
     }
 
     private void handleSendClick(final View theButton) {

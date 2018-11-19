@@ -76,7 +76,7 @@
                 android:id="@+id/text_chat_message_display"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/darker_gray"
+                android:background="@color/common_google_signin_btn_text_dark_default"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 tools:layout_editor_absoluteX="106dp"
                 tools:layout_editor_absoluteY="196dp" />
