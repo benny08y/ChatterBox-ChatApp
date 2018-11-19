@@ -141,7 +141,6 @@ public class HomeActivity extends AppCompatActivity implements
             loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
             mFab.show();
-//            loadFragment(new ChatsFragment());
             Uri uri = new Uri.Builder()
                     .scheme("https")
                     .appendPath(getString(R.string.ep_base_url))
@@ -163,17 +162,22 @@ public class HomeActivity extends AppCompatActivity implements
                     .build().execute();
         } else if (id == R.id.nav_contacts) {
             mFab.hide();
-//            loadFragment(new ContactsFragment());
-
             Uri uri = new Uri.Builder()
                     .scheme("https")
                     .appendPath(getString(R.string.ep_base_url))
                     .appendPath(getString(R.string.ep_contacts))
                     .appendPath(getString(R.string.ep_contacts_getAllContacts))
                     .build();
-            new GetAsyncTask.Builder(uri.toString())
+            JSONObject messageJson = new JSONObject();
+            try {
+                messageJson.put("email", mEmail);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
                     .onPreExecute(this::onWaitFragmentInteractionShow)
                     .onPostExecute(this::handleContactsGetOnPostExecute)
+                    .onCancelled(error -> Log.e("SEND_TAG", error))
                     .build().execute();
         } else if (id == R.id.nav_logout) {
             logout();
@@ -188,36 +192,25 @@ public class HomeActivity extends AppCompatActivity implements
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
-            if (root.has("response")) {
-                JSONObject response = root.getJSONObject("response");
-                if (response.has("data")) {
-                    JSONArray data = response.getJSONArray("data");
-                    List<Contacts> contacts = new ArrayList<>();
-                    for(int i = 0; i < data.length(); i++) {
-                        JSONObject jsonContacts = data.getJSONObject(i);
-                        contacts.add(new Contacts.Builder(jsonContacts.getString("nickname"),
-                                jsonContacts.getString("email"))
-                                .addFirstName(jsonContacts.getString("firstName"))
-                                .addLastName(jsonContacts.getString("lastName"))
-                                .build());
-                    }
-                    Contacts[] contactsAsArray = new Contacts[contacts.size()];
-                    contactsAsArray = contacts.toArray(contactsAsArray);
-                    Bundle args = new Bundle();
-                    args.putSerializable(ContactsFragment.ARG_CONTACTS_LIST, contactsAsArray);
-                    Fragment frag = new ContactsFragment();
-                    frag.setArguments(args);
-                    onWaitFragmentInteractionHide();
-                    loadFragment(frag);
-                } else {
-                    Log.e("ERROR!", "No data array");
-                    //notify user
-                    onWaitFragmentInteractionHide();
+            if (root.has("success") && root.getBoolean("success")) {
+                JSONArray data = root.getJSONArray("data");
+                List<Contacts> contacts = new ArrayList<>();
+                for(int i = 0; i < data.length(); i++) {
+                    JSONObject jsonContacts = data.getJSONObject(i);
+                    contacts.add(new Contacts.Builder(jsonContacts.getString("nickname"),
+                        jsonContacts.getString("email"))
+                        .addFirstName(jsonContacts.getString("firstName"))
+                        .addLastName(jsonContacts.getString("lastName"))
+                        .build());
                 }
-            } else {
-                Log.e("ERROR!", "No response");
-                //notify user
+                Contacts[] contactsAsArray = new Contacts[contacts.size()];
+                contactsAsArray = contacts.toArray(contactsAsArray);
+                Bundle args = new Bundle();
+                args.putSerializable(ContactsFragment.ARG_CONTACTS_LIST, contactsAsArray);
+                Fragment frag = new ContactsFragment();
+                frag.setArguments(args);
                 onWaitFragmentInteractionHide();
+                loadFragment(frag);
             }
         } catch (JSONException e) {
             e.printStackTrace();
