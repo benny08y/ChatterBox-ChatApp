@@ -34,6 +34,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private OnLoginFragmentInteractionListener mListener;
     private Credentials mCredentials;
     private String mFirebaseToken;
+    private Button mResendButton;
 
     public LoginFragment() {
     }
@@ -60,6 +61,16 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 mListener.onRegisterClicked();
+            }
+        });
+
+        mResendButton = v.findViewById(R.id.login_resend_button);
+        mResendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Credentials.Builder builder = new Credentials.Builder(emailEdit.getText().toString(), passwordEdit.getText().toString());
+                Credentials credentials = builder.build();
+                mListener.onResendClicked(credentials);
             }
         });
 
@@ -198,6 +209,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
                 ((TextView) getView().findViewById(R.id.fragLogin_email_editTxt))
                         .setError("Login Unsuccessful");
+                mResendButton.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
             Log.e("JSON_PARSE_ERROR", result
@@ -248,5 +260,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         void onLoginAttempt(Credentials credentials);
 
         void onRegisterClicked();
+
+        void onResendClicked(Credentials credentials);
     }
 }

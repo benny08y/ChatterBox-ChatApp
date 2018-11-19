@@ -68,6 +68,20 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
                 .commit();
     }
 
+    @Override
+    public void onResendClicked(Credentials credentials) {
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("credentials", credentials);
+        VerificationFragment verificationFragment = new VerificationFragment();
+        verificationFragment.setArguments(bundle);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_container, verificationFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
     //Register Fragment Interface Methods
     @Override
     public void onRegisterAttempt(Credentials credentials) {

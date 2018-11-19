@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +29,6 @@ public class VerificationFragment extends Fragment implements View.OnClickListen
 
     private OnVerificationFragmentInteractionListener mListener;
     private Credentials mCredentials;
-    private TextView confirmation;
 
     public VerificationFragment() {
         // Required empty public constructor
@@ -46,7 +46,6 @@ public class VerificationFragment extends Fragment implements View.OnClickListen
         resend_button.setOnClickListener(this);
         Button login_button = v.findViewById(R.id.verification_login_button);
         login_button.setOnClickListener(this);
-        confirmation = v.findViewById(R.id.verification_resend_confirmation);
 
         return v;
     }
@@ -94,7 +93,6 @@ public class VerificationFragment extends Fragment implements View.OnClickListen
                             .onCancelled(this::handleErrorsInTask)
                             .build().execute();
 
-//                    mListener.onResendClicked();
                     break;
                 case R.id.verification_login_button:
                     mListener.onLoginClicked();
@@ -107,6 +105,7 @@ public class VerificationFragment extends Fragment implements View.OnClickListen
 
     /**
      * Handle errors that may occur during the AsyncTask.
+     *
      * @param result the error message provide from the AsyncTask
      */
     private void handleErrorsInTask(String result) {
@@ -122,17 +121,18 @@ public class VerificationFragment extends Fragment implements View.OnClickListen
     /**
      * Handle onPostExecute of the AsynceTask. The result from our webservice is
      * a JSON formatted String. Parse it for success or failure.
+     *
      * @param result the JSON formatted String response from the web service
      */
     private void handleResendOnPost(String result) {
         try {
-            Log.d("JSON result",result);
+            Log.d("JSON result", result);
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
-                confirmation.setText("Re-sent!");
+                Toast.makeText(getActivity(), "Re-sent!", Toast.LENGTH_SHORT).show();
             } else {
-                confirmation.setText("Resend failed!");
+                Toast.makeText(getActivity(), "Resend failed!", Toast.LENGTH_SHORT).show();
 
 //                //Login was unsuccessful. Don’t switch fragments and inform the user
 //                ((TextView) Objects.requireNonNull(getView()).findViewById(R.id.fragRegister_email_editText))
@@ -140,7 +140,7 @@ public class VerificationFragment extends Fragment implements View.OnClickListen
             }
         } catch (JSONException e) {
 
-            confirmation.setText("Resend failed!");
+            Toast.makeText(getActivity(), "Resend failed!", Toast.LENGTH_SHORT).show();
 
 //            //It appears that the web service didn’t return a JSON formatted String
 //            //or it didn’t have what we expected in it.
