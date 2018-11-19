@@ -2,7 +2,9 @@ package tcss450.uw.edu.chatapp.chats;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +32,7 @@ public class ChatsFragment extends Fragment  {
 
     public static final String ARG_CHATS = "list of chats";
     private List<Chats> mChatsList;
+    private FloatingActionButton mFab;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -47,9 +50,14 @@ public class ChatsFragment extends Fragment  {
         return fragment;
     }
 
+    public void setFab(FloatingActionButton fab){
+        mFab = fab;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFab.show();
         if (getArguments() != null) {
             mChatsList = new ArrayList<Chats>(
                     Arrays.asList((Chats[]) getArguments().getSerializable(ARG_CHATS)));
@@ -61,6 +69,8 @@ public class ChatsFragment extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats_list, container, false);
+        mFab.show();
+        mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_chat_black_24dp));
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;

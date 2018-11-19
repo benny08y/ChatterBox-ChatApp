@@ -209,6 +209,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 ((TextView) getView().findViewById(R.id.fragLogin_email_editTxt))
                         .setError("Login Unsuccessful");
                 mResendButton.setVisibility(View.VISIBLE);
+                mListener.onWaitFragmentInteractionHide();
             }
             mListener.onWaitFragmentInteractionHide();
         } catch (JSONException e) {
