@@ -150,10 +150,8 @@ public class HomeActivity extends AppCompatActivity implements
             JSONObject messageJson = new JSONObject();
             try {
                 messageJson.put("email", mEmail);
-                Log.e("IN_JSON", "post body email");
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.e("IN_JSON", "didnt put email");
             }
             new SendPostAsyncTask.Builder(uri.toString(), messageJson)
                     .onPreExecute(this::onWaitFragmentInteractionShow)
@@ -221,12 +219,10 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     private void handleChatsPostExecute(final String result) {
-        Log.e("ERROR!", "ON POST EXECUTED");
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
             if (root.has("success") && root.getBoolean("success")) {
-                Log.e("ERROR!", "JSON HAS A RESPONSE");
 
                 JSONArray data = root.getJSONArray("data");
                 List<Chats> chats = new ArrayList<>();
