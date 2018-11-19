@@ -64,13 +64,8 @@ public class HomeActivity extends AppCompatActivity implements
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri uri = new Uri.Builder()
-                        .scheme("https")
-                        .appendPath(getString(R.string.ep_base_url))
-                        .appendPath(getString(R.string.ep_chats_base))
-                        .appendPath(getString(R.string.ep_newchat))
-                        .build();
-                loadFragment(new MessageFragment());
+                mFab.hide();
+                getContacts();
             }
         });
         mFab.hide();
@@ -111,6 +106,26 @@ public class HomeActivity extends AppCompatActivity implements
             }
         }
 
+    }
+
+    private void getContacts(){
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_contacts))
+                .appendPath(getString(R.string.ep_contacts_getAllContacts))
+                .build();
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put("email", mEmail);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                .onPreExecute(this::onWaitFragmentInteractionShow)
+                .onPostExecute(this::handleContactsGetOnPostExecute)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
     }
 
     @Override
@@ -160,23 +175,7 @@ public class HomeActivity extends AppCompatActivity implements
                     .build().execute();
         } else if (id == R.id.nav_contacts) {
             mFab.hide();
-            Uri uri = new Uri.Builder()
-                    .scheme("https")
-                    .appendPath(getString(R.string.ep_base_url))
-                    .appendPath(getString(R.string.ep_contacts))
-                    .appendPath(getString(R.string.ep_contacts_getAllContacts))
-                    .build();
-            JSONObject messageJson = new JSONObject();
-            try {
-                messageJson.put("email", mEmail);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                    .onPreExecute(this::onWaitFragmentInteractionShow)
-                    .onPostExecute(this::handleContactsGetOnPostExecute)
-                    .onCancelled(error -> Log.e("SEND_TAG", error))
-                    .build().execute();
+            getContacts();
         } else if (id == R.id.nav_logout) {
             logout();
         }
