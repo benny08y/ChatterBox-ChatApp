@@ -61,7 +61,7 @@ public class WeatherFragment extends Fragment {
         currentTemperatureField = v.findViewById(R.id.current_temperature_field);
         humidity_field = v.findViewById(R.id.humidity_field);
         weatherIcon = v.findViewById(R.id.weather_icon);
-        weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weathericons-regular-webfont.ttf");
+        weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "weathericons-regular-webfont.ttf");
         weatherIcon.setTypeface(weatherFont);
 
         taskLoadUp(city);
