@@ -284,6 +284,7 @@ public class HomeActivity extends AppCompatActivity implements
         mFab.hide();
         MessageFragment messageFragment = new MessageFragment();
         messageFragment.setChat(item);
+        messageFragment.setName(item.getNickname()+ " (" +item.getFirstname()+" "+item.getLastname()+")");
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_home_container, messageFragment)
@@ -311,12 +312,13 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public void onContactListFragmentInteraction(Contacts contact) {
         ContactPageFragment contactPageFragment = new ContactPageFragment();
-
+        contactPageFragment.setContacts(contact);
         Bundle args = new Bundle();
         args.putString("nickname", contact.getNickname());
         args.putString("email", contact.getEmail());
         args.putString("firstName", contact.getFirstName());
         args.putString("lastName", contact.getLastName());
+        args.putString("currEmail", mEmail);
 
         contactPageFragment.setArguments(args);
         FragmentTransaction transaction = getSupportFragmentManager()
@@ -327,8 +329,14 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onContactPageFragmentInteraction(String email) {
-        //open a new chat here
+    public void onContactPageFragmentInteraction(String name) {
+        MessageFragment messageFragment = new MessageFragment();
+        messageFragment.setName(name);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_home_container, messageFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
