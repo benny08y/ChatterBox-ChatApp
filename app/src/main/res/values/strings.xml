@@ -16,4 +16,5 @@
     <string name="contact_string_text_email">Email</string>
     <string name="contact_string_text_fname">First Name</string>
     <string name="contact_string_text_lname">Last Name</string>
+
 </resources>
