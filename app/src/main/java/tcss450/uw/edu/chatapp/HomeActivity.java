@@ -49,7 +49,8 @@ public class HomeActivity extends AppCompatActivity implements
         ChatsFragment.OnChatListFragmentInteractionListener,
         ContactsFragment.OnContactListFragmentInteractionListener,
         WaitFragment.OnFragmentInteractionListener,
-        ContactPageFragment.OnContactPageFragmentInteractionListener {
+        ContactPageFragment.OnContactPageFragmentInteractionListener,
+        WeatherFragment.OnWeatherFragmentInteractionListener {
 
     private FloatingActionButton mFab;
     Bundle thisBundle;
@@ -198,6 +199,9 @@ public class HomeActivity extends AppCompatActivity implements
             getContacts();
         } else if (id == R.id.nav_logout) {
             logout();
+        } else if (id == R.id.nav_weather) {
+            mFab.hide();
+            loadFragment(new WeatherFragment());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -433,5 +437,23 @@ public class HomeActivity extends AppCompatActivity implements
                 }
             }
         }
+    }
+
+    @Override
+    public void onMyCurrentLocationButtonClicked() {
+        MyCurrentLocationFragment myCurrentLocationFragment = new MyCurrentLocationFragment();
+        loadFragment(myCurrentLocationFragment);
+    }
+
+    @Override
+    public void onZipCodeButtonClicked() {
+        ZipCodeFragment zipCodeFragment = new ZipCodeFragment();
+        loadFragment(zipCodeFragment);
+    }
+
+    @Override
+    public void onMapButtonClicked() {
+        MapFragment mapFragment = new MapFragment();
+        loadFragment(mapFragment);
     }
 }
