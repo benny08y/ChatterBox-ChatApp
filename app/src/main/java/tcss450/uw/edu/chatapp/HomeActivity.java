@@ -262,7 +262,11 @@ public class HomeActivity extends AppCompatActivity implements
             logout();
         } else if (id == R.id.nav_weather) {
             mFab.hide();
-            loadFragment(weatherFragment);
+            FragmentTransaction transaction = getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content_home_container, weatherFragment, "MY_FRAGMENT")
+                    .addToBackStack(null);
+            transaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -515,9 +519,13 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onMyCurrentLocationButtonClicked() {
-//        MyCurrentLocationFragment myCurrentLocationFragment = new MyCurrentLocationFragment();
-//        loadFragment(myCurrentLocationFragment);
+    public void onMyCurrentLocationButtonClicked(Double lat, Double lon) {
+        CurrentConditionsLatLngFragment currentConditionsLatLngFragment = new CurrentConditionsLatLngFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("lat", lat);
+        bundle.putSerializable("lon", lon);
+        currentConditionsLatLngFragment.setArguments(bundle);
+        loadFragment(currentConditionsLatLngFragment);
     }
 
     @Override

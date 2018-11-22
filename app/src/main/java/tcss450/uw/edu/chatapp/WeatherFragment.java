@@ -35,7 +35,7 @@ public class WeatherFragment extends Fragment {
         mMyCurrentLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onMyCurrentLocationButtonClicked();
+                mListener.onMyCurrentLocationButtonClicked(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
             }
         });
         Button b = (Button) v.findViewById(R.id.weatherFragmentZipCodeButton);
@@ -76,7 +76,7 @@ public class WeatherFragment extends Fragment {
 
     public interface OnWeatherFragmentInteractionListener {
 
-        void onMyCurrentLocationButtonClicked();
+        void onMyCurrentLocationButtonClicked(Double lat, Double lon);
 
         void onZipCodeButtonClicked();
 

@@ -2,9 +2,13 @@ package tcss450.uw.edu.chatapp;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -51,34 +55,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapClick(LatLng latLng) {
-        Log.d("LAT/LONG", latLng.toString());
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.map);
+        if (!(currentFragment instanceof CurrentConditionsLatLngFragment)) {
+            Log.d("LAT/LONG", latLng.toString());
 
-        Marker marker = mMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .title("New Marker"));
+            Marker marker = mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title("New Marker"));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.0f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.0f));
 
-        View v = findViewById(android.R.id.content);
+            View v = findViewById(android.R.id.content);
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(v.getContext());
-        alertDialog.setTitle("Change location?");
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(v.getContext());
+            alertDialog.setTitle("Change location?");
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
 
-        alertDialog.setPositiveButton("Select",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO show weather
-                    }
-                });
-        alertDialog.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-        alertDialog.show();
+            alertDialog.setPositiveButton("Select",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            CurrentConditionsLatLngFragment currentConditionsLatLngFragment = new CurrentConditionsLatLngFragment();
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("lat", latLng.latitude);
+                            bundle.putSerializable("lon", latLng.longitude);
+                            currentConditionsLatLngFragment.setArguments(bundle);
+                            FragmentTransaction transaction = getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.map, currentConditionsLatLngFragment)
+                                    .addToBackStack(null);
+                            transaction.commit();
+                        }
+                    });
+            alertDialog.setNegativeButton("Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+            alertDialog.show();
+        }
     }
 }
