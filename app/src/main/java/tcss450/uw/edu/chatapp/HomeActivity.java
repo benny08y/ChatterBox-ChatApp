@@ -49,7 +49,6 @@ import tcss450.uw.edu.chatapp.chats.ChatsFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
-import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.utils.MyFirebaseMessagingService;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
@@ -61,7 +60,8 @@ public class HomeActivity extends AppCompatActivity implements
         ContactsFragment.OnContactListFragmentInteractionListener,
         WaitFragment.OnFragmentInteractionListener,
         ContactPageFragment.OnContactPageFragmentInteractionListener,
-        WeatherFragment.OnWeatherFragmentInteractionListener {
+        WeatherFragment.OnWeatherFragmentInteractionListener,
+        ZipCodeFragment.OnZipCodeFragmentInteractionListener {
 
     private FloatingActionButton mFab;
     Bundle thisBundle;
@@ -443,6 +443,15 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void onSearchButtonClicked(String zipCodeString) {
+        CurrentConditionsZipCodeFragment frag = new CurrentConditionsZipCodeFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("zip code", zipCodeString);
+        frag.setArguments(bundle);
+        loadFragment(frag);
+    }
+
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
     // we have something that allows us to do that.
     class DeleteTokenAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -507,8 +516,8 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onMyCurrentLocationButtonClicked() {
-        MyCurrentLocationFragment myCurrentLocationFragment = new MyCurrentLocationFragment();
-        loadFragment(myCurrentLocationFragment);
+//        MyCurrentLocationFragment myCurrentLocationFragment = new MyCurrentLocationFragment();
+//        loadFragment(myCurrentLocationFragment);
     }
 
     @Override
