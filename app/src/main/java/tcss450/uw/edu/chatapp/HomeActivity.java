@@ -1,14 +1,19 @@
 package tcss450.uw.edu.chatapp;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -23,6 +28,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONArray;
@@ -58,6 +69,22 @@ public class HomeActivity extends AppCompatActivity implements
     private ArrayList<Chats> mChats;
     private String mSender;
     private FirebaseMessageReciever mFirebaseMessageReciever;
+    private WeatherFragment weatherFragment;
+
+    /**
+     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
+     */
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    /**
+     * The fastest rate for active location updates. Exact. Updates will never be more frequent * than this value.
+     */
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+    private static final int MY_PERMISSIONS_LOCATIONS = 8414;
+    private LocationRequest mLocationRequest;
+    private Location mCurrentLocation;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationCallback mLocationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +125,9 @@ public class HomeActivity extends AppCompatActivity implements
         LandingPageFragment landingPageFragment = new LandingPageFragment();
         landingPageFragment.setArguments(bundle);
 
-        if(savedInstanceState == null) {
+        weatherFragment = new WeatherFragment();
+
+        if (savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
                 Fragment fragment;
                 if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), false)) {
@@ -126,9 +155,41 @@ public class HomeActivity extends AppCompatActivity implements
                         .commit();
             }
         }
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION
+                            , Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_LOCATIONS);
+        } else {
+            //The user has already allowed the use of Locations. Get the current location.
+            requestLocation();
+        }
+
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    // Update UI with location data
+                    // ...
+                    mCurrentLocation = location;
+                    WeatherFragment.setLocation(location);
+                    Log.d("LOCATION UPDATE!", location.toString());
+                }
+            }
+        };
+        createLocationRequest();
     }
 
-    private void getContacts(){
+    private void getContacts() {
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -201,7 +262,7 @@ public class HomeActivity extends AppCompatActivity implements
             logout();
         } else if (id == R.id.nav_weather) {
             mFab.hide();
-            loadFragment(new WeatherFragment());
+            loadFragment(weatherFragment);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -216,13 +277,13 @@ public class HomeActivity extends AppCompatActivity implements
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
                 List<Contacts> contacts = new ArrayList<>();
-                for(int i = 0; i < data.length(); i++) {
+                for (int i = 0; i < data.length(); i++) {
                     JSONObject jsonContacts = data.getJSONObject(i);
                     contacts.add(new Contacts.Builder(jsonContacts.getString("username"),
-                        jsonContacts.getString("email"))
-                        .addFirstName(jsonContacts.getString("firstname"))
-                        .addLastName(jsonContacts.getString("lastname"))
-                        .build());
+                            jsonContacts.getString("email"))
+                            .addFirstName(jsonContacts.getString("firstname"))
+                            .addLastName(jsonContacts.getString("lastname"))
+                            .build());
                 }
                 Contacts[] contactsAsArray = new Contacts[contacts.size()];
                 contactsAsArray = contacts.toArray(contactsAsArray);
@@ -251,18 +312,18 @@ public class HomeActivity extends AppCompatActivity implements
 
                 JSONArray data = root.getJSONArray("data");
                 mChats = new ArrayList<>();
-                for(int i = 0; i < data.length(); i++) {
+                for (int i = 0; i < data.length(); i++) {
                     JSONObject jsonChats = data.getJSONObject(i);
                     mChats.add(new Chats.Builder(jsonChats.getString("email"),
-                    jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
                             .addChatID(jsonChats.getInt("chatid"))
                             .addNickname(jsonChats.getString("username"))
-                    .build());
+                            .build());
                 }
                 Chats[] chatsAsArray = new Chats[mChats.size()];
                 chatsAsArray = mChats.toArray(chatsAsArray);
                 Bundle args = new Bundle();
-                args.putSerializable( ChatsFragment.ARG_CHATS , chatsAsArray);
+                args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
                 ChatsFragment frag = new ChatsFragment();
                 frag.setArguments(args);
                 frag.setFab(mFab);
@@ -307,7 +368,7 @@ public class HomeActivity extends AppCompatActivity implements
         mFab.hide();
         MessageFragment messageFragment = new MessageFragment();
         messageFragment.setChat(item);
-        messageFragment.setName(item.getNickname()+ " (" +item.getFirstname()+" "+item.getLastname()+")");
+        messageFragment.setName(item.getNickname() + " (" + item.getFirstname() + " " + item.getLastname() + ")");
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_home_container, messageFragment)
@@ -365,16 +426,19 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public void onResume() {
         super.onResume();
+        startLocationUpdates();
         if (mFirebaseMessageReciever == null) {
             mFirebaseMessageReciever = new FirebaseMessageReciever();
         }
         IntentFilter iFilter = new IntentFilter(MyFirebaseMessagingService.RECEIVED_NEW_MESSAGE);
         registerReceiver(mFirebaseMessageReciever, iFilter);
     }
+
     @Override
     public void onPause() {
         super.onPause();
-        if (mFirebaseMessageReciever != null){
+        stopLocationUpdates();
+        if (mFirebaseMessageReciever != null) {
             unregisterReceiver(mFirebaseMessageReciever);
         }
     }
@@ -386,6 +450,7 @@ public class HomeActivity extends AppCompatActivity implements
         protected void onPreExecute() {
             super.onPreExecute();
         }
+
         @Override
         protected Void doInBackground(Void... voids) {
             //since we are already doing stuff in the background, go ahead
@@ -405,15 +470,16 @@ public class HomeActivity extends AppCompatActivity implements
             }
             return null;
         }
+
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             //close the app
             finishAndRemoveTask();
             //or close this activity and bring back the Login
-             Intent i = new Intent(HomeActivity.this, MainActivity.class);
-             startActivity(i);
-             //Ends this Activity and removes it from the Activity back stack.
+            Intent i = new Intent(HomeActivity.this, MainActivity.class);
+            startActivity(i);
+            //Ends this Activity and removes it from the Activity back stack.
 //             finish();
         }
     }
@@ -422,12 +488,12 @@ public class HomeActivity extends AppCompatActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i("FCM Chat Frag", "start onRecieve");
-            if(intent.hasExtra("DATA")) {
+            if (intent.hasExtra("DATA")) {
                 String data = intent.getStringExtra("DATA");
                 JSONObject jObj = null;
                 try {
                     jObj = new JSONObject(data);
-                    if(jObj.has("message") && jObj.has("sender")) {
+                    if (jObj.has("message") && jObj.has("sender")) {
                         mSender = jObj.getString("sender");
                         String msg = jObj.getString("message");
                         Log.i("FCM Chat Frag", mSender + " " + msg);
@@ -453,7 +519,103 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onMapButtonClicked() {
-        MapFragment mapFragment = new MapFragment();
-        loadFragment(mapFragment);
+        if (mCurrentLocation == null) {
+            Snackbar.make(findViewById(android.R.id.content), "Please wait for location to enable", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        } else {
+            Intent i = new Intent(HomeActivity.this, MapsActivity.class);
+            //pass the current location on to the MapActivity when it is loaded
+            i.putExtra("LOCATION", mCurrentLocation);
+            startActivity(i);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_LOCATIONS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // locations-related task you need to do.
+                    requestLocation();
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Log.d("PERMISSION DENIED", "Nothing to see or do here.");
+                    //Shut down the app. In production release, you would let the user
+                    // know why the app is shutting down...maybe ask for permission again?
+                    finishAndRemoveTask();
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request }
+        }
+    }
+
+    private void requestLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.d("REQUEST LOCATION", "User did NOT allow permission to request location!");
+        } else {
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                mCurrentLocation = location;
+                                WeatherFragment.setLocation(location);
+                                Log.d("LOCATION", location.toString());
+                            }
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Create and configure a Location Request used when retrieving location updates
+     */
+    protected void createLocationRequest() {
+        mLocationRequest = LocationRequest.create();
+        // Sets the desired interval for active location updates. This interval is
+        // inexact. You may not receive updates at all if no location sources are available, or
+        // you may receive them slower than requested. You may also receive updates faster than
+        // requested if other applications are requesting location at a faster interval.
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        // Sets the fastest rate for active location updates. This interval is exact, and your
+        // application will never receive updates faster than this value.
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    /**
+     * Requests location updates from the FusedLocationApi.
+     */
+    protected void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                    mLocationCallback,
+                    null /* Looper */);
+        }
+    }
+
+    /**
+     * Removes location updates from the FusedLocationApi.
+     */
+    protected void stopLocationUpdates() {
+        // It is a good practice to remove location requests when the activity is in a paused or
+        // stopped state. Doing so helps battery performance and is especially
+        // recommended in applications that request frequent location updates.
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 }
