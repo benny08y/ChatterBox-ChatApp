@@ -71,11 +71,9 @@ public class HomeActivity extends AppCompatActivity implements
     private FloatingActionButton mFab;
     Bundle thisBundle;
     private String mEmail;
-    private ArrayList<Chats> mChats;
+    private ArrayList<Chats> mChatList;
+    private ChatsFragment mChatFrag;
     private ArrayList<Contacts> mContacts;
-    private String mSender;
-    private int mNotifChatId;
-    private FirebaseMessageReciever mFirebaseMessageReciever;
     private WeatherFragment weatherFragment;
 
     /**
@@ -133,30 +131,53 @@ public class HomeActivity extends AppCompatActivity implements
 
         weatherFragment = new WeatherFragment();
 
+        Uri uri = new Uri.Builder()             //get all chats data
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_chats_base))
+                .appendPath(getString(R.string.ep_getallchats))
+                .build();
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put("email", mEmail);
+            Log.e("IN_JSON", "post body email");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("IN_JSON", "didnt put email");
+        }
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                .onPreExecute(this::onWaitFragmentInteractionShow)
+                .onPostExecute(this::handleChatsPostExecute)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
         if (savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
                 Fragment fragment = new LandingPageFragment();
-                if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), false)) {
-                    fragment.setArguments(bundle);
-                } else {
-//                    for (int i =0 ; i< mChats.size(); i++){
-//                        Chats currChat = mChats.get(i);
-//                        if(currChat.getEmail().equals(mSender)){
+                if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), true)) {
+//                    for (Chats chat: mChatList){
+//                        Log.v("NOtification", "NOITFIY");
+//                        Chats currChat = chat;
+//                        if(currChat.getChatID() == mNotifChatId){
 //                            mFab.hide();
-//                            MessageFragment messageFragment = new MessageFragment();
+                            MessageFragment messageFragment = new MessageFragment();
 //                            messageFragment.setChat(currChat);
 //                            messageFragment.setName(currChat.getNickname()+ " (" +currChat.getFirstname()+" "+currChat.getLastname()+")");
-//                            getSupportFragmentManager()
-//                                    .beginTransaction()
-//                                    .replace(R.id.content_home_container, messageFragment)
-//                                    .addToBackStack(null)
-//                                    .commit();
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.content_home_container, messageFragment)
+                                    .addToBackStack(null)
+                                    .commit();
 //                        }
 //                    }
+
+                } else {
+                    Log.v("NOtification", "NO NOITFIY");
+                    fragment.setArguments(bundle);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.content_home_container, fragment)
+                            .commit();
                 }
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.content_home_container, fragment)
-                        .commit();
+
             }
         }
 
@@ -220,25 +241,7 @@ public class HomeActivity extends AppCompatActivity implements
             mFab.hide();
             loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
-            Uri uri = new Uri.Builder()
-                    .scheme("https")
-                    .appendPath(getString(R.string.ep_base_url))
-                    .appendPath(getString(R.string.ep_chats_base))
-                    .appendPath(getString(R.string.ep_getallchats))
-                    .build();
-            JSONObject messageJson = new JSONObject();
-            try {
-                messageJson.put("email", mEmail);
-                Log.e("IN_JSON", "post body email");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("IN_JSON", "didnt put email");
-            }
-            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                    .onPreExecute(this::onWaitFragmentInteractionShow)
-                    .onPostExecute(this::handleChatsPostExecute)
-                    .onCancelled(error -> Log.e("SEND_TAG", error))
-                    .build().execute();
+            loadFragment(mChatFrag);
         } else if (id == R.id.nav_contacts) {
             mFab.hide();
             getContacts();
@@ -315,25 +318,25 @@ public class HomeActivity extends AppCompatActivity implements
             if (root.has("success") && root.getBoolean("success")) {
 
                 JSONArray data = root.getJSONArray("data");
-                mChats = new ArrayList<>();
+                mChatList = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject jsonChats = data.getJSONObject(i);
-                    mChats.add(new Chats.Builder(jsonChats.getString("email"),
+                    mChatList.add(new Chats.Builder(jsonChats.getString("email"),
                             jsonChats.getString("firstname"), jsonChats.getString("lastname"))
                             .addChatID(jsonChats.getInt("chatid"))
                             .addNickname(jsonChats.getString("username"))
                             .build());
                 }
-                Chats[] chatsAsArray = new Chats[mChats.size()];
-                chatsAsArray = mChats.toArray(chatsAsArray);
+                Log.d("Chats_array", mChatList.toString() + " size:" + mChatList.size());
+                Chats[] chatsAsArray = new Chats[mChatList.size()];
+                chatsAsArray = mChatList.toArray(chatsAsArray);
                 Bundle args = new Bundle();
                 args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
-                ChatsFragment frag = new ChatsFragment();
-                frag.setArguments(args);
-                frag.setFab(mFab);
-                frag.setContacts(mContacts);
+                mChatFrag = new ChatsFragment();
+                mChatFrag.setArguments(args);
+                mChatFrag.setFab(mFab);
+                mChatFrag.setContacts(mContacts);
                 onWaitFragmentInteractionHide();
-                loadFragment(frag);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -429,26 +432,6 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        startLocationUpdates();
-        if (mFirebaseMessageReciever == null) {
-            mFirebaseMessageReciever = new FirebaseMessageReciever();
-        }
-        IntentFilter iFilter = new IntentFilter(MyFirebaseMessagingService.RECEIVED_NEW_MESSAGE);
-        registerReceiver(mFirebaseMessageReciever, iFilter);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-        if (mFirebaseMessageReciever != null) {
-            unregisterReceiver(mFirebaseMessageReciever);
-        }
-    }
-
-    @Override
     public void onSearchButtonClicked(String zipCodeString) {
         CurrentConditionsZipCodeFragment frag = new CurrentConditionsZipCodeFragment();
         Bundle bundle = new Bundle();
@@ -495,28 +478,6 @@ public class HomeActivity extends AppCompatActivity implements
             startActivity(i);
             //Ends this Activity and removes it from the Activity back stack.
 //             finish();
-        }
-    }
-
-    private class FirebaseMessageReciever extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i("FCM Chat Frag", "start onRecieve");
-            if (intent.hasExtra("DATA")) {
-                String data = intent.getStringExtra("DATA");
-                JSONObject jObj = null;
-                try {
-                    jObj = new JSONObject(data);
-                    if (jObj.has("message") && jObj.has("sender")) {
-                        mSender = jObj.getString("sender");
-                        mNotifChatId = jObj.getInt("chatid");
-                        String msg = jObj.getString("message");
-                        Log.i("FCM Chat Frag", mSender + " " + msg);
-                    }
-                } catch (JSONException e) {
-                    Log.e("JSON PARSE", e.toString());
-                }
-            }
         }
     }
 
