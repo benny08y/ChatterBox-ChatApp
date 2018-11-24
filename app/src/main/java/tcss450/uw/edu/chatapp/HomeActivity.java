@@ -53,6 +53,11 @@ import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.utils.MyFirebaseMessagingService;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
+import tcss450.uw.edu.chatapp.weather.CurrentConditionsLatLngFragment;
+import tcss450.uw.edu.chatapp.weather.CurrentConditionsZipCodeFragment;
+import tcss450.uw.edu.chatapp.weather.MapsActivity;
+import tcss450.uw.edu.chatapp.weather.WeatherFragment;
+import tcss450.uw.edu.chatapp.weather.ZipCodeFragment;
 
 public class HomeActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -67,7 +72,9 @@ public class HomeActivity extends AppCompatActivity implements
     Bundle thisBundle;
     private String mEmail;
     private ArrayList<Chats> mChats;
+    private ArrayList<Contacts> mContacts;
     private String mSender;
+    private int mNotifChatId;
     private FirebaseMessageReciever mFirebaseMessageReciever;
     private WeatherFragment weatherFragment;
 
@@ -98,7 +105,6 @@ public class HomeActivity extends AppCompatActivity implements
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFab.hide();
                 getContacts();
             }
         });
@@ -129,9 +135,10 @@ public class HomeActivity extends AppCompatActivity implements
 
         if (savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
-                Fragment fragment;
+                Fragment fragment = new LandingPageFragment();
                 if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), false)) {
-                    fragment = new LandingPageFragment();
+                    fragment.setArguments(bundle);
+                } else {
 //                    for (int i =0 ; i< mChats.size(); i++){
 //                        Chats currChat = mChats.get(i);
 //                        if(currChat.getEmail().equals(mSender)){
@@ -146,9 +153,6 @@ public class HomeActivity extends AppCompatActivity implements
 //                                    .commit();
 //                        }
 //                    }
-                } else {
-                    fragment = new LandingPageFragment();
-                    fragment.setArguments(bundle);
                 }
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.content_home_container, fragment)
@@ -187,26 +191,6 @@ public class HomeActivity extends AppCompatActivity implements
             }
         };
         createLocationRequest();
-    }
-
-    private void getContacts() {
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_contacts))
-                .appendPath(getString(R.string.ep_contacts_getAllContacts))
-                .build();
-        JSONObject messageJson = new JSONObject();
-        try {
-            messageJson.put("email", mEmail);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                .onPreExecute(this::onWaitFragmentInteractionShow)
-                .onPostExecute(this::handleContactsGetOnPostExecute)
-                .onCancelled(error -> Log.e("SEND_TAG", error))
-                .build().execute();
     }
 
     @Override
@@ -273,24 +257,42 @@ public class HomeActivity extends AppCompatActivity implements
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
+    private void getContacts() {
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_contacts))
+                .appendPath(getString(R.string.ep_contacts_getAllContacts))
+                .build();
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put("email", mEmail);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                .onPreExecute(this::onWaitFragmentInteractionShow)
+                .onPostExecute(this::handleContactsGetOnPostExecute)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
+    }
     private void handleContactsGetOnPostExecute(final String result) {
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
-                List<Contacts> contacts = new ArrayList<>();
+                mContacts = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject jsonContacts = data.getJSONObject(i);
-                    contacts.add(new Contacts.Builder(jsonContacts.getString("username"),
+                    mContacts.add(new Contacts.Builder(jsonContacts.getString("username"),
                             jsonContacts.getString("email"))
                             .addFirstName(jsonContacts.getString("firstname"))
                             .addLastName(jsonContacts.getString("lastname"))
                             .build());
                 }
-                Contacts[] contactsAsArray = new Contacts[contacts.size()];
-                contactsAsArray = contacts.toArray(contactsAsArray);
+                Contacts[] contactsAsArray = new Contacts[mContacts.size()];
+                contactsAsArray = mContacts.toArray(contactsAsArray);
                 Bundle args = new Bundle();
                 args.putSerializable(ContactsFragment.ARG_CONTACTS_LIST, contactsAsArray);
                 Fragment frag = new ContactsFragment();
@@ -307,12 +309,10 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     private void handleChatsPostExecute(final String result) {
-        Log.e("ERROR!", "ON POST EXECUTED");
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
             if (root.has("success") && root.getBoolean("success")) {
-                Log.e("ERROR!", "JSON HAS A RESPONSE");
 
                 JSONArray data = root.getJSONArray("data");
                 mChats = new ArrayList<>();
@@ -331,6 +331,7 @@ public class HomeActivity extends AppCompatActivity implements
                 ChatsFragment frag = new ChatsFragment();
                 frag.setArguments(args);
                 frag.setFab(mFab);
+                frag.setContacts(mContacts);
                 onWaitFragmentInteractionHide();
                 loadFragment(frag);
             }
@@ -508,6 +509,7 @@ public class HomeActivity extends AppCompatActivity implements
                     jObj = new JSONObject(data);
                     if (jObj.has("message") && jObj.has("sender")) {
                         mSender = jObj.getString("sender");
+                        mNotifChatId = jObj.getInt("chatid");
                         String msg = jObj.getString("message");
                         Log.i("FCM Chat Frag", mSender + " " + msg);
                     }

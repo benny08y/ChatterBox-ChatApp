@@ -1,4 +1,4 @@
-package tcss450.uw.edu.chatapp;
+package tcss450.uw.edu.chatapp.weather;
 
 
 import android.app.AlertDialog;
@@ -24,18 +24,21 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import tcss450.uw.edu.chatapp.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CurrentConditionsZipCodeFragment extends Fragment {
+public class CurrentConditionsLatLngFragment extends Fragment {
 
-    TextView selectZipCode, cityField, detailsField, currentTemperatureField, humidity_field, pressure_field, weatherIcon, updatedField;
+    TextView displayLatLng, cityField, detailsField, currentTemperatureField, humidity_field, pressure_field, weatherIcon, updatedField;
     ProgressBar loader;
     Typeface weatherFont;
-    String zipCode = "98006";
+    String lat;
+    String lon;
 
-    public CurrentConditionsZipCodeFragment() {
+    public CurrentConditionsLatLngFragment() {
         // Required empty public constructor
     }
 
@@ -44,14 +47,15 @@ public class CurrentConditionsZipCodeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_current_conditions_zip_code, container, false);
+        View v = inflater.inflate(R.layout.fragment_current_conditions_lat_lng, container, false);
 
         if (getArguments() != null) {
-            zipCode = getArguments().getString("zip code");
+            lat = Double.toString(getArguments().getDouble("lat"));
+            lon = Double.toString(getArguments().getDouble("lon"));
         }
 
         loader = (ProgressBar) v.findViewById(R.id.loader);
-        selectZipCode = (TextView) v.findViewById(R.id.selectZipCode);
+        displayLatLng = (TextView) v.findViewById(R.id.displayLatLng);
         cityField = (TextView) v.findViewById(R.id.city_field);
         updatedField = (TextView) v.findViewById(R.id.updated_field);
         detailsField = (TextView) v.findViewById(R.id.details_field);
@@ -62,45 +66,15 @@ public class CurrentConditionsZipCodeFragment extends Fragment {
         weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weathericonsregularwebfont.ttf");
         weatherIcon.setTypeface(weatherFont);
 
-        taskLoadUp(zipCode);
-
-        selectZipCode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(v.getContext());
-                alertDialog.setTitle("Change Zip Code");
-                final EditText input = new EditText(v.getContext());
-                input.setText(zipCode);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-                input.setLayoutParams(lp);
-                alertDialog.setView(input);
-
-                alertDialog.setPositiveButton("Change",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                zipCode = input.getText().toString();
-                                taskLoadUp(zipCode);
-                            }
-                        });
-                alertDialog.setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                alertDialog.show();
-            }
-        });
+        taskLoadUp(lat, lon);
 
         return v;
     }
 
-    public void taskLoadUp(String query) {
+    public void taskLoadUp(String query1, String query2) {
         if (WeatherHelpers.isNetworkAvailable(getActivity().getApplicationContext())) {
             DownloadWeather task = new DownloadWeather();
-            task.execute(query);
+            task.execute(query1, query2);
         } else {
             Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
         }
@@ -114,8 +88,8 @@ public class CurrentConditionsZipCodeFragment extends Fragment {
 
         }
         protected String doInBackground(String...args) {
-            String xml = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/weather?zip=" + args[0] +
-                    "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
+            String xml = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/weather?lat=" + args[0] +
+                    "&lon=" + args[1] + "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
             return xml;
         }
         @Override
@@ -139,10 +113,10 @@ public class CurrentConditionsZipCodeFragment extends Fragment {
                             json.getJSONObject("sys").getLong("sunset") * 1000)));
 
                     loader.setVisibility(View.GONE);
-
+                    displayLatLng.setText(lat + ", " + lon);
                 }
             } catch (JSONException e) {
-                Toast.makeText(getActivity().getApplicationContext(), "Error, Check Zip Code", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Error, Check Latitude And Longitude", Toast.LENGTH_LONG).show();
             }
         }
     }

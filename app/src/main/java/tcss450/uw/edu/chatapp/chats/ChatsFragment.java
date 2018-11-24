@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
+import tcss450.uw.edu.chatapp.contacts.Contacts;
 
 /**
  * A fragment representing a list of Items.
@@ -33,6 +34,7 @@ public class ChatsFragment extends Fragment  {
     public static final String ARG_CHATS = "list of chats";
     private List<Chats> mChatsList;
     private FloatingActionButton mFab;
+    private ArrayList<Contacts> mContactsList;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -53,6 +55,9 @@ public class ChatsFragment extends Fragment  {
     public void setFab(FloatingActionButton fab){
         mFab = fab;
     }
+    public void setContacts(ArrayList<Contacts> contacts){
+        mContactsList = contacts;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +76,12 @@ public class ChatsFragment extends Fragment  {
         View view = inflater.inflate(R.layout.fragment_chats_list, container, false);
         mFab.show();
         mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_chat_black_24dp));
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;

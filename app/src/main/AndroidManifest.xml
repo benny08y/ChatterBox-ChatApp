@@ -61,7 +61,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".weather.MapsActivity"
             android:label="@string/title_activity_maps" />
     </application>
 

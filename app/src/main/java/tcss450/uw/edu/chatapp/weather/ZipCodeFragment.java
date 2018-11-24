@@ -1,17 +1,16 @@
-package tcss450.uw.edu.chatapp;
+package tcss450.uw.edu.chatapp.weather;
 
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
+import tcss450.uw.edu.chatapp.R;
 
 
 /**
