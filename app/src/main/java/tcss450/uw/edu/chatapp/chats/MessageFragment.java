@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import tcss450.uw.edu.chatapp.HomeActivity;
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.utils.MyFirebaseMessagingService;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
@@ -44,8 +45,8 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
     private String mEmail;
     private String mSendUrl;
     private FirebaseMessageReciever mFirebaseMessageReciever;
-    private Chats mChats;
-    private String mName;
+    private String mNickname;
+    private int mChatId;
 
     public MessageFragment() {    }
 
@@ -55,13 +56,12 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
         View rootLayout = inflater.inflate(R.layout.fragment_message, container, false);
         mMessageOutputTextView = rootLayout.findViewById(R.id.text_chat_message_display);
         mMessageInputEditText = rootLayout.findViewById(R.id.edit_chat_message_input);
-        TextView msg_contactname = rootLayout.findViewById(R.id.message_contactname);
-        msg_contactname.setText(mName);
+
         ScrollView scrollView = rootLayout.findViewById(R.id.scrollView_msg_display);
         scrollView.post(new Runnable() {
             @Override
             public void run() {
-                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                scrollView.fullScroll(View.FOCUS_DOWN);
             }
         });
         rootLayout.findViewById(R.id.button_chat_send).setOnClickListener(this::handleSendClick);
@@ -80,6 +80,11 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
         } else {
             throw new IllegalStateException("No EMAIL in prefs!");
         }
+
+        mChatId = getArguments().getInt(HomeActivity.MESSAGE_CHATID);
+        mNickname = getArguments().getString(HomeActivity.MESSAGE_NICKNAME);
+        TextView msg_contactname = getActivity().findViewById(R.id.message_contactname);
+        msg_contactname.setText(mNickname);
         //We will use this url every time the user hits send. Let's only build it once, ya?
         mSendUrl = new Uri.Builder()
                 .scheme("https")
@@ -95,9 +100,9 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                 .appendPath(getString(R.string.ep_messaging_getAll))
                 .build();
         JSONObject messageJson = new JSONObject();
-        if(mChats != null ) {
+//        if(mChats != null ) {
             try {
-                messageJson.put("chatId", mChats.getChatID());
+                messageJson.put("chatId", mChatId);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -105,7 +110,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                     .onPostExecute(this::getMessagesPostExecute)
                     .onCancelled(error -> Log.e("SEND_TAG", error))
                     .build().execute();
-        }
+//        }
     }
 
     private void getMessagesPostExecute(final String result) {
@@ -145,23 +150,18 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
         }
     }
 
-    public void setChat(Chats theChat){
-        mChats = theChat;
-    }
-    public void setName(String name){
-        mName = name;
-    }
-
     private void handleSendClick(final View theButton) {
         String msg = mMessageInputEditText.getText().toString();
         JSONObject messageJson = new JSONObject();
         try {
             messageJson.put("email", mEmail);
             messageJson.put("message", msg);
-            messageJson.put("chatId", mChats.getChatID());
+            Log.d("SENT_MSG", String.valueOf(mChatId));
+            messageJson.put("chatId", mChatId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.d("SENT_MSG", msg);
         new SendPostAsyncTask.Builder(mSendUrl, messageJson)
                 .onPostExecute(this::endOfSendMsgTask)
                 .onCancelled(error -> Log.e(TAG, error))
@@ -170,14 +170,17 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
     private void endOfSendMsgTask(final String result) {
         try {
             //This is the result from the web service
+            Log.d("SENT_MSG", "trying");
             JSONObject res = new JSONObject(result);
-            if(res.has("success") && res.getBoolean("success")) {
+            if(res.has("success") ) {
                 //The web service got our message. Time to clear out the input EditText
                 mMessageInputEditText.setText("");
+                Log.d("SENT_MSG", "SUCCESS SENT " + res.getBoolean("success"));
                 //its up to you to decide if you want to send the message to the output here
                 //or wait for the message to come back from the web service.
             }
         } catch (JSONException e) {
+            Log.d("SENT_MSG", "Failed to recieve");
             e.printStackTrace();
         }
     }
@@ -202,7 +205,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
     private class FirebaseMessageReciever extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("FCM Chat Frag", "start onRecieve");
+            Log.d("SENT_MSG", "start onRecieve");
             if(intent.hasExtra("DATA")) {
                 String data = intent.getStringExtra("DATA");
                 JSONObject jObj = null;
@@ -214,7 +217,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                         mMessageOutputTextView.append(sender + ":" + msg);
                         mMessageOutputTextView.append(System.lineSeparator());
                         mMessageOutputTextView.append(System.lineSeparator());
-                        Log.i("FCM Chat Frag", sender + " " + msg);
+                        Log.d("SENT_MSG", sender + " " + msg);
                     }
                 } catch (JSONException e) {
                     Log.e("JSON PARSE", e.toString());

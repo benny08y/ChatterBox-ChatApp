@@ -46,6 +46,7 @@ import java.util.List;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
+import tcss450.uw.edu.chatapp.chats.Message;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
@@ -68,11 +69,12 @@ public class HomeActivity extends AppCompatActivity implements
         WeatherFragment.OnWeatherFragmentInteractionListener,
         ZipCodeFragment.OnZipCodeFragmentInteractionListener {
 
+    public static final String MESSAGE_CHATID = "chat_ID";
+    public static final String MESSAGE_NICKNAME = "msg_nickname";
+    public static final String OPEN_CHAT = "open_chat";
     private FloatingActionButton mFab;
     Bundle thisBundle;
     private String mEmail;
-    private ArrayList<Chats> mChatList;
-    private ChatsFragment mChatFrag;
     private ArrayList<Contacts> mContacts;
     private WeatherFragment weatherFragment;
 
@@ -131,45 +133,18 @@ public class HomeActivity extends AppCompatActivity implements
 
         weatherFragment = new WeatherFragment();
 
-        Uri uri = new Uri.Builder()             //get all chats data
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_chats_base))
-                .appendPath(getString(R.string.ep_getallchats))
-                .build();
-        JSONObject messageJson = new JSONObject();
-        try {
-            messageJson.put("email", mEmail);
-            Log.e("IN_JSON", "post body email");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("IN_JSON", "didnt put email");
-        }
-        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                .onPreExecute(this::onWaitFragmentInteractionShow)
-                .onPostExecute(this::handleChatsPostExecute)
-                .onCancelled(error -> Log.e("SEND_TAG", error))
-                .build().execute();
         if (savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
                 Fragment fragment = new LandingPageFragment();
                 if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), true)) {
-//                    for (Chats chat: mChatList){
-//                        Log.v("NOtification", "NOITFIY");
-//                        Chats currChat = chat;
-//                        if(currChat.getChatID() == mNotifChatId){
-//                            mFab.hide();
-                            MessageFragment messageFragment = new MessageFragment();
-//                            messageFragment.setChat(currChat);
-//                            messageFragment.setName(currChat.getNickname()+ " (" +currChat.getFirstname()+" "+currChat.getLastname()+")");
-                            getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.content_home_container, messageFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-//                        }
-//                    }
-
+                    Message msg = (Message) getIntent().getExtras().get("message");
+                    Bundle args = new Bundle();
+//                    args.putSerializable(MESSAGE_NOTIFICATION, msg);
+                    args.putInt(MESSAGE_CHATID, msg.getChatId());
+                    args.putString(MESSAGE_NICKNAME, msg.getNickname());
+                    MessageFragment messageFragment = new MessageFragment();
+                    messageFragment.setArguments(args);
+                    loadFragment(messageFragment);
                 } else {
                     Log.v("NOtification", "NO NOITFIY");
                     fragment.setArguments(bundle);
@@ -177,10 +152,8 @@ public class HomeActivity extends AppCompatActivity implements
                             .add(R.id.content_home_container, fragment)
                             .commit();
                 }
-
             }
         }
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -241,7 +214,25 @@ public class HomeActivity extends AppCompatActivity implements
             mFab.hide();
             loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
-            loadFragment(mChatFrag);
+            Uri uri = new Uri.Builder()
+                    .scheme("https")
+                    .appendPath(getString(R.string.ep_base_url))
+                    .appendPath(getString(R.string.ep_chats_base))
+                    .appendPath(getString(R.string.ep_getallchats))
+                    .build();
+            JSONObject messageJson = new JSONObject();
+            try {
+                messageJson.put("email", mEmail);
+                Log.e("IN_JSON", "post body email");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.e("IN_JSON", "didnt put email");
+            }
+            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                    .onPreExecute(this::onWaitFragmentInteractionShow)
+                    .onPostExecute(this::handleChatsPostExecute)
+                    .onCancelled(error -> Log.e("SEND_TAG", error))
+                    .build().execute();
         } else if (id == R.id.nav_contacts) {
             mFab.hide();
             getContacts();
@@ -310,7 +301,6 @@ public class HomeActivity extends AppCompatActivity implements
             onWaitFragmentInteractionHide();
         }
     }
-
     private void handleChatsPostExecute(final String result) {
         //parse JSON
         try {
@@ -318,25 +308,25 @@ public class HomeActivity extends AppCompatActivity implements
             if (root.has("success") && root.getBoolean("success")) {
 
                 JSONArray data = root.getJSONArray("data");
-                mChatList = new ArrayList<>();
+                ArrayList<Chats> chatList = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject jsonChats = data.getJSONObject(i);
-                    mChatList.add(new Chats.Builder(jsonChats.getString("email"),
+                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
                             jsonChats.getString("firstname"), jsonChats.getString("lastname"))
                             .addChatID(jsonChats.getInt("chatid"))
                             .addNickname(jsonChats.getString("username"))
                             .build());
                 }
-                Log.d("Chats_array", mChatList.toString() + " size:" + mChatList.size());
-                Chats[] chatsAsArray = new Chats[mChatList.size()];
-                chatsAsArray = mChatList.toArray(chatsAsArray);
+                Chats[] chatsAsArray = new Chats[chatList.size()];
+                chatsAsArray = chatList.toArray(chatsAsArray);
                 Bundle args = new Bundle();
                 args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
-                mChatFrag = new ChatsFragment();
-                mChatFrag.setArguments(args);
-                mChatFrag.setFab(mFab);
-                mChatFrag.setContacts(mContacts);
+                ChatsFragment chatFrag = new ChatsFragment();
+                chatFrag.setArguments(args);
+                chatFrag.setFab(mFab);
+                chatFrag.setContacts(mContacts);
                 onWaitFragmentInteractionHide();
+                loadFragment(chatFrag);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -375,13 +365,12 @@ public class HomeActivity extends AppCompatActivity implements
     public void onChatListFragmentInteraction(Chats item) {
         mFab.hide();
         MessageFragment messageFragment = new MessageFragment();
-        messageFragment.setChat(item);
-        messageFragment.setName(item.getNickname() + " (" + item.getFirstname() + " " + item.getLastname() + ")");
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_home_container, messageFragment)
-                .addToBackStack(null)
-                .commit();
+        Message msg = new Message.Builder(item.getEmail(), item.getNickname(), item.getChatID()).build();
+        Bundle args = new Bundle();
+        args.putString(MESSAGE_NICKNAME, msg.getNickname());
+        args.putInt(MESSAGE_CHATID, msg.getChatId());
+        messageFragment.setArguments(args);
+        loadFragment(messageFragment);
     }
 
     @Override
@@ -423,7 +412,7 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public void onContactPageFragmentInteraction(String name) {
         MessageFragment messageFragment = new MessageFragment();
-        messageFragment.setName(name);
+//        messageFragment.setName(name);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_home_container, messageFragment)
