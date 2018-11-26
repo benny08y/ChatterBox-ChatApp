@@ -22,7 +22,7 @@
                 android:id="@+id/chat_contactName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="40dp"
                 android:layout_marginTop="8dp"
                 android:text="Contact Name"
                 android:textAppearance="?attr/textAppearanceListItem"
@@ -33,7 +33,7 @@
                 android:id="@+id/chat_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="40dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:text="Email"
@@ -41,7 +41,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/chat_contactName"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="0.0" />
 
         </android.support.constraint.ConstraintLayout>
 

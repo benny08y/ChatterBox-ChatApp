@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import tcss450.uw.edu.chatapp.R;
@@ -20,6 +21,7 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
 
     private final List<Chats> mValues;
     private final OnChatListFragmentInteractionListener mListener;
+    private static boolean isDeletChat;
 
     public MyChatsRecyclerViewAdapter(List<Chats> items, OnChatListFragmentInteractionListener listener) {
         mValues = items;
@@ -33,13 +35,19 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
         return new ViewHolder(view);
     }
 
+    public static void setCheckBoxVisibility(boolean value){
+        isDeletChat = value;
+    }
+    public static boolean isCheckBoxes(){
+        return isDeletChat;
+    }
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mContactName.setText( mValues.get(position).getNickname() + " ("
                 +mValues.get(position).getFirstname() + " "+ mValues.get(position).getLastname() +")");
         holder.mEmail.setText(mValues.get(position).getEmail());
-//        holder.mLastMessage.setText(mValues.get(position).getLastMessage());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,7 +70,6 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
         public final View mView;
         public final TextView mContactName;
         public final TextView mEmail;
-//        public final TextView mLastMessage;
         public Chats mItem;
 
         public ViewHolder(View view) {
@@ -70,7 +77,6 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
             mView = view;
             mContactName = (TextView) view.findViewById(R.id.chat_contactName);
             mEmail = (TextView) view.findViewById(R.id.chat_email);
-//            mLastMessage = (TextView) view.findViewById(R.id.chat_lastMsg);
         }
 
         @Override
