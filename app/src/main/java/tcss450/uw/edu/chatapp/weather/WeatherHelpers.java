@@ -1,4 +1,4 @@
-package tcss450.uw.edu.chatapp;
+package tcss450.uw.edu.chatapp.weather;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

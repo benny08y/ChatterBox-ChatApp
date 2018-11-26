@@ -7,22 +7,44 @@ public class Message implements Serializable {
     private final String mEmail;
     private final String mFirstName;
     private final String mLastName;
+    private final String mNickname;
     private final String mMessage;
     private final String mTimeStamp;
+    private final int mChatId;
 
     public static class Builder {
         private final String mEmail;
-        private final String mFirstName;
-        private final String mLastName;
-        private final String mMessage;
-        private final String mTimeStamp;
+        private final String mNickname;
+        private String mMessage="";
+        private final int mChatId;
+        private String mFirstName="";
+        private String mLastName="";
+        private String mTimeStamp="";
 
-        public Builder(String email, String firstName, String lastName, String message, String timeStamp) {
+        public Builder(String email, String nickname, int chatid) {
             this.mEmail = email;
-            this.mFirstName = firstName;
-            this.mLastName = lastName;
-            this.mMessage = message;
-            this.mTimeStamp = timeStamp;
+            this.mNickname = nickname;
+            this.mChatId = chatid;
+        }
+
+        public Message.Builder addTimeStamp(final String timeStamp){
+            mTimeStamp = timeStamp;
+            return this;
+        }
+
+        public Message.Builder addFirstName(final String val){
+            mFirstName = val;
+            return this;
+        }
+
+        public Message.Builder addLastName(final String lastname){
+            mLastName = lastname;
+            return this;
+        }
+
+        public Message.Builder addMessage(final String msg){
+            mMessage = msg;
+            return this;
         }
 
         public Message build() {
@@ -36,6 +58,8 @@ public class Message implements Serializable {
         this.mLastName = builder.mLastName;
         this.mMessage = builder.mMessage;
         this.mTimeStamp = builder.mTimeStamp;
+        this.mChatId = builder.mChatId;
+        this.mNickname = builder.mNickname;
     }
 
     public String getEmail() {
@@ -56,6 +80,14 @@ public class Message implements Serializable {
 
     public String getTimeStamp() {
         return mTimeStamp;
+    }
+
+    public int getChatId() {
+        return mChatId;
+    }
+
+    public String getNickname() {
+        return mNickname;
     }
 
 }
