@@ -1,10 +1,8 @@
 package tcss450.uw.edu.chatapp;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -42,16 +40,15 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
+import tcss450.uw.edu.chatapp.chats.DeleteChatFragment;
 import tcss450.uw.edu.chatapp.chats.Message;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
-import tcss450.uw.edu.chatapp.utils.MyFirebaseMessagingService;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 import tcss450.uw.edu.chatapp.weather.CurrentConditionsLatLngFragment;
@@ -63,11 +60,12 @@ import tcss450.uw.edu.chatapp.weather.ZipCodeFragment;
 public class HomeActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ChatsFragment.OnChatListFragmentInteractionListener,
+        DeleteChatFragment.DeleteChatFragmentInteractionListener,
         ContactsFragment.OnContactListFragmentInteractionListener,
         WaitFragment.OnFragmentInteractionListener,
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
-        ZipCodeFragment.OnZipCodeFragmentInteractionListener {
+        ZipCodeFragment.OnZipCodeFragmentInteractionListener{
 
     public static final String MESSAGE_CHATID = "chat_ID";
     public static final String MESSAGE_NICKNAME = "msg_nickname";
@@ -197,13 +195,6 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -214,25 +205,11 @@ public class HomeActivity extends AppCompatActivity implements
             mFab.hide();
             loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
-            Uri uri = new Uri.Builder()
-                    .scheme("https")
-                    .appendPath(getString(R.string.ep_base_url))
-                    .appendPath(getString(R.string.ep_chats_base))
-                    .appendPath(getString(R.string.ep_getallchats))
-                    .build();
-            JSONObject messageJson = new JSONObject();
-            try {
-                messageJson.put("email", mEmail);
-                Log.e("IN_JSON", "post body email");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("IN_JSON", "didnt put email");
-            }
-            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                    .onPreExecute(this::onWaitFragmentInteractionShow)
-                    .onPostExecute(this::handleChatsPostExecute)
-                    .onCancelled(error -> Log.e("SEND_TAG", error))
-                    .build().execute();
+            ChatsFragment chatsFragment = new ChatsFragment();
+            Bundle args = new Bundle();
+            args.putString("currEmail", mEmail);
+            chatsFragment.setArguments(args);
+            loadFragment(chatsFragment);
         } else if (id == R.id.nav_contacts) {
             mFab.hide();
             getContacts();
@@ -301,40 +278,7 @@ public class HomeActivity extends AppCompatActivity implements
             onWaitFragmentInteractionHide();
         }
     }
-    private void handleChatsPostExecute(final String result) {
-        //parse JSON
-        try {
-            JSONObject root = new JSONObject(result);
-            if (root.has("success") && root.getBoolean("success")) {
 
-                JSONArray data = root.getJSONArray("data");
-                ArrayList<Chats> chatList = new ArrayList<>();
-                for (int i = 0; i < data.length(); i++) {
-                    JSONObject jsonChats = data.getJSONObject(i);
-                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
-                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
-                            .addChatID(jsonChats.getInt("chatid"))
-                            .addNickname(jsonChats.getString("username"))
-                            .build());
-                }
-                Chats[] chatsAsArray = new Chats[chatList.size()];
-                chatsAsArray = chatList.toArray(chatsAsArray);
-                Bundle args = new Bundle();
-                args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
-                ChatsFragment chatFrag = new ChatsFragment();
-                chatFrag.setArguments(args);
-                chatFrag.setFab(mFab);
-                chatFrag.setContacts(mContacts);
-                onWaitFragmentInteractionHide();
-                loadFragment(chatFrag);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("ERROR!", e.getMessage());
-            //notify user
-            onWaitFragmentInteractionHide();
-        }
-    }
 
     private void logout() {
         SharedPreferences prefs =
@@ -427,6 +371,11 @@ public class HomeActivity extends AppCompatActivity implements
         bundle.putSerializable("zip code", zipCodeString);
         frag.setArguments(bundle);
         loadFragment(frag);
+    }
+
+    @Override
+    public void deleteChatFragmentInteraction(Chats item) {
+
     }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
