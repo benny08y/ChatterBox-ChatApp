@@ -205,23 +205,11 @@ public class HomeActivity extends AppCompatActivity implements
             mFab.hide();
             loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
-            Uri uri = new Uri.Builder()
-                    .scheme("https")
-                    .appendPath(getString(R.string.ep_base_url))
-                    .appendPath(getString(R.string.ep_chats_base))
-                    .appendPath(getString(R.string.ep_getallchats))
-                    .build();
-            JSONObject messageJson = new JSONObject();
-            try {
-                messageJson.put("email", mEmail);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                    .onPreExecute(this::onWaitFragmentInteractionShow)
-                    .onPostExecute(this::handleChatsPostExecute)
-                    .onCancelled(error -> Log.e("SEND_TAG", error))
-                    .build().execute();
+            ChatsFragment chatsFragment = new ChatsFragment();
+            Bundle args = new Bundle();
+            args.putString("currEmail", mEmail);
+            chatsFragment.setArguments(args);
+            loadFragment(chatsFragment);
         } else if (id == R.id.nav_contacts) {
             mFab.hide();
             getContacts();
@@ -290,39 +278,7 @@ public class HomeActivity extends AppCompatActivity implements
             onWaitFragmentInteractionHide();
         }
     }
-    private void handleChatsPostExecute(final String result) {
-        //parse JSON
-        try {
-            JSONObject root = new JSONObject(result);
-            if (root.has("success") && root.getBoolean("success")) {
 
-                JSONArray data = root.getJSONArray("data");
-                ArrayList<Chats> chatList = new ArrayList<>();
-                for (int i = 0; i < data.length(); i++) {
-                    JSONObject jsonChats = data.getJSONObject(i);
-                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
-                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
-                            .addChatID(jsonChats.getInt("chatid"))
-                            .addNickname(jsonChats.getString("username"))
-                            .build());
-                }
-                Chats[] chatsAsArray = new Chats[chatList.size()];
-                chatsAsArray = chatList.toArray(chatsAsArray);
-                Bundle args = new Bundle();
-                args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
-                ChatsFragment chatFrag = new ChatsFragment();
-                chatFrag.setArguments(args);
-                chatFrag.setContacts(mContacts);
-                onWaitFragmentInteractionHide();
-                loadFragment(chatFrag);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("ERROR!", e.getMessage());
-            //notify user
-            onWaitFragmentInteractionHide();
-        }
-    }
 
     private void logout() {
         SharedPreferences prefs =
