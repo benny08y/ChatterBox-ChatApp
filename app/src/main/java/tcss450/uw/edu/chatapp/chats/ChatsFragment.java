@@ -1,6 +1,7 @@
 package tcss450.uw.edu.chatapp.chats;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,12 +18,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
+import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
+import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 /**
  * A fragment representing a list of Items.
@@ -29,7 +37,7 @@ import tcss450.uw.edu.chatapp.contacts.Contacts;
  * Activities containing this fragment MUST implement the {@link OnChatListFragmentInteractionListener}
  * interface.
  */
-public class ChatsFragment extends Fragment  {
+public class ChatsFragment extends Fragment  implements WaitFragment.OnFragmentInteractionListener {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
@@ -42,6 +50,7 @@ public class ChatsFragment extends Fragment  {
     private ArrayList<Contacts> mContactsList;
     private MyChatsRecyclerViewAdapter mChatsAdapters;
     private Menu mMenu;
+    private String mEmail;
 
 
     /**
@@ -67,6 +76,26 @@ public class ChatsFragment extends Fragment  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mEmail = getArguments().getString("email");
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_chats_base))
+                .appendPath(getString(R.string.ep_getallchats))
+                .build();
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put("email", mEmail);
+            Log.e("IN_JSON", "post body email");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("IN_JSON", "didnt put email");
+        }
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                .onPreExecute(this::onWaitFragmentInteractionShow)
+                .onPostExecute(this::handleChatsPostExecute)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
         mFAB = (FloatingActionButton) this.getActivity().findViewById(R.id.fab);
         mFAB.show();
         mFAB.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_chat_black_24dp));
@@ -80,6 +109,37 @@ public class ChatsFragment extends Fragment  {
         if (getArguments() != null) {
             mChatsList = new ArrayList<Chats>(
                     Arrays.asList((Chats[]) getArguments().getSerializable(ARG_CHATS)));
+        }
+    }
+    private void handleChatsPostExecute(final String result) {
+        //parse JSON
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("success") && root.getBoolean("success")) {
+
+                JSONArray data = root.getJSONArray("data");
+                ArrayList<Chats> chatList = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonChats = data.getJSONObject(i);
+                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
+                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                            .addChatID(jsonChats.getInt("chatid"))
+                            .addNickname(jsonChats.getString("username"))
+                            .build());
+                }
+                Chats[] chatsAsArray = new Chats[chatList.size()];
+                chatsAsArray = chatList.toArray(chatsAsArray);
+                Bundle args = new Bundle();
+                args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
+                ChatsFragment chatFrag = new ChatsFragment();
+                chatFrag.setArguments(args);
+                onWaitFragmentInteractionHide();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("ERROR!", e.getMessage());
+            //notify user
+            onWaitFragmentInteractionHide();
         }
     }
 
@@ -146,6 +206,23 @@ public class ChatsFragment extends Fragment  {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onWaitFragmentInteractionShow() {
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.content_home_container, new WaitFragment(), "WAIT")
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onWaitFragmentInteractionHide() {
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .remove(getActivity().getSupportFragmentManager().findFragmentByTag("WAIT"))
+                .commit();
     }
 
     /**

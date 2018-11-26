@@ -70,7 +70,7 @@ public class DeleteChatFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
@@ -101,6 +101,9 @@ public class DeleteChatFragment extends Fragment {
                     .replace(R.id.content_home_container, chatsFragment)
                     .addToBackStack(null)
                     .commit();
+            result = true;
+        } else if(id == R.id.menu_delete_icon){
+
             result = true;
         }
         return result;

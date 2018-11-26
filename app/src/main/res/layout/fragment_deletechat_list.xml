@@ -29,9 +29,9 @@
 
 <!--</RelativeLayout>-->
 
-<app:android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list"
     android:name="tcss450.uw.edu.chatapp.chats.DeleteChatFragment"
     android:layout_width="match_parent"
@@ -40,7 +40,9 @@
     android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp"
     android:layout_marginBottom="8dp"
-    app:layoutManager="LinearLayoutManager"
     android:visibility="visible"
+    app:layoutManager="LinearLayoutManager"
     tools:context=".chats.DeleteChatFragment"
-    tools:listitem="@layout/fragment_deletechat" />
+    tools:listitem="@layout/fragment_deletechat" >
+
+</android.support.v7.widget.RecyclerView>
