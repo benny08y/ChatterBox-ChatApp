@@ -1,6 +1,7 @@
 package tcss450.uw.edu.chatapp.chats;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,22 +9,22 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.chats.ChatsFragment.OnChatListFragmentInteractionListener;
+import tcss450.uw.edu.chatapp.chats.DeleteChatFragment.DeleteChatFragmentInteractionListener;
 
 import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
- * specified {@link OnChatListFragmentInteractionListener}.
+ * specified {@link DeleteChatFragment.DeleteChatFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecyclerViewAdapter.ViewHolder> {
+public class DeleteChatRecyclerViewAdapter extends RecyclerView.Adapter<DeleteChatRecyclerViewAdapter.ViewHolder> {
 
     private final List<Chats> mValues;
-    private final OnChatListFragmentInteractionListener mListener;
-    private static boolean isDeletChat;
+    private final DeleteChatFragmentInteractionListener mListener;
 
-    public MyChatsRecyclerViewAdapter(List<Chats> items, OnChatListFragmentInteractionListener listener) {
+    public DeleteChatRecyclerViewAdapter(List<Chats> items, DeleteChatFragment.DeleteChatFragmentInteractionListener listener) {
+        Log.d("DeleteChat", ""+items.size());
         mValues = items;
         mListener = listener;
     }
@@ -31,22 +32,14 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_chats, parent, false);
+                .inflate(R.layout.fragment_deletechat, parent, false);
         return new ViewHolder(view);
-    }
-
-    public static void setCheckBoxVisibility(boolean value){
-        isDeletChat = value;
-    }
-    public static boolean isCheckBoxes(){
-        return isDeletChat;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mContactName.setText( mValues.get(position).getNickname() + " ("
-                +mValues.get(position).getFirstname() + " "+ mValues.get(position).getLastname() +")");
+        holder.mContactName.setText(mValues.get(position).getNickname());
         holder.mEmail.setText(mValues.get(position).getEmail());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +48,7 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onChatListFragmentInteraction(holder.mItem);
+                    mListener.deleteChatFragmentInteraction(holder.mItem);
                 }
             }
         });
@@ -70,13 +63,15 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
         public final View mView;
         public final TextView mContactName;
         public final TextView mEmail;
+        public final CheckBox mCheckBox;
         public Chats mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mContactName = (TextView) view.findViewById(R.id.chat_contactName);
-            mEmail = (TextView) view.findViewById(R.id.chat_email);
+            mContactName = (TextView) view.findViewById(R.id.chat_delete_contactName);
+            mEmail = (TextView) view.findViewById(R.id.chat_delete_email);
+            mCheckBox = view.findViewById(R.id.chat_delete_checkbox);
         }
 
         @Override
