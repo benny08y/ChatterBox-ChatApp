@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -49,6 +52,8 @@ public class CurrentConditionsLatLngFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_current_conditions_lat_lng, container, false);
 
+        setHasOptionsMenu(true);
+
         if (getArguments() != null) {
             lat = Double.toString(getArguments().getDouble("lat"));
             lon = Double.toString(getArguments().getDouble("lon"));
@@ -80,18 +85,20 @@ public class CurrentConditionsLatLngFragment extends Fragment {
         }
     }
 
-    class DownloadWeather extends AsyncTask< String, Void, String > {
+    class DownloadWeather extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             loader.setVisibility(View.VISIBLE);
 
         }
-        protected String doInBackground(String...args) {
+
+        protected String doInBackground(String... args) {
             String xml = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/weather?lat=" + args[0] +
                     "&lon=" + args[1] + "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
             return xml;
         }
+
         @Override
         protected void onPostExecute(String xml) {
 
@@ -119,5 +126,33 @@ public class CurrentConditionsLatLngFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), "Error, Check Latitude And Longitude", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.weather, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_current) {
+            // TODO switch to current view
+            return true;
+        } else if (id == R.id.action_hour) {
+            // TODO switch to hour view
+            return true;
+        } else if (id == R.id.action_day) {
+            // TODO switch to day view
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <item
+        android:id="@+id/action_current"
+        android:orderInCategory="100"
+        android:title="Current Conditions"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_hour"
+        android:orderInCategory="100"
+        android:title="24-Hour Forecast"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_day"
+        android:orderInCategory="100"
+        android:title="10-Day Forecast"
+        app:showAsAction="never" />
+
+</menu>

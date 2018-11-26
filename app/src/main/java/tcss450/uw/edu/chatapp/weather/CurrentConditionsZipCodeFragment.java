@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -47,6 +50,8 @@ public class CurrentConditionsZipCodeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_current_conditions_zip_code, container, false);
+
+        setHasOptionsMenu(true);
 
         if (getArguments() != null) {
             zipCode = getArguments().getString("zip code");
@@ -147,5 +152,33 @@ public class CurrentConditionsZipCodeFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), "Error, Check Zip Code", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.weather, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_current) {
+            // TODO switch to current view
+            return true;
+        } else if (id == R.id.action_hour) {
+            // TODO switch to hour view
+            return true;
+        } else if (id == R.id.action_day) {
+            // TODO switch to day view
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
