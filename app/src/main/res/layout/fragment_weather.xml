@@ -7,8 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".weather.WeatherFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <Button
         android:id="@+id/weatherFragmentMyCurrentLocationButton"
         android:layout_width="0dp"

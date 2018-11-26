@@ -140,10 +140,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
                 .commit();
     }
 
-    //    @Override
-//    public void onResendClicked() {
-//        // TODO: resend verification email
-//    }
     @Override
     public void onLoginClicked() {
         getSupportFragmentManager()

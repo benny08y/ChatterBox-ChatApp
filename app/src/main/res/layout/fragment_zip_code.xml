@@ -7,8 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".weather.ZipCodeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <TextView
         android:id="@+id/zipCodeFragmentTitle"
         android:layout_width="wrap_content"

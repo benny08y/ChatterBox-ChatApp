@@ -1,4 +1,4 @@
-package tcss450.uw.edu.chatapp;
+package tcss450.uw.edu.chatapp.weather;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,7 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import tcss450.uw.edu.chatapp.WeatherHourFragment.OnListFragmentInteractionListener;
+import tcss450.uw.edu.chatapp.R;
+import tcss450.uw.edu.chatapp.weather.WeatherHourFragment.OnListFragmentInteractionListener;
 import tcss450.uw.edu.chatapp.dummy.WeatherHourContent;
 
 import java.util.List;

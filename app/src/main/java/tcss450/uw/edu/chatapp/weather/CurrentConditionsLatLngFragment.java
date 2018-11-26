@@ -143,7 +143,6 @@ public class CurrentConditionsLatLngFragment extends Fragment {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_current) {
-            // TODO switch to current view
             return true;
         } else if (id == R.id.action_hour) {
             // TODO switch to hour view

@@ -1,4 +1,4 @@
-package tcss450.uw.edu.chatapp;
+package tcss450.uw.edu.chatapp.weather;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.dummy.WeatherHourContent;
 
 /**
@@ -106,7 +107,6 @@ public class WeatherHourFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onListFragmentInteraction(WeatherHourContent item);
     }
 
@@ -117,7 +117,7 @@ public class WeatherHourFragment extends Fragment {
             mWeatherHours = new ArrayList<WeatherHourContent>(
                     Arrays.asList((WeatherHourContent[]) getArguments().getSerializable(ARG_WEATHER_HOUR_LIST)));
         } else {
-            // TODO generator
+            // TODO
 //            mWeatherHours = Arrays.asList(BlogGenerator.BLOGS);
         }
     }

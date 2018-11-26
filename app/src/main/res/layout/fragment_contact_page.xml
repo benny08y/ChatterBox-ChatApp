@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".contacts.ContactPageFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <ImageView
         android:id="@+id/contact_page_icon_person"
         android:layout_width="wrap_content"

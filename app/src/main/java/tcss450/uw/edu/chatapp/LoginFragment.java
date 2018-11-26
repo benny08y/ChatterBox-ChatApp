@@ -257,7 +257,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnLoginFragmentInteractionListener extends WaitFragment.OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onLoginAttempt(Credentials credentials);
 
         void onRegisterClicked();
