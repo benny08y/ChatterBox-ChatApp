@@ -104,7 +104,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
                         Log.w("FCM: ", "getInstanceId failed", task.getException());
-                        mListener.onWaitFragmentInteractionHide();
                         return;
                     }
                     // Get new Instance ID token
@@ -212,6 +211,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 mResendButton.setVisibility(View.VISIBLE);
                 mListener.onWaitFragmentInteractionHide();
             }
+            mListener.onWaitFragmentInteractionHide();
         } catch (JSONException e) {
             Log.e("JSON_PARSE_ERROR", result
                     + System.lineSeparator()
