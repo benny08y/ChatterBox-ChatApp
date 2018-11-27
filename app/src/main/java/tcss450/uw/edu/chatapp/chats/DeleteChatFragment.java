@@ -1,8 +1,13 @@
 package tcss450.uw.edu.chatapp.chats;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +19,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import tcss450.uw.edu.chatapp.R;
+import tcss450.uw.edu.chatapp.contacts.Contacts;
+import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
+import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
+import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +39,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link DeleteChatFragmentInteractionListener}
  * interface.
  */
-public class DeleteChatFragment extends Fragment {
+public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragmentInteractionListener {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
@@ -34,6 +47,8 @@ public class DeleteChatFragment extends Fragment {
 
     public static final String ARG_CHATS = "list of chats";
     private List<Chats> mChatsList;
+    private DeleteChatRecyclerViewAdapter mDeleteChatAdapter;
+    private String mEmail;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -55,6 +70,7 @@ public class DeleteChatFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mEmail = getArguments().getString("email");
         if (getArguments() != null) {
             mChatsList = new ArrayList<Chats>(
                     Arrays.asList((Chats[]) getArguments().getSerializable(ARG_CHATS)));
@@ -74,7 +90,8 @@ public class DeleteChatFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new DeleteChatRecyclerViewAdapter(mChatsList, mListener));
+            mDeleteChatAdapter = new DeleteChatRecyclerViewAdapter(mChatsList, mListener);
+            recyclerView.setAdapter(mDeleteChatAdapter);
         }
         return view;
     }
@@ -103,10 +120,131 @@ public class DeleteChatFragment extends Fragment {
                     .commit();
             result = true;
         } else if(id == R.id.menu_delete_icon){
-
+            if (mDeleteChatAdapter.getCheckedChats() == null){
+                Snackbar.make(getView(), "Please select 1 or more chats to delete", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setCancelable(true);
+                builder.setTitle("Are you sure you want to delete these chat(s)?");
+                builder.setMessage("This will permanetely delete the chat(s).");
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteChats();
+                    }
+                });
+                builder.show();
+            }
             result = true;
         }
         return result;
+    }
+    private void deleteChats(){
+        ArrayList<Chats> checkedChats=null;
+        if (mDeleteChatAdapter.getCheckedChats() != null){
+            checkedChats = mDeleteChatAdapter.getCheckedChats();
+            Log.d("Checked_Items", checkedChats.get(0).getChatID()+"");
+            // make call to delete chat endpoint
+            Uri uri = new Uri.Builder()
+                    .scheme("https")
+                    .appendPath(getString(R.string.ep_base_url))
+                    .appendPath(getString(R.string.ep_chats_base))
+                    .appendPath(getString(R.string.ep_delete_chats))
+                    .build();
+
+            for (int i = 0; i < checkedChats.size(); i++){
+                JSONObject messageJson = new JSONObject();
+                try {
+                    Log.e("IN_JSON", "post body email"+ checkedChats.get(i).getChatID());
+                    messageJson.put("chatid", checkedChats.get(i).getChatID());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                        .onPreExecute(this::onWaitFragmentInteractionShow)
+                        .onPostExecute(this::handleDeleteChatPostExecute)
+                        .onCancelled(error -> Log.e("SEND_TAG", error))
+                        .build().execute();
+            }
+
+        }
+    }
+    private void handleDeleteChatPostExecute(final String result) {
+        //parse JSON
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("success") && root.getBoolean("success")) {
+                Uri uri = new Uri.Builder()
+                        .scheme("https")
+                        .appendPath(getString(R.string.ep_base_url))
+                        .appendPath(getString(R.string.ep_chats_base))
+                        .appendPath(getString(R.string.ep_getallchats))
+                        .build();
+                JSONObject messageJson = new JSONObject();
+                try {
+                    messageJson.put("email", mEmail);
+                    Log.e("IN_JSON", "post body email");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.e("IN_JSON", "didnt put email");
+                }
+                new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                        .onPreExecute(this::onWaitFragmentInteractionShow)
+                        .onPostExecute(this::handleChatsPostExecute)
+                        .onCancelled(error -> Log.e("SEND_TAG", error))
+                        .build().execute();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("ERROR!", e.getMessage());
+            //notify user
+            onWaitFragmentInteractionHide();
+        }
+    }
+    private void handleChatsPostExecute(final String result) {
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("success") && root.getBoolean("success")) {
+
+                JSONArray data = root.getJSONArray("data");
+                ArrayList<Chats> chatList = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonChats = data.getJSONObject(i);
+                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
+                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                            .addChatID(jsonChats.getInt("chatid"))
+                            .addNickname(jsonChats.getString("username"))
+                            .build());
+                }
+                Chats[] chatsAsArray = new Chats[chatList.size()];
+                chatsAsArray = chatList.toArray(chatsAsArray);
+                Bundle args = new Bundle();
+                args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
+                ChatsFragment chatFrag = new ChatsFragment();
+                chatFrag.setArguments(args);
+                onWaitFragmentInteractionHide();
+                loadFragment(chatFrag);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("ERROR!", e.getMessage());
+            //notify user
+            onWaitFragmentInteractionHide();
+        }
+    }
+    private void loadFragment(Fragment frag) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_home_container, frag)
+                .addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
@@ -124,6 +262,22 @@ public class DeleteChatFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onWaitFragmentInteractionShow() {
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.content_home_container, new WaitFragment(), "WAIT")
+                .addToBackStack(null)
+                .commit();
+    }
+    @Override
+    public void onWaitFragmentInteractionHide() {
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .remove(getActivity().getSupportFragmentManager().findFragmentByTag("WAIT"))
+                .commit();
     }
 
     /**

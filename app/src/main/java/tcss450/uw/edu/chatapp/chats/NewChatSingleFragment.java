@@ -1,4 +1,4 @@
-package tcss450.uw.edu.chatapp;
+package tcss450.uw.edu.chatapp.chats;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,54 +14,58 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tcss450.uw.edu.chatapp.dummy.WeatherHourContent;
+import tcss450.uw.edu.chatapp.R;
+import tcss450.uw.edu.chatapp.contacts.Contacts;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnNewSingleChatListFragmentInteractionListener}
  * interface.
  */
-public class WeatherHourFragment extends Fragment {
+public class NewChatSingleFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
-    public static final String ARG_WEATHER_HOUR_LIST = "weather hours lists";
-    private List<WeatherHourContent> mWeatherHours;
+    private OnNewSingleChatListFragmentInteractionListener mListener;
+
+    public static final String ARG_NEWSINGLE_CHAT = "list of contacts";
+    private List<Contacts> mContactsList;
+    private String mEmail;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public WeatherHourFragment() {
-    }
+    public NewChatSingleFragment() {    }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static WeatherHourFragment newInstance(int columnCount) {
-        WeatherHourFragment fragment = new WeatherHourFragment();
+    public static NewChatSingleFragment newInstance(int columnCount) {
+        NewChatSingleFragment fragment = new NewChatSingleFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
     }
 
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        if (getArguments() != null) {
-//            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-//        }
-//    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        mEmail = getArguments().getString("email");
+        if (getArguments() != null) {
+            mContactsList = new ArrayList<Contacts>(
+                    Arrays.asList((Contacts[]) getArguments().getSerializable(ARG_NEWSINGLE_CHAT)));
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_weatherhour_list, container, false);
+        View view = inflater.inflate(R.layout.new_chat_single_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -72,7 +76,7 @@ public class WeatherHourFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyWeatherHourRecyclerViewAdapter(mWeatherHours, mListener));
+            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(mContactsList, mListener));
         }
         return view;
     }
@@ -81,8 +85,8 @@ public class WeatherHourFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof OnNewSingleChatListFragmentInteractionListener) {
+            mListener = (OnNewSingleChatListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnNewSingleChatListFragmentInteractionListener");
@@ -105,20 +109,8 @@ public class WeatherHourFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnListFragmentInteractionListener {
+    public interface OnNewSingleChatListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(WeatherHourContent item);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mWeatherHours = new ArrayList<WeatherHourContent>(
-                    Arrays.asList((WeatherHourContent[]) getArguments().getSerializable(ARG_WEATHER_HOUR_LIST)));
-        } else {
-            // TODO generator
-//            mWeatherHours = Arrays.asList(BlogGenerator.BLOGS);
-        }
+        void newSingleChatFragmentInteraction(Contacts item);
     }
 }

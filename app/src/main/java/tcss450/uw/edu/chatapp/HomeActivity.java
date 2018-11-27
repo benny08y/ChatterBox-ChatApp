@@ -2,6 +2,7 @@ package tcss450.uw.edu.chatapp;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -14,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -45,6 +47,7 @@ import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
 import tcss450.uw.edu.chatapp.chats.DeleteChatFragment;
 import tcss450.uw.edu.chatapp.chats.Message;
+import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
@@ -61,6 +64,7 @@ public class HomeActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ChatsFragment.OnChatListFragmentInteractionListener,
         DeleteChatFragment.DeleteChatFragmentInteractionListener,
+        NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener,
         ContactsFragment.OnContactListFragmentInteractionListener,
         WaitFragment.OnFragmentInteractionListener,
         ContactPageFragment.OnContactPageFragmentInteractionListener,
@@ -205,16 +209,45 @@ public class HomeActivity extends AppCompatActivity implements
             mFab.hide();
             loadFragment(new LandingPageFragment());
         } else if (id == R.id.nav_chat) {
-            ChatsFragment chatsFragment = new ChatsFragment();
-            Bundle args = new Bundle();
-            args.putString("currEmail", mEmail);
-            chatsFragment.setArguments(args);
-            loadFragment(chatsFragment);
+            Uri uri = new Uri.Builder()
+                    .scheme("https")
+                    .appendPath(getString(R.string.ep_base_url))
+                    .appendPath(getString(R.string.ep_chats_base))
+                    .appendPath(getString(R.string.ep_getallchats))
+                    .build();
+            JSONObject messageJson = new JSONObject();
+            try {
+                messageJson.put("email", mEmail);
+                Log.e("IN_JSON", "post body email");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.e("IN_JSON", "didnt put email");
+            }
+            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                    .onPreExecute(this::onWaitFragmentInteractionShow)
+                    .onPostExecute(this::handleChatsPostExecute)
+                    .onCancelled(error -> Log.e("SEND_TAG", error))
+                    .build().execute();
         } else if (id == R.id.nav_contacts) {
             mFab.hide();
             getContacts();
         } else if (id == R.id.nav_logout) {
-            logout();
+            AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+            builder.setCancelable(true);
+            builder.setTitle("Are you sure you want to logout?");
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    logout();
+                }
+            });
+            builder.show();
         } else if (id == R.id.nav_weather) {
             mFab.hide();
             FragmentTransaction transaction = getSupportFragmentManager()
@@ -270,6 +303,38 @@ public class HomeActivity extends AppCompatActivity implements
                 frag.setArguments(args);
                 onWaitFragmentInteractionHide();
                 loadFragment(frag);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("ERROR!", e.getMessage());
+            //notify user
+            onWaitFragmentInteractionHide();
+        }
+    }
+    private void handleChatsPostExecute(final String result) {
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("success") && root.getBoolean("success")) {
+
+                JSONArray data = root.getJSONArray("data");
+                ArrayList<Chats> chatList = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonChats = data.getJSONObject(i);
+                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
+                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                            .addChatID(jsonChats.getInt("chatid"))
+                            .addNickname(jsonChats.getString("username"))
+                            .build());
+                }
+                Chats[] chatsAsArray = new Chats[chatList.size()];
+                chatsAsArray = chatList.toArray(chatsAsArray);
+                Bundle args = new Bundle();
+                args.putString("email", mEmail);
+                args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
+                ChatsFragment chatFrag = new ChatsFragment();
+                chatFrag.setArguments(args);
+                onWaitFragmentInteractionHide();
+                loadFragment(chatFrag);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -375,6 +440,11 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void deleteChatFragmentInteraction(Chats item) {
+
+    }
+
+    @Override
+    public void newSingleChatFragmentInteraction(Contacts item) {
 
     }
 
