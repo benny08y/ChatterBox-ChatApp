@@ -42,6 +42,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
@@ -103,6 +104,7 @@ public class HomeActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setTitle(R.string.app_name);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -344,7 +346,6 @@ public class HomeActivity extends AppCompatActivity implements
         }
     }
 
-
     private void logout() {
         SharedPreferences prefs =
                 getSharedPreferences(
@@ -439,13 +440,62 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void deleteChatFragmentInteraction(Chats item) {
-
-    }
+    public void deleteChatFragmentInteraction(Chats item) { }
 
     @Override
     public void newSingleChatFragmentInteraction(Contacts item) {
-
+        //webserivece call to start new chat, retrieve chatid and put into message fragment
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_chats_base))
+                .appendPath(getString(R.string.ep_newchat))
+                .build();
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put("chatName", mEmail+item.getEmail()+"singelchat");
+            messageJson.put("email1", mEmail);
+            messageJson.put("email2", item.getEmail());
+        } catch (JSONException e) {
+            Log.d("NewChatSingle", "array wrong");
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                .onPreExecute(this::onWaitFragmentInteractionShow)
+                .onPostExecute(this::handleNewChat)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
+    }
+    private void handleNewChat(final String result) {
+        try {
+            JSONObject root = new JSONObject(result);
+            Log.d("NewChatSingle", "Should be true: "+root.getBoolean("success"));
+            if (root.has("success") && root.getBoolean("success")) {
+                JSONArray data = root.getJSONArray("data");
+                Log.d("NewChatSingle", data.toString());
+                String email="";
+                String nickname="";
+                int chatid=root.getInt("chatid");
+                for (int i = 0; i < data.length(); i++){
+                    email = data.getJSONObject(i).getString("email");
+                    nickname = data.getJSONObject(i).getString("username");
+                }
+                Log.d("NewChatSingle", chatid+" "+email+ " "+nickname);
+                MessageFragment messageFragment = new MessageFragment();
+                Message msg = new Message.Builder(email, nickname, chatid).build();
+                Bundle args = new Bundle();
+                args.putString(MESSAGE_NICKNAME, nickname);
+                args.putInt(MESSAGE_CHATID, chatid);
+                messageFragment.setArguments(args);
+                Log.d("NewChatSingle", "Please load the message fragment");
+                onWaitFragmentInteractionHide();
+                loadFragment(messageFragment);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d("NewChatSingle", e.getMessage());
+            onWaitFragmentInteractionHide();
+        }
     }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing

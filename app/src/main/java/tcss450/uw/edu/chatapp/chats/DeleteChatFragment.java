@@ -211,8 +211,9 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
     private void handleChatsPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
+            Log.d("DELETCHAT", "result is valid");
             if (root.has("success") && root.getBoolean("success")) {
-
+                Log.d("DELETCHAT", "success is true");
                 JSONArray data = root.getJSONArray("data");
                 ArrayList<Chats> chatList = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
@@ -223,6 +224,7 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
                             .addNickname(jsonChats.getString("username"))
                             .build());
                 }
+                Log.d("DELETCHAT", "got data so it should work...");
                 Chats[] chatsAsArray = new Chats[chatList.size()];
                 chatsAsArray = chatList.toArray(chatsAsArray);
                 Bundle args = new Bundle();
@@ -234,8 +236,7 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e("ERROR!", e.getMessage());
-            //notify user
+            Log.d("DELETCHAT", e.getMessage());
             onWaitFragmentInteractionHide();
         }
     }
