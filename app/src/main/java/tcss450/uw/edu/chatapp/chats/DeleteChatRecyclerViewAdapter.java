@@ -11,6 +11,7 @@ import android.widget.TextView;
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.chats.DeleteChatFragment.DeleteChatFragmentInteractionListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,11 +23,13 @@ public class DeleteChatRecyclerViewAdapter extends RecyclerView.Adapter<DeleteCh
 
     private final List<Chats> mValues;
     private final DeleteChatFragmentInteractionListener mListener;
+    private ArrayList<Chats> checkedChats;
 
     public DeleteChatRecyclerViewAdapter(List<Chats> items, DeleteChatFragment.DeleteChatFragmentInteractionListener listener) {
         Log.d("DeleteChat", ""+items.size());
         mValues = items;
         mListener = listener;
+        checkedChats = new ArrayList<>();
     }
 
     @Override
@@ -45,13 +48,30 @@ public class DeleteChatRecyclerViewAdapter extends RecyclerView.Adapter<DeleteCh
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.deleteChatFragmentInteraction(holder.mItem);
+//                if (null != mListener) {
+//                    // Notify the active callbacks interface (the activity, if the
+//                    // fragment is attached to one) that an item has been selected.
+//                    mListener.deleteChatFragmentInteraction(holder.mItem);
+//                }
+//                CheckBox checkBox = (CheckBox) v;
+                if (holder.mCheckBox.isChecked()){
+                    holder.mCheckBox.setChecked(false);
+                    checkedChats.remove(mValues.get(position));
+                    Log.d("Checked_Items", "UnChecked: "+mValues.get(position).getNickname());
+                } else {
+                    holder.mCheckBox.setChecked(true);
+                    checkedChats.add(mValues.get(position));
+                    Log.d("Checked_Items", "Checked: "+mValues.get(position).getNickname());
                 }
             }
         });
+    }
+
+    public ArrayList<Chats> getCheckedChats(){
+        if (checkedChats.isEmpty()){
+            return null;
+        }
+        return checkedChats;
     }
 
     @Override

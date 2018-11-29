@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +29,7 @@ import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
+import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
@@ -37,7 +39,7 @@ import tcss450.uw.edu.chatapp.utils.WaitFragment;
  * Activities containing this fragment MUST implement the {@link OnChatListFragmentInteractionListener}
  * interface.
  */
-public class ChatsFragment extends Fragment  implements WaitFragment.OnFragmentInteractionListener {
+public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentInteractionListener{
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
@@ -77,32 +79,16 @@ public class ChatsFragment extends Fragment  implements WaitFragment.OnFragmentI
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEmail = getArguments().getString("email");
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_chats_base))
-                .appendPath(getString(R.string.ep_getallchats))
-                .build();
-        JSONObject messageJson = new JSONObject();
-        try {
-            messageJson.put("email", mEmail);
-            Log.e("IN_JSON", "post body email");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("IN_JSON", "didnt put email");
-        }
-        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                .onPreExecute(this::onWaitFragmentInteractionShow)
-                .onPostExecute(this::handleChatsPostExecute)
-                .onCancelled(error -> Log.e("SEND_TAG", error))
-                .build().execute();
+
         mFAB = (FloatingActionButton) this.getActivity().findViewById(R.id.fab);
         mFAB.show();
         mFAB.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_chat_black_24dp));
         mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Log.d("LoadNewChat", mEmail);
+                mFAB.hide();
+                makeSingleChat();
             }
         });
         setHasOptionsMenu(true);
@@ -111,29 +97,51 @@ public class ChatsFragment extends Fragment  implements WaitFragment.OnFragmentI
                     Arrays.asList((Chats[]) getArguments().getSerializable(ARG_CHATS)));
         }
     }
-    private void handleChatsPostExecute(final String result) {
+
+    private void makeSingleChat(){
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_contacts))
+                .appendPath(getString(R.string.ep_contacts_getAllContacts))
+                .build();
+        JSONObject messageJson = new JSONObject();
+        try {
+            Log.d("LoadNewChat", mEmail);
+            messageJson.put("email", mEmail);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                .onPreExecute(this::onWaitFragmentInteractionShow)
+                .onPostExecute(this::handleContactsGetOnPostExecute)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
+    }
+    private void handleContactsGetOnPostExecute(final String result) {
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
+            Log.d("LoadNewChat", "Should be true: "+root.getBoolean("success"));
             if (root.has("success") && root.getBoolean("success")) {
-
                 JSONArray data = root.getJSONArray("data");
-                ArrayList<Chats> chatList = new ArrayList<>();
+                ArrayList<Contacts> contactsList = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
-                    JSONObject jsonChats = data.getJSONObject(i);
-                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
-                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
-                            .addChatID(jsonChats.getInt("chatid"))
-                            .addNickname(jsonChats.getString("username"))
+                    JSONObject jsonContacts = data.getJSONObject(i);
+                    contactsList.add(new Contacts.Builder(jsonContacts.getString("username"),
+                            jsonContacts.getString("email"))
+                            .addFirstName(jsonContacts.getString("firstname"))
+                            .addLastName(jsonContacts.getString("lastname"))
                             .build());
                 }
-                Chats[] chatsAsArray = new Chats[chatList.size()];
-                chatsAsArray = chatList.toArray(chatsAsArray);
+                Contacts[] contactsAsArray = new Contacts[contactsList.size()];
+                contactsAsArray = contactsList.toArray(contactsAsArray);
                 Bundle args = new Bundle();
-                args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
-                ChatsFragment chatFrag = new ChatsFragment();
-                chatFrag.setArguments(args);
-                onWaitFragmentInteractionHide();
+                args.putString("email", mEmail);
+                args.putSerializable(NewChatSingleFragment.ARG_NEWSINGLE_CHAT, contactsAsArray);
+                NewChatSingleFragment singleChatFragment = new NewChatSingleFragment();
+                singleChatFragment.setArguments(args);
+                loadFragment(singleChatFragment);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -142,6 +150,7 @@ public class ChatsFragment extends Fragment  implements WaitFragment.OnFragmentI
             onWaitFragmentInteractionHide();
         }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -179,16 +188,21 @@ public class ChatsFragment extends Fragment  implements WaitFragment.OnFragmentI
             chatsAsArray = mChatsList.toArray(chatsAsArray);
             Bundle args = new Bundle();
             args.putSerializable(DeleteChatFragment.ARG_CHATS, chatsAsArray);
+            args.putString("email", mEmail);
             DeleteChatFragment deleteChatFragment = new DeleteChatFragment();;
             deleteChatFragment.setArguments(args);
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.content_home_container, deleteChatFragment)
-                    .addToBackStack(null)
-                    .commit();
+            loadFragment(deleteChatFragment);
             result = true;
         }
         return result;
+    }
+
+    private void loadFragment(Fragment frag) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_home_container, frag)
+                .addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
@@ -216,7 +230,6 @@ public class ChatsFragment extends Fragment  implements WaitFragment.OnFragmentI
                 .addToBackStack(null)
                 .commit();
     }
-
     @Override
     public void onWaitFragmentInteractionHide() {
         getActivity().getSupportFragmentManager()
