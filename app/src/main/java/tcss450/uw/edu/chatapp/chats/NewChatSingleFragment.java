@@ -79,7 +79,7 @@ public class NewChatSingleFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(mContactsList, mListener));
+            recyclerView.setAdapter(new NewChatRecyclerViewAdapter(mContactsList, mListener));
         }
         return view;
     }
