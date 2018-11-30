@@ -20,7 +20,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.weather.CurrentConditionsLatLngFragment;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -56,7 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapClick(LatLng latLng) {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.map);
-        if (!(currentFragment instanceof CurrentConditionsLatLngFragment)) {
+        if (!(currentFragment instanceof WeatherDisplayLatLngFragment)) {
             Log.d("LAT/LONG", latLng.toString());
 
             Marker marker = mMap.addMarker(new MarkerOptions()
@@ -76,14 +75,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             alertDialog.setPositiveButton("Select",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            CurrentConditionsLatLngFragment currentConditionsLatLngFragment = new CurrentConditionsLatLngFragment();
+                            WeatherDisplayLatLngFragment weatherDisplayLatLngFragment = new WeatherDisplayLatLngFragment();
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("lat", latLng.latitude);
                             bundle.putSerializable("lon", latLng.longitude);
-                            currentConditionsLatLngFragment.setArguments(bundle);
+                            weatherDisplayLatLngFragment.setArguments(bundle);
                             FragmentTransaction transaction = getSupportFragmentManager()
                                     .beginTransaction()
-                                    .replace(R.id.map, currentConditionsLatLngFragment)
+                                    .replace(R.id.map, weatherDisplayLatLngFragment)
                                     .addToBackStack(null);
                             transaction.commit();
                         }

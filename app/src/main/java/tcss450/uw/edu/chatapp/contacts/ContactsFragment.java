@@ -109,7 +109,6 @@ public class ContactsFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnContactListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onContactListFragmentInteraction(Contacts contact);
     }
 }
