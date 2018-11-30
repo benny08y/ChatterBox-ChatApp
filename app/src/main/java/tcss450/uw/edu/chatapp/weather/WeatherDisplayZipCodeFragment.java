@@ -3,6 +3,7 @@ package tcss450.uw.edu.chatapp.weather;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -245,9 +246,9 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
 
                     cityField.setText(jsonCurrent.getString("name").toUpperCase(Locale.US) + ", " + jsonCurrent.getJSONObject("sys").getString("country"));
                     detailsField.setText(details.getString("description").toUpperCase(Locale.US));
-                    currentTemperatureField.setText(String.format("%.2f", main.getDouble("temp")) + "°F");
+                    currentTemperatureField.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
                     humidity_field.setText("Humidity: " + main.getString("humidity") + "%");
-                    pressure_field.setText("Pressure: " + main.getString("pressure") + " hPa");
+                    pressure_field.setText("Pressure: " + (((double)Math.round(main.getDouble("pressure") / 1013.25 * 1000d)) / 1000d) + " atm");
                     updatedField.setText(df.format(new Date(jsonCurrent.getLong("dt") * 1000)));
                     weatherIcon.setText(Html.fromHtml(WeatherHelpers.setWeatherIcon(details.getInt("id"),
                             jsonCurrent.getJSONObject("sys").getLong("sunrise") * 1000,
@@ -414,6 +415,9 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
                             details.getString("icon").substring(details.getString("icon").length() - 1))));
                     day10max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
                     day10min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    selectZipCode.setText("Change Zip Code");
+                    selectZipCode.setTextColor(Color.BLUE);
 
                     loader.setVisibility(View.GONE);
 
