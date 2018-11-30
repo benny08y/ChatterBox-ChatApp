@@ -33,7 +33,7 @@ import tcss450.uw.edu.chatapp.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CurrentConditionsLatLngFragment extends Fragment {
+public class WeatherDisplayLatLngFragment extends Fragment {
 
     TextView displayLatLng, cityField, detailsField, currentTemperatureField, humidity_field, pressure_field, weatherIcon, updatedField;
     ProgressBar loader;
@@ -41,7 +41,7 @@ public class CurrentConditionsLatLngFragment extends Fragment {
     String lat;
     String lon;
 
-    public CurrentConditionsLatLngFragment() {
+    public WeatherDisplayLatLngFragment() {
         // Required empty public constructor
     }
 
@@ -50,9 +50,7 @@ public class CurrentConditionsLatLngFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_current_conditions_lat_lng, container, false);
-
-        setHasOptionsMenu(true);
+        View v = inflater.inflate(R.layout.fragment_weather_display, container, false);
 
         if (getArguments() != null) {
             lat = Double.toString(getArguments().getDouble("lat"));
@@ -60,7 +58,7 @@ public class CurrentConditionsLatLngFragment extends Fragment {
         }
 
         loader = (ProgressBar) v.findViewById(R.id.loader);
-        displayLatLng = (TextView) v.findViewById(R.id.displayLatLng);
+        displayLatLng = (TextView) v.findViewById(R.id.selectZipCode);
         cityField = (TextView) v.findViewById(R.id.city_field);
         updatedField = (TextView) v.findViewById(R.id.updated_field);
         detailsField = (TextView) v.findViewById(R.id.details_field);
@@ -126,32 +124,5 @@ public class CurrentConditionsLatLngFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), "Error, Check Latitude And Longitude", Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.weather, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_current) {
-            return true;
-        } else if (id == R.id.action_hour) {
-            // TODO switch to hour view
-            return true;
-        } else if (id == R.id.action_day) {
-            // TODO switch to day view
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

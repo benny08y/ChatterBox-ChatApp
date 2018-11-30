@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -21,7 +20,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.weather.CurrentConditionsLatLngFragment;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -57,7 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapClick(LatLng latLng) {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.map);
-        if (!(currentFragment instanceof CurrentConditionsLatLngFragment)) {
+        if (!(currentFragment instanceof WeatherDisplayLatLngFragment)) {
             Log.d("LAT/LONG", latLng.toString());
 
             Marker marker = mMap.addMarker(new MarkerOptions()
@@ -77,14 +75,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             alertDialog.setPositiveButton("Select",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            CurrentConditionsLatLngFragment currentConditionsLatLngFragment = new CurrentConditionsLatLngFragment();
+                            WeatherDisplayLatLngFragment weatherDisplayLatLngFragment = new WeatherDisplayLatLngFragment();
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("lat", latLng.latitude);
                             bundle.putSerializable("lon", latLng.longitude);
-                            currentConditionsLatLngFragment.setArguments(bundle);
+                            weatherDisplayLatLngFragment.setArguments(bundle);
                             FragmentTransaction transaction = getSupportFragmentManager()
                                     .beginTransaction()
-                                    .replace(R.id.map, currentConditionsLatLngFragment)
+                                    .replace(R.id.map, weatherDisplayLatLngFragment)
                                     .addToBackStack(null);
                             transaction.commit();
                         }
@@ -97,12 +95,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
             alertDialog.show();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
     }
 }

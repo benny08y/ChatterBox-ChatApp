@@ -24,7 +24,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -42,7 +41,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
@@ -55,8 +53,8 @@ import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
-import tcss450.uw.edu.chatapp.weather.CurrentConditionsLatLngFragment;
-import tcss450.uw.edu.chatapp.weather.CurrentConditionsZipCodeFragment;
+import tcss450.uw.edu.chatapp.weather.WeatherDisplayLatLngFragment;
+import tcss450.uw.edu.chatapp.weather.WeatherDisplayZipCodeFragment;
 import tcss450.uw.edu.chatapp.weather.MapsActivity;
 import tcss450.uw.edu.chatapp.weather.WeatherFragment;
 import tcss450.uw.edu.chatapp.weather.ZipCodeFragment;
@@ -432,7 +430,7 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onSearchButtonClicked(String zipCodeString) {
-        CurrentConditionsZipCodeFragment frag = new CurrentConditionsZipCodeFragment();
+        WeatherDisplayZipCodeFragment frag = new WeatherDisplayZipCodeFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("zip code", zipCodeString);
         frag.setArguments(bundle);
@@ -541,12 +539,12 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onMyCurrentLocationButtonClicked(Double lat, Double lon) {
-        CurrentConditionsLatLngFragment currentConditionsLatLngFragment = new CurrentConditionsLatLngFragment();
+        WeatherDisplayLatLngFragment weatherDisplayLatLngFragment = new WeatherDisplayLatLngFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("lat", lat);
         bundle.putSerializable("lon", lon);
-        currentConditionsLatLngFragment.setArguments(bundle);
-        loadFragment(currentConditionsLatLngFragment);
+        weatherDisplayLatLngFragment.setArguments(bundle);
+        loadFragment(weatherDisplayLatLngFragment);
     }
 
     @Override
