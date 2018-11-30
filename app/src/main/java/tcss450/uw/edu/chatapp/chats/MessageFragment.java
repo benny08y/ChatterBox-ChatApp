@@ -123,12 +123,13 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
 
     }
 
-    private void getMessagesPostExecute(final String result) {             // Get arraylist of all messages and put into message list adapter
+    private void getMessagesPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
             int chatid = root.getInt("chatid");
             JSONArray data = root.getJSONArray("messages");
-            for (int i =data.length()-1; i >= 0; i--){
+//            for (int i =data.length()-1; i >= 0; i--){
+            for (int i =0; i< data.length(); i++){
                 JSONObject jsonMsg = data.getJSONObject(i);
                 String sender = jsonMsg.getString("email");
                 String msg = jsonMsg.getString("message");
@@ -142,7 +143,8 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
             Log.d("MesgAdapter", "MessageFragment_after_parse" + mGetAllMessagesList.get(0));
             mMessageAdapter = new MessageListAdapter(getContext(), mGetAllMessagesList, mEmail);
             LinearLayoutManager linearLayout = new LinearLayoutManager(getActivity());
-            linearLayout.setReverseLayout(true);
+//            linearLayout.setReverseLayout(true);
+            linearLayout.setStackFromEnd(true);
             mMessageRecycler.setLayoutManager(linearLayout);
             mMessageRecycler.setAdapter(mMessageAdapter);
         } catch (JSONException e) {
@@ -192,9 +194,11 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
             if(res.has("success") ) {
                 //The web service got our message. Time to clear out the input EditText
                 mMessageInputEditText.setText("");
-                Log.d("SENT_MSG", "SUCCESS SENT " + res.getBoolean("success"));
                 //its up to you to decide if you want to send the message to the output here
                 //or wait for the message to come back from the web service.
+                String message = res.getString("msg");
+                Message curMsg = new Message.Builder(mEmail, "", 0).addMessage(message).build();
+                mMessageAdapter.addNewMessage(curMsg);
             }
         } catch (JSONException e) {
             Log.d("SENT_MSG", "Failed to recieve");
@@ -233,8 +237,8 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                         String nickname = jObj.getString("username");
                         int chatid = jObj.getInt("chatid");
                         String msg = jObj.getString("message");
-                        Message curMsg = new Message.Builder(sender, nickname, chatid).addMessage(msg).build();
-                        mMessageAdapter.addNewMessage(curMsg);
+//                        Message curMsg = new Message.Builder(sender, nickname, chatid).addMessage(msg).build();
+//                        mMessageAdapter.addNewMessage(curMsg);
 //                        mMessageOutputTextView.append(sender + ":" + msg);
 //                        mMessageOutputTextView.append(System.lineSeparator());
 //                        mMessageOutputTextView.append(System.lineSeparator());

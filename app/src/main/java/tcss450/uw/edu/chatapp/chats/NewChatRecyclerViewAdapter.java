@@ -17,12 +17,12 @@ import java.util.List;
  * specified {@link OnNewSingleChatListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
+public class NewChatRecyclerViewAdapter extends RecyclerView.Adapter<NewChatRecyclerViewAdapter.ViewHolder> {
 
     private final List<Contacts> mValues;
     private final OnNewSingleChatListFragmentInteractionListener mListener;
 
-    public MyItemRecyclerViewAdapter(List<Contacts> items, NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener listener) {
+    public NewChatRecyclerViewAdapter(List<Contacts> items, NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
