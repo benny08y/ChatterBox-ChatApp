@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -36,9 +38,9 @@ import tcss450.uw.edu.chatapp.R;
 public class WeatherDisplayZipCodeFragment extends Fragment {
 
     TextView selectZipCode, cityField, detailsField, currentTemperatureField, humidity_field, pressure_field, weatherIcon, updatedField;
-    TextView hour4dt, hour8dt, hour12dt, hour16dt, hour20dt, hour24dt, hour28dt, hour32dt;
-    TextView hour4icon, hour8icon, hour12icon, hour16icon, hour20icon, hour24icon, hour28icon, hour32icon;
-    TextView hour4temp, hour8temp, hour12temp, hour16temp, hour20temp, hour24temp, hour28temp, hour32temp;
+    TextView hour4dt, hour8dt, hour12dt, hour16dt, hour20dt, hour24dt, hour28dt, hour32dt, hour36dt;
+    TextView hour4icon, hour8icon, hour12icon, hour16icon, hour20icon, hour24icon, hour28icon, hour32icon, hour36icon;
+    TextView hour4temp, hour8temp, hour12temp, hour16temp, hour20temp, hour24temp, hour28temp, hour32temp, hour36temp;
     TextView day1dt, day2dt, day3dt, day4dt, day5dt, day6dt, day7dt, day8dt, day9dt, day10dt;
     TextView day1icon, day2icon, day3icon, day4icon, day5icon, day6icon, day7icon, day8icon, day9icon, day10icon;
     TextView day1max, day2max, day3max, day4max, day5max, day6max, day7max, day8max, day9max, day10max;
@@ -81,6 +83,7 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
         hour24dt = v.findViewById(R.id.hour24dt);
         hour28dt = v.findViewById(R.id.hour28dt);
         hour32dt = v.findViewById(R.id.hour32dt);
+        hour36dt = v.findViewById(R.id.hour36dt);
         hour4icon = v.findViewById(R.id.hour4icon);
         hour4icon.setTypeface(weatherFont);
         hour8icon = v.findViewById(R.id.hour8icon);
@@ -97,6 +100,8 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
         hour28icon.setTypeface(weatherFont);
         hour32icon = v.findViewById(R.id.hour32icon);
         hour32icon.setTypeface(weatherFont);
+        hour36icon = v.findViewById(R.id.hour36icon);
+        hour36icon.setTypeface(weatherFont);
         hour4temp = v.findViewById(R.id.hour4temp);
         hour8temp = v.findViewById(R.id.hour8temp);
         hour12temp = v.findViewById(R.id.hour12temp);
@@ -105,6 +110,7 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
         hour24temp = v.findViewById(R.id.hour24temp);
         hour28temp = v.findViewById(R.id.hour28temp);
         hour32temp = v.findViewById(R.id.hour32temp);
+        hour36temp = v.findViewById(R.id.hour36temp);
         day1dt = v.findViewById(R.id.day1dt);
         day2dt = v.findViewById(R.id.day2dt);
         day3dt = v.findViewById(R.id.day3dt);
@@ -214,7 +220,7 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
             String hour = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/forecast?zip=" + args[0] +
                     "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
             String day = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/forecast/daily?zip=" + args[0] +
-                    "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
+                    "&cnt=10&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
             String[] xml = new String[3];
             xml[0] = current;
             xml[1] = hour;
@@ -234,6 +240,8 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
                     JSONObject details = jsonCurrent.getJSONArray("weather").getJSONObject(0);
                     JSONObject main = jsonCurrent.getJSONObject("main");
                     DateFormat df = DateFormat.getDateTimeInstance();
+                    DateFormat dfHour = new SimpleDateFormat("ha");
+                    DateFormat dfDay = new SimpleDateFormat("EEEEE");
 
                     cityField.setText(jsonCurrent.getString("name").toUpperCase(Locale.US) + ", " + jsonCurrent.getJSONObject("sys").getString("country"));
                     detailsField.setText(details.getString("description").toUpperCase(Locale.US));
@@ -244,6 +252,168 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
                     weatherIcon.setText(Html.fromHtml(WeatherHelpers.setWeatherIcon(details.getInt("id"),
                             jsonCurrent.getJSONObject("sys").getLong("sunrise") * 1000,
                             jsonCurrent.getJSONObject("sys").getLong("sunset") * 1000)));
+
+                    JSONObject weatherHourObject = jsonHour.getJSONArray("list").getJSONObject(0);
+                    main = weatherHourObject.getJSONObject("main");
+                    details = weatherHourObject.getJSONArray("weather").getJSONObject(0);
+                    hour4dt.setText(dfHour.format(new Date(weatherHourObject.getLong("dt") * 1000)));
+                    hour4icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    hour4temp.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
+
+                    weatherHourObject = jsonHour.getJSONArray("list").getJSONObject(1);
+                    main = weatherHourObject.getJSONObject("main");
+                    details = weatherHourObject.getJSONArray("weather").getJSONObject(0);
+                    hour8dt.setText(dfHour.format(new Date(weatherHourObject.getLong("dt") * 1000)));
+                    hour8icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    hour8temp.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
+
+                    weatherHourObject = jsonHour.getJSONArray("list").getJSONObject(2);
+                    main = weatherHourObject.getJSONObject("main");
+                    details = weatherHourObject.getJSONArray("weather").getJSONObject(0);
+                    hour12dt.setText(dfHour.format(new Date(weatherHourObject.getLong("dt") * 1000)));
+                    hour12icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    hour12temp.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
+
+                    weatherHourObject = jsonHour.getJSONArray("list").getJSONObject(3);
+                    main = weatherHourObject.getJSONObject("main");
+                    details = weatherHourObject.getJSONArray("weather").getJSONObject(0);
+                    hour16dt.setText(dfHour.format(new Date(weatherHourObject.getLong("dt") * 1000)));
+                    hour16icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    hour16temp.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
+
+                    weatherHourObject = jsonHour.getJSONArray("list").getJSONObject(4);
+                    main = weatherHourObject.getJSONObject("main");
+                    details = weatherHourObject.getJSONArray("weather").getJSONObject(0);
+                    hour20dt.setText(dfHour.format(new Date(weatherHourObject.getLong("dt") * 1000)));
+                    hour20icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    hour20temp.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
+
+                    weatherHourObject = jsonHour.getJSONArray("list").getJSONObject(5);
+                    main = weatherHourObject.getJSONObject("main");
+                    details = weatherHourObject.getJSONArray("weather").getJSONObject(0);
+                    hour24dt.setText(dfHour.format(new Date(weatherHourObject.getLong("dt") * 1000)));
+                    hour24icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    hour24temp.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
+
+                    weatherHourObject = jsonHour.getJSONArray("list").getJSONObject(6);
+                    main = weatherHourObject.getJSONObject("main");
+                    details = weatherHourObject.getJSONArray("weather").getJSONObject(0);
+                    hour28dt.setText(dfHour.format(new Date(weatherHourObject.getLong("dt") * 1000)));
+                    hour28icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    hour28temp.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
+
+                    weatherHourObject = jsonHour.getJSONArray("list").getJSONObject(7);
+                    main = weatherHourObject.getJSONObject("main");
+                    details = weatherHourObject.getJSONArray("weather").getJSONObject(0);
+                    hour32dt.setText(dfHour.format(new Date(weatherHourObject.getLong("dt") * 1000)));
+                    hour32icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    hour32temp.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
+
+                    weatherHourObject = jsonHour.getJSONArray("list").getJSONObject(8);
+                    main = weatherHourObject.getJSONObject("main");
+                    details = weatherHourObject.getJSONArray("weather").getJSONObject(0);
+                    hour36dt.setText(dfHour.format(new Date(weatherHourObject.getLong("dt") * 1000)));
+                    hour36icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    hour36temp.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
+
+                    JSONObject weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(0);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day1dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day1icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day1max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day1min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(1);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day2dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day2icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day2max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day2min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(2);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day3dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day3icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day3max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day3min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(3);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day4dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day4icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day4max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day4min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(4);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day5dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day5icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day5max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day5min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(5);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day6dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day6icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day6max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day6min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(6);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day7dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day7icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day7max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day7min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(7);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day8dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day8icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day8max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day8min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(8);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day9dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day9icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day9max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day9min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
+
+                    weatherDayObject = jsonDay.getJSONArray("list").getJSONObject(9);
+                    details = weatherDayObject.getJSONArray("weather").getJSONObject(0);
+                    main = weatherDayObject.getJSONObject("temp");
+                    day10dt.setText(dfDay.format(new Date(weatherDayObject.getLong("dt") * 1000)));
+                    day10icon.setText(Html.fromHtml(WeatherHelpers.setWeatherIconHour(details.getInt("id"),
+                            details.getString("icon").substring(details.getString("icon").length() - 1))));
+                    day10max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
+                    day10min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
 
                     loader.setVisibility(View.GONE);
 

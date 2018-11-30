@@ -253,7 +253,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/day4dt"
-        app:layout_constraintTop_toBottomOf="@+id/hour32temp" />
+        app:layout_constraintTop_toBottomOf="@+id/hour36temp" />
 
     <TextView
         android:id="@+id/day6dt"
@@ -289,6 +289,8 @@
         android:id="@+id/city_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -410,7 +412,6 @@
         android:id="@+id/hour4icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/hour8icon"
         app:layout_constraintEnd_toStartOf="@+id/hour8icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -633,12 +634,10 @@
         android:id="@+id/hour32dt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@+id/hour36dt"
+        app:layout_constraintEnd_toStartOf="@+id/hour36dt"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/hour28dt"
-        app:layout_constraintTop_toBottomOf="@+id/pressure_field" />
+        app:layout_constraintStart_toEndOf="@+id/hour28dt" />
 
     <TextView
         android:id="@+id/hour28dt"
@@ -662,11 +661,10 @@
         android:id="@+id/hour32icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@+id/hour36icon"
+        app:layout_constraintEnd_toStartOf="@+id/hour36icon"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/hour28icon"
-        app:layout_constraintTop_toBottomOf="@+id/hour32dt" />
+        app:layout_constraintStart_toEndOf="@+id/hour28icon" />
 
     <TextView
         android:id="@+id/hour28temp"
@@ -681,10 +679,39 @@
         android:id="@+id/hour32temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintBaseline_toBaselineOf="@+id/hour36temp"
+        app:layout_constraintEnd_toStartOf="@+id/hour36temp"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/hour28temp" />
+
+    <TextView
+        android:id="@+id/hour36dt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/hour28temp"
-        app:layout_constraintTop_toBottomOf="@+id/hour32icon" />
+        app:layout_constraintStart_toEndOf="@+id/hour32dt"
+        app:layout_constraintTop_toBottomOf="@+id/pressure_field" />
+
+    <TextView
+        android:id="@+id/hour36icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/hour32icon"
+        app:layout_constraintTop_toBottomOf="@+id/hour36dt" />
+
+    <TextView
+        android:id="@+id/hour36temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/hour32temp"
+        app:layout_constraintTop_toBottomOf="@+id/hour36icon" />
 
 </android.support.constraint.ConstraintLayout>
