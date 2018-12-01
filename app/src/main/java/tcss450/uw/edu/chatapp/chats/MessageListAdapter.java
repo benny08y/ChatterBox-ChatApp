@@ -100,7 +100,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
     public void addNewMessage(Message message){
         mMessageList.add(message);
-        Log.d("MesgAdapter", "In adapter"+mMessageList.get(0).getMessage() + " "+mMessageList.get(1).getMessage());
+//        Log.d("MesgAdapter", "In adapter"+mMessageList.get(0).getMessage() + " "+mMessageList.get(1).getMessage());
         notifyDataSetChanged();
     }
 
