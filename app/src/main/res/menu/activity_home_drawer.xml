@@ -22,6 +22,9 @@
             android:id="@+id/nav_chat"
             android:icon="@drawable/ic_chat_black_24dp"
             android:title="Chats" />
+        <item
+            android:id="@+id/nav_search_contacts"
+            android:title="Search Contacts"/>
 
     </group>
     <group android:id="@+id/menu_group2">
