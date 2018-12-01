@@ -185,14 +185,40 @@ public class HomeActivity extends AppCompatActivity implements
                 for (Location location : locationResult.getLocations()) {
                     // Update UI with location data
                     // ...
-                    mCurrentLocation = location;
                     WeatherFragment.setLocation(location);
                     LandingPageFragment.setLocation(location);
-                    Log.d("LOCATION UPDATE!", location.toString());
                 }
             }
         };
         createLocationRequest();
+
+        weatherFragment = new WeatherFragment();
+
+        if (savedInstanceState == null) {
+            if (findViewById(R.id.content_home_container) != null) {
+                LandingPageFragment landingPageFragment = new LandingPageFragment();
+//                Bundle landingPageBundle = new Bundle();
+//                landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+//                landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+//                fragment.setArguments(landingPageBundle);
+                if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), true)) {
+                    Message msg = (Message) getIntent().getExtras().get("message");
+                    Bundle args = new Bundle();
+//                    args.putSerializable(MESSAGE_NOTIFICATION, msg);
+                    args.putInt(MESSAGE_CHATID, msg.getChatId());
+                    args.putString(MESSAGE_NICKNAME, msg.getNickname());
+                    MessageFragment messageFragment = new MessageFragment();
+                    messageFragment.setArguments(args);
+                    loadFragment(messageFragment);
+                } else {
+                    Log.v("NOtification", "NO NOITFIY");
+//                    fragment.setArguments(bundle);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.content_home_container, landingPageFragment, "landing page fragment")
+                            .commit();
+                }
+            }
+        }
     }
 
     @Override
@@ -619,10 +645,9 @@ public class HomeActivity extends AppCompatActivity implements
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                mCurrentLocation = location;
+                                setLocation(location);
                                 WeatherFragment.setLocation(location);
                                 LandingPageFragment.setLocation(location);
-                                Log.d("LOCATION", location.toString());
                             }
                         }
                     });
@@ -691,5 +716,15 @@ public class HomeActivity extends AppCompatActivity implements
         bundle.putSerializable("lon", lon);
         weatherDisplayLatLngFragment.setArguments(bundle);
         loadFragment(weatherDisplayLatLngFragment);
+    }
+
+    private void setLocation(final Location location) {
+        mCurrentLocation = location;
+        Fragment frg = null;
+        frg = getSupportFragmentManager().findFragmentByTag("landing page fragment");
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commit();
     }
 }
