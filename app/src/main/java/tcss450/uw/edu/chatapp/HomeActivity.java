@@ -47,12 +47,10 @@ import tcss450.uw.edu.chatapp.chats.ChatsFragment;
 import tcss450.uw.edu.chatapp.chats.DeleteChatFragment;
 import tcss450.uw.edu.chatapp.chats.Message;
 import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment;
-import tcss450.uw.edu.chatapp.contacts.AddContactsFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
-import tcss450.uw.edu.chatapp.contacts.SearchContactsFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayLatLngFragment;
@@ -71,9 +69,7 @@ public class HomeActivity extends AppCompatActivity implements
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
         ZipCodeFragment.OnZipCodeFragmentInteractionListener,
-        LandingPageFragment.OnLandingPageFragmentInteractionListener,
-        SearchContactsFragment.OnFragmentInteractionListener,
-        AddContactsFragment.OnFragmentInteractionListener {
+        LandingPageFragment.OnLandingPageFragmentInteractionListener {
 
     public static final String MESSAGE_CHATID = "chat_ID";
     public static final String MESSAGE_NICKNAME = "msg_nickname";
@@ -136,11 +132,11 @@ public class HomeActivity extends AppCompatActivity implements
         t.setText(mEmail);
 
         LandingPageFragment landingPageFragment = new LandingPageFragment();
-        //Bundle landingPageBundle = new Bundle();
-        //landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
-        //landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
-        //landingPageFragment.setArguments(landingPageBundle);
-        //landingPageFragment.setArguments(bundle);
+        Bundle landingPageBundle = new Bundle();
+        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+        landingPageFragment.setArguments(landingPageBundle);
+        landingPageFragment.setArguments(bundle);
 
         weatherFragment = new WeatherFragment();
 
@@ -268,16 +264,6 @@ public class HomeActivity extends AppCompatActivity implements
             FragmentTransaction transaction = getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.content_home_container, weatherFragment, "MY_FRAGMENT")
-                    .addToBackStack(null);
-            transaction.commit();
-        } else if (id == R.id.nav_search_contacts) {
-            SearchContactsFragment searchContactsFragment = new SearchContactsFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("email", mEmail);
-            searchContactsFragment.setArguments(bundle);
-            FragmentTransaction transaction = getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.content_home_container, searchContactsFragment)
                     .addToBackStack(null);
             transaction.commit();
         }
@@ -524,30 +510,6 @@ public class HomeActivity extends AppCompatActivity implements
             Log.d("NewChatSingle", e.getMessage());
             onWaitFragmentInteractionHide();
         }
-    }
-
-    @Override
-    public void onSearchContactsFragmentInteraction(Contacts contact) {
-        AddContactsFragment addContactPageFragment = new AddContactsFragment();
-        //contactPageFragment.setContacts(contact);
-        Bundle args = new Bundle();
-        args.putString("nickname", contact.getNickname());
-        args.putString("email", contact.getEmail());
-        args.putString("firstName", contact.getFirstName());
-        args.putString("lastName", contact.getLastName());
-        args.putString("currEmail", mEmail);
-
-        addContactPageFragment.setArguments(args);
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_home_container, addContactPageFragment)
-                .addToBackStack(null);
-        transaction.commit();
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing

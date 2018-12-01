@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import tcss450.uw.edu.chatapp.HomeActivity;
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
@@ -70,7 +71,11 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
         fragment.setArguments(args);
         return fragment;
     }
-
+    @Override
+    public void onResume(){
+        super.onResume();
+        showFAB();
+    }
     public void setContacts(ArrayList<Contacts> contacts){
         mContactsList = contacts;
     }
@@ -79,25 +84,26 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEmail = getArguments().getString("email");
+        showFAB();
 
-        mFAB = (FloatingActionButton) this.getActivity().findViewById(R.id.fab);
-        mFAB.show();
-        mFAB.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_chat_black_24dp));
-        mFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("LoadNewChat", mEmail);
-                mFAB.hide();
-                makeSingleChat();
-            }
-        });
         setHasOptionsMenu(true);
         if (getArguments() != null) {
             mChatsList = new ArrayList<Chats>(
                     Arrays.asList((Chats[]) getArguments().getSerializable(ARG_CHATS)));
         }
     }
-
+    private void showFAB(){
+        mFAB = (FloatingActionButton) this.getActivity().findViewById(R.id.fab);
+        mFAB.show();
+        mFAB.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_chat_black_24dp));
+        mFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFAB.hide();
+                makeSingleChat();
+            }
+        });
+    }
     private void makeSingleChat(){
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -107,7 +113,6 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            Log.d("LoadNewChat", mEmail);
             messageJson.put("email", mEmail);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -122,7 +127,6 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("LoadNewChat", "Should be true: "+root.getBoolean("success"));
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
                 ArrayList<Contacts> contactsList = new ArrayList<>();

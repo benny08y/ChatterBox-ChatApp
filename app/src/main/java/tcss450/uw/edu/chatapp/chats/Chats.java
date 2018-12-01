@@ -21,6 +21,7 @@ public class Chats implements Serializable {
     private final String mLastMessage;
     private final String mTimeStamp;
     private final int mChatID;
+    private final String mChatname;
 
     public static class Builder {
         private final String mEmail;
@@ -30,6 +31,7 @@ public class Chats implements Serializable {
         private  String mTimeStamp = "";
         private int mChatID=0;
         private  String mLastMessage= "";
+        private  String mChatName= "";
 
         public Builder(String email, String firstName, String lastName) {
             this.mEmail = email;
@@ -57,6 +59,10 @@ public class Chats implements Serializable {
             return this;
         }
 
+        public Chats.Builder addChatName(final String val) {
+            mChatName = val;
+            return this;
+        }
         public Chats build() {
             return new Chats(this);
         }
@@ -70,6 +76,7 @@ public class Chats implements Serializable {
         this.mTimeStamp = builder.mTimeStamp;
         this.mChatID = builder.mChatID;
         this.mLastMessage = builder.mLastMessage;
+        this.mChatname = builder.mChatName;
     }
 
     public String getEmail() {
@@ -86,6 +93,10 @@ public class Chats implements Serializable {
 
     public String getNickname() {
         return mNickname;
+    }
+
+    public String getChatName() {
+        return mChatname;
     }
 
     public String getTimeStamp() {
