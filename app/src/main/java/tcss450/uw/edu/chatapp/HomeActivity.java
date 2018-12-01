@@ -68,7 +68,8 @@ public class HomeActivity extends AppCompatActivity implements
         WaitFragment.OnFragmentInteractionListener,
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
-        ZipCodeFragment.OnZipCodeFragmentInteractionListener {
+        ZipCodeFragment.OnZipCodeFragmentInteractionListener,
+        LandingPageFragment.OnLandingPageFragmentInteractionListener {
 
     public static final String MESSAGE_CHATID = "chat_ID";
     public static final String MESSAGE_NICKNAME = "msg_nickname";
@@ -131,10 +132,10 @@ public class HomeActivity extends AppCompatActivity implements
         t.setText(mEmail);
 
         LandingPageFragment landingPageFragment = new LandingPageFragment();
-//        Bundle landingPageBundle = new Bundle();
-////        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
-////        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
-////        landingPageFragment.setArguments(landingPageBundle);
+        Bundle landingPageBundle = new Bundle();
+        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+        landingPageFragment.setArguments(landingPageBundle);
         landingPageFragment.setArguments(bundle);
 
         weatherFragment = new WeatherFragment();
@@ -681,5 +682,15 @@ public class HomeActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
         stopLocationUpdates();
+    }
+
+    @Override
+    public void onWeatherClicked(Double lat, Double lon) {
+        WeatherDisplayLatLngFragment weatherDisplayLatLngFragment = new WeatherDisplayLatLngFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("lat", lat);
+        bundle.putSerializable("lon", lon);
+        weatherDisplayLatLngFragment.setArguments(bundle);
+        loadFragment(weatherDisplayLatLngFragment);
     }
 }

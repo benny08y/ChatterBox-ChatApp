@@ -1,6 +1,8 @@
 package tcss450.uw.edu.chatapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
@@ -11,6 +13,8 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +27,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayLatLngFragment;
+import tcss450.uw.edu.chatapp.weather.WeatherFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherHelpers;
 
 
@@ -31,6 +36,7 @@ import tcss450.uw.edu.chatapp.weather.WeatherHelpers;
  */
 public class LandingPageFragment extends Fragment {
 
+    private LandingPageFragment.OnLandingPageFragmentInteractionListener mListener;
     TextView weatherInfo, weatherIcon;
     Typeface weatherFont;
     Double lat;
@@ -61,6 +67,20 @@ public class LandingPageFragment extends Fragment {
         if (lat != null && lon != null) {
             taskLoadUp(Double.toString(lat), Double.toString(lon));
         }
+
+        weatherInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onWeatherClicked(lat, lon);
+            }
+        });
+
+        weatherIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onWeatherClicked(lat, lon);
+            }
+        });
 
         return v;
     }
@@ -115,4 +135,21 @@ public class LandingPageFragment extends Fragment {
     public static void setLocation(final Location location) {
         mCurrentLocation = location;
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof LandingPageFragment.OnLandingPageFragmentInteractionListener) {
+            mListener = (LandingPageFragment.OnLandingPageFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnLandingPageFragmentInteractionListener");
+        }
+    }
+
+    public interface OnLandingPageFragmentInteractionListener {
+
+        void onWeatherClicked(Double lat, Double lon);
+    }
+
 }
