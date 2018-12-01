@@ -68,7 +68,7 @@ public class HomeActivity extends AppCompatActivity implements
         WaitFragment.OnFragmentInteractionListener,
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
-        ZipCodeFragment.OnZipCodeFragmentInteractionListener{
+        ZipCodeFragment.OnZipCodeFragmentInteractionListener {
 
     public static final String MESSAGE_CHATID = "chat_ID";
     public static final String MESSAGE_NICKNAME = "msg_nickname";
@@ -131,6 +131,10 @@ public class HomeActivity extends AppCompatActivity implements
         t.setText(mEmail);
 
         LandingPageFragment landingPageFragment = new LandingPageFragment();
+//        Bundle landingPageBundle = new Bundle();
+////        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+////        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+////        landingPageFragment.setArguments(landingPageBundle);
         landingPageFragment.setArguments(bundle);
 
         weatherFragment = new WeatherFragment();
@@ -182,6 +186,7 @@ public class HomeActivity extends AppCompatActivity implements
                     // ...
                     mCurrentLocation = location;
                     WeatherFragment.setLocation(location);
+                    LandingPageFragment.setLocation(location);
                     Log.d("LOCATION UPDATE!", location.toString());
                 }
             }
@@ -207,7 +212,12 @@ public class HomeActivity extends AppCompatActivity implements
 
         if (id == R.id.nav_home) {
             mFab.hide();
-            loadFragment(new LandingPageFragment());
+            LandingPageFragment landingPageFragment = new LandingPageFragment();
+            Bundle landingPageBundle = new Bundle();
+            landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+            landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+            landingPageFragment.setArguments(landingPageBundle);
+            loadFragment(landingPageFragment);
         } else if (id == R.id.nav_chat) {
             Uri uri = new Uri.Builder()
                     .scheme("https")
@@ -261,6 +271,7 @@ public class HomeActivity extends AppCompatActivity implements
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     private void getContacts() {
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -280,6 +291,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .onCancelled(error -> Log.e("SEND_TAG", error))
                 .build().execute();
     }
+
     private void handleContactsGetOnPostExecute(final String result) {
         //parse JSON
         try {
@@ -311,6 +323,7 @@ public class HomeActivity extends AppCompatActivity implements
             onWaitFragmentInteractionHide();
         }
     }
+
     private void handleChatsPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
@@ -438,7 +451,8 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void deleteChatFragmentInteraction(Chats item) { }
+    public void deleteChatFragmentInteraction(Chats item) {
+    }
 
     @Override
     public void newSingleChatFragmentInteraction(Contacts item) {
@@ -451,7 +465,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            messageJson.put("chatName", mEmail+item.getEmail()+"singelchat");
+            messageJson.put("chatName", mEmail + item.getEmail() + "singelchat");
             messageJson.put("email1", mEmail);
             messageJson.put("email2", item.getEmail());
         } catch (JSONException e) {
@@ -464,21 +478,22 @@ public class HomeActivity extends AppCompatActivity implements
                 .onCancelled(error -> Log.e("SEND_TAG", error))
                 .build().execute();
     }
+
     private void handleNewChat(final String result) {
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("NewChatSingle", "Should be true: "+root.getBoolean("success"));
+            Log.d("NewChatSingle", "Should be true: " + root.getBoolean("success"));
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
                 Log.d("NewChatSingle", data.toString());
-                String email="";
-                String nickname="";
-                int chatid=root.getInt("chatid");
-                for (int i = 0; i < data.length(); i++){
+                String email = "";
+                String nickname = "";
+                int chatid = root.getInt("chatid");
+                for (int i = 0; i < data.length(); i++) {
                     email = data.getJSONObject(i).getString("email");
                     nickname = data.getJSONObject(i).getString("username");
                 }
-                Log.d("NewChatSingle", chatid+" "+email+ " "+nickname);
+                Log.d("NewChatSingle", chatid + " " + email + " " + nickname);
                 MessageFragment messageFragment = new MessageFragment();
                 Message msg = new Message.Builder(email, nickname, chatid).build();
                 Bundle args = new Bundle();
@@ -607,6 +622,7 @@ public class HomeActivity extends AppCompatActivity implements
                             if (location != null) {
                                 mCurrentLocation = location;
                                 WeatherFragment.setLocation(location);
+                                LandingPageFragment.setLocation(location);
                                 Log.d("LOCATION", location.toString());
                             }
                         }
@@ -653,5 +669,17 @@ public class HomeActivity extends AppCompatActivity implements
         // stopped state. Doing so helps battery performance and is especially
         // recommended in applications that request frequent location updates.
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
     }
 }
