@@ -66,7 +66,7 @@ public class WeatherFragment extends Fragment {
     public static void setLocation(final Location location) {
         mCurrentLocation = location;
         if (mMyCurrentLocationButton != null) {
-            mMyCurrentLocationButton.setText("MY CURRENT LOCATION: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
+            mMyCurrentLocationButton.setText("MY CURRENT LOCATION: " + "\n" + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
         }
     }
 

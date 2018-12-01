@@ -68,7 +68,8 @@ public class HomeActivity extends AppCompatActivity implements
         WaitFragment.OnFragmentInteractionListener,
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
-        ZipCodeFragment.OnZipCodeFragmentInteractionListener{
+        ZipCodeFragment.OnZipCodeFragmentInteractionListener,
+        LandingPageFragment.OnLandingPageFragmentInteractionListener {
 
     public static final String MESSAGE_CHATID = "chat_ID";
     public static final String MESSAGE_NICKNAME = "msg_nickname";
@@ -131,6 +132,10 @@ public class HomeActivity extends AppCompatActivity implements
         t.setText(mEmail);
 
         LandingPageFragment landingPageFragment = new LandingPageFragment();
+        Bundle landingPageBundle = new Bundle();
+        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+        landingPageFragment.setArguments(landingPageBundle);
         landingPageFragment.setArguments(bundle);
 
         weatherFragment = new WeatherFragment();
@@ -182,6 +187,7 @@ public class HomeActivity extends AppCompatActivity implements
                     // ...
                     mCurrentLocation = location;
                     WeatherFragment.setLocation(location);
+                    LandingPageFragment.setLocation(location);
                     Log.d("LOCATION UPDATE!", location.toString());
                 }
             }
@@ -207,7 +213,12 @@ public class HomeActivity extends AppCompatActivity implements
 
         if (id == R.id.nav_home) {
             mFab.hide();
-            loadFragment(new LandingPageFragment());
+            LandingPageFragment landingPageFragment = new LandingPageFragment();
+            Bundle landingPageBundle = new Bundle();
+            landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+            landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+            landingPageFragment.setArguments(landingPageBundle);
+            loadFragment(landingPageFragment);
         } else if (id == R.id.nav_chat) {
             Uri uri = new Uri.Builder()
                     .scheme("https")
@@ -261,6 +272,7 @@ public class HomeActivity extends AppCompatActivity implements
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     private void getContacts() {
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -280,6 +292,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .onCancelled(error -> Log.e("SEND_TAG", error))
                 .build().execute();
     }
+
     private void handleContactsGetOnPostExecute(final String result) {
         //parse JSON
         try {
@@ -311,6 +324,7 @@ public class HomeActivity extends AppCompatActivity implements
             onWaitFragmentInteractionHide();
         }
     }
+
     private void handleChatsPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
@@ -464,6 +478,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .onCancelled(error -> Log.e("SEND_TAG", error))
                 .build().execute();
     }
+
     private void handleNewChat(final String result) {
         try {
             JSONObject root = new JSONObject(result);
@@ -599,6 +614,7 @@ public class HomeActivity extends AppCompatActivity implements
                             if (location != null) {
                                 mCurrentLocation = location;
                                 WeatherFragment.setLocation(location);
+                                LandingPageFragment.setLocation(location);
                                 Log.d("LOCATION", location.toString());
                             }
                         }
@@ -645,5 +661,27 @@ public class HomeActivity extends AppCompatActivity implements
         // stopped state. Doing so helps battery performance and is especially
         // recommended in applications that request frequent location updates.
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    @Override
+    public void onWeatherClicked(Double lat, Double lon) {
+        WeatherDisplayLatLngFragment weatherDisplayLatLngFragment = new WeatherDisplayLatLngFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("lat", lat);
+        bundle.putSerializable("lon", lon);
+        weatherDisplayLatLngFragment.setArguments(bundle);
+        loadFragment(weatherDisplayLatLngFragment);
     }
 }

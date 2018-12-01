@@ -5,6 +5,7 @@
     android:id="@+id/weatherDisplayLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context=".WeatherDisplayFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -41,7 +42,8 @@
         android:id="@+id/day6icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day7icon"
         app:layout_constraintEnd_toStartOf="@+id/day7icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -51,6 +53,7 @@
         android:id="@+id/day7icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day8icon"
         app:layout_constraintEnd_toStartOf="@+id/day8icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -60,6 +63,7 @@
         android:id="@+id/day8icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day9icon"
         app:layout_constraintEnd_toStartOf="@+id/day9icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -69,6 +73,7 @@
         android:id="@+id/day9icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day10icon"
         app:layout_constraintEnd_toStartOf="@+id/day10icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -78,7 +83,8 @@
         android:id="@+id/day10icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="4dp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/day9icon"
@@ -249,17 +255,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/day4dt"
-        app:layout_constraintTop_toBottomOf="@+id/hour32temp" />
+        app:layout_constraintTop_toBottomOf="@+id/hour36temp" />
 
     <TextView
         android:id="@+id/day6dt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day7dt"
         app:layout_constraintEnd_toStartOf="@+id/day7dt"
         app:layout_constraintHorizontal_bias="0.5"
@@ -275,20 +279,22 @@
         app:layout_constraintStart_toEndOf="@+id/day3dt" />
 
     <ProgressBar
-    android:id="@+id/loader"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/city_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -297,6 +303,7 @@
         android:id="@+id/updated_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/city_field" />
@@ -305,7 +312,6 @@
         android:id="@+id/selectZipCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change Zip Code"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/updated_field" />
@@ -314,7 +320,7 @@
         android:id="@+id/weather_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="36sp"
+        android:textSize="45sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/selectZipCode" />
@@ -410,7 +416,7 @@
         android:id="@+id/hour4icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/hour8icon"
         app:layout_constraintEnd_toStartOf="@+id/hour8icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -420,6 +426,7 @@
         android:id="@+id/hour12icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/hour16icon"
         app:layout_constraintEnd_toStartOf="@+id/hour16icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -429,6 +436,7 @@
         android:id="@+id/hour16icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/hour20icon"
         app:layout_constraintEnd_toStartOf="@+id/hour20icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -438,6 +446,7 @@
         android:id="@+id/hour24icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/hour28icon"
         app:layout_constraintEnd_toStartOf="@+id/hour28icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -447,6 +456,7 @@
         android:id="@+id/hour8icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/hour12icon"
         app:layout_constraintEnd_toStartOf="@+id/hour12icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -456,6 +466,7 @@
         android:id="@+id/hour20icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/hour24icon"
         app:layout_constraintEnd_toStartOf="@+id/hour24icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -520,7 +531,6 @@
         android:id="@+id/day1dt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day2dt"
         app:layout_constraintEnd_toStartOf="@+id/day2dt"
         app:layout_constraintHorizontal_bias="0.5"
@@ -576,7 +586,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/day9dt"
@@ -586,7 +595,8 @@
         android:id="@+id/day1icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day2icon"
         app:layout_constraintEnd_toStartOf="@+id/day2icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -596,6 +606,7 @@
         android:id="@+id/day2icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day3icon"
         app:layout_constraintEnd_toStartOf="@+id/day3icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -605,6 +616,7 @@
         android:id="@+id/day3icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day4icon"
         app:layout_constraintEnd_toStartOf="@+id/day4icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -614,6 +626,7 @@
         android:id="@+id/day4icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/day5icon"
         app:layout_constraintEnd_toStartOf="@+id/day5icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -623,7 +636,8 @@
         android:id="@+id/day5icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="4dp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/day4icon"
@@ -633,12 +647,10 @@
         android:id="@+id/hour32dt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@+id/hour36dt"
+        app:layout_constraintEnd_toStartOf="@+id/hour36dt"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/hour28dt"
-        app:layout_constraintTop_toBottomOf="@+id/pressure_field" />
+        app:layout_constraintStart_toEndOf="@+id/hour28dt" />
 
     <TextView
         android:id="@+id/hour28dt"
@@ -653,6 +665,7 @@
         android:id="@+id/hour28icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/hour32icon"
         app:layout_constraintEnd_toStartOf="@+id/hour32icon"
         app:layout_constraintHorizontal_bias="0.5"
@@ -662,11 +675,11 @@
         android:id="@+id/hour32icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/hour36icon"
+        app:layout_constraintEnd_toStartOf="@+id/hour36icon"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/hour28icon"
-        app:layout_constraintTop_toBottomOf="@+id/hour32dt" />
+        app:layout_constraintStart_toEndOf="@+id/hour28icon" />
 
     <TextView
         android:id="@+id/hour28temp"
@@ -681,10 +694,40 @@
         android:id="@+id/hour32temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintBaseline_toBaselineOf="@+id/hour36temp"
+        app:layout_constraintEnd_toStartOf="@+id/hour36temp"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/hour28temp" />
+
+    <TextView
+        android:id="@+id/hour36dt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/hour28temp"
-        app:layout_constraintTop_toBottomOf="@+id/hour32icon" />
+        app:layout_constraintStart_toEndOf="@+id/hour32dt"
+        app:layout_constraintTop_toBottomOf="@+id/pressure_field" />
+
+    <TextView
+        android:id="@+id/hour36icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/hour32icon"
+        app:layout_constraintTop_toBottomOf="@+id/hour36dt" />
+
+    <TextView
+        android:id="@+id/hour36temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/hour32temp"
+        app:layout_constraintTop_toBottomOf="@+id/hour36icon" />
 
 </android.support.constraint.ConstraintLayout>
