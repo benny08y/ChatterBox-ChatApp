@@ -103,7 +103,7 @@ public class HomeActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle(R.string.app_name);
+
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,8 +133,8 @@ public class HomeActivity extends AppCompatActivity implements
 
         LandingPageFragment landingPageFragment = new LandingPageFragment();
         Bundle landingPageBundle = new Bundle();
-        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
-        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+//        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+//        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
         landingPageFragment.setArguments(landingPageBundle);
         landingPageFragment.setArguments(bundle);
 
@@ -457,6 +457,7 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public void newSingleChatFragmentInteraction(Contacts item) {
         //webserivece call to start new chat, retrieve chatid and put into message fragment
+        Log.d("NewChatSingle", "Adding new single chat..." + item.getEmail());
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -482,12 +483,18 @@ public class HomeActivity extends AppCompatActivity implements
     private void handleNewChat(final String result) {
         try {
             JSONObject root = new JSONObject(result);
-//            Log.d("NewChatSingle", "Should be true: "+root.getBoolean("success"));
+            Log.d("NewChatSingle", "Result: "+result);
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
+
                 String chatName = root.getString("chatname");
+
+//                JSONArray chatIdArray = root.getJSONArray("chatid");
+//                JSONObject chatIdObj = chatIdArray.getJSONObject(0);
+//                int chatID = chatIdObj.getInt("chatid");
                 int chatID = root.getInt("chatid");
-                Log.d("NewChatSingle", chatName.replace(mEmail, ""));
+
+                Log.d("NewChatSingle", "ChatID: "+chatID);
                 MessageFragment messageFragment = new MessageFragment();
                 Bundle args = new Bundle();
                 args.putString(MESSAGE_NICKNAME, chatName.replace(mEmail, ""));
@@ -666,6 +673,7 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        getSupportActionBar().setTitle(R.string.app_name);
         startLocationUpdates();
     }
 
