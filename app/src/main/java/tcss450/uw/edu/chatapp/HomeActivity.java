@@ -320,10 +320,10 @@ public class HomeActivity extends AppCompatActivity implements
                 ArrayList<Chats> chatList = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject jsonChats = data.getJSONObject(i);
-                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
-                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                    chatList.add(new Chats.Builder("",
+                            "", "")
                             .addChatID(jsonChats.getInt("chatid"))
-                            .addNickname(jsonChats.getString("username"))
+                            .addChatName(jsonChats.getString("name").replace(mEmail, ""))
                             .build());
                 }
                 Chats[] chatsAsArray = new Chats[chatList.size()];
@@ -375,8 +375,8 @@ public class HomeActivity extends AppCompatActivity implements
         MessageFragment messageFragment = new MessageFragment();
         Message msg = new Message.Builder(item.getEmail(), item.getNickname(), item.getChatID()).build();
         Bundle args = new Bundle();
-        args.putString(MESSAGE_NICKNAME, msg.getNickname());
-        args.putInt(MESSAGE_CHATID, msg.getChatId());
+        args.putString(MESSAGE_NICKNAME, item.getChatName());
+        args.putInt(MESSAGE_CHATID, item.getChatID());
         messageFragment.setArguments(args);
         loadFragment(messageFragment);
     }
@@ -451,7 +451,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            messageJson.put("chatName", mEmail+item.getEmail()+"singelchat");
+            messageJson.put("chatName", "Single: "+item.getNickname() + " "+ mEmail);
             messageJson.put("email1", mEmail);
             messageJson.put("email2", item.getEmail());
         } catch (JSONException e) {
@@ -467,31 +467,23 @@ public class HomeActivity extends AppCompatActivity implements
     private void handleNewChat(final String result) {
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("NewChatSingle", "Should be true: "+root.getBoolean("success"));
+//            Log.d("NewChatSingle", "Should be true: "+root.getBoolean("success"));
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
-                Log.d("NewChatSingle", data.toString());
-                String email="";
-                String nickname="";
-                int chatid=root.getInt("chatid");
-                for (int i = 0; i < data.length(); i++){
-                    email = data.getJSONObject(i).getString("email");
-                    nickname = data.getJSONObject(i).getString("username");
-                }
-                Log.d("NewChatSingle", chatid+" "+email+ " "+nickname);
+                String chatName = root.getString("chatname");
+                int chatID = root.getInt("chatid");
+                Log.d("NewChatSingle", chatName.replace(mEmail, ""));
                 MessageFragment messageFragment = new MessageFragment();
-                Message msg = new Message.Builder(email, nickname, chatid).build();
                 Bundle args = new Bundle();
-                args.putString(MESSAGE_NICKNAME, nickname);
-                args.putInt(MESSAGE_CHATID, chatid);
+                args.putString(MESSAGE_NICKNAME, chatName.replace(mEmail, ""));
+                args.putInt(MESSAGE_CHATID, chatID);
                 messageFragment.setArguments(args);
-                Log.d("NewChatSingle", "Please load the message fragment");
                 onWaitFragmentInteractionHide();
                 loadFragment(messageFragment);
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.d("NewChatSingle", e.getMessage());
+            Log.d("NewChatSingle", "ERROR: "+e.getMessage());
             onWaitFragmentInteractionHide();
         }
     }
