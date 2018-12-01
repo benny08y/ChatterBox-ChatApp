@@ -131,15 +131,6 @@ public class HomeActivity extends AppCompatActivity implements
         TextView t = (TextView) headerView.findViewById(R.id.header_curEmail);
         t.setText(mEmail);
 
-        LandingPageFragment landingPageFragment = new LandingPageFragment();
-        Bundle landingPageBundle = new Bundle();
-//        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
-//        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
-        landingPageFragment.setArguments(landingPageBundle);
-        landingPageFragment.setArguments(bundle);
-
-        weatherFragment = new WeatherFragment();
-
         if (savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
                 Fragment fragment = new LandingPageFragment();
