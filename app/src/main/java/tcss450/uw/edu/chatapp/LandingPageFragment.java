@@ -119,7 +119,7 @@ public class LandingPageFragment extends Fragment {
 
                     String s = jsonCurrent.getString("name").toUpperCase(Locale.US) + ", " + jsonCurrent.getJSONObject("sys").getString("country") + "\n" +
                             details.getString("description").toUpperCase(Locale.US) + "\n" +
-                                    String.format("%.0f", main.getDouble("temp")) + "°F";
+                            String.format("%.0f", main.getDouble("temp")) + "°F";
                     weatherInfo.setText(s);
                     weatherIcon.setText(Html.fromHtml(WeatherHelpers.setWeatherIcon(details.getInt("id"),
                             jsonCurrent.getJSONObject("sys").getLong("sunrise") * 1000,

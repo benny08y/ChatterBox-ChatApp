@@ -47,12 +47,10 @@ import tcss450.uw.edu.chatapp.chats.ChatsFragment;
 import tcss450.uw.edu.chatapp.chats.DeleteChatFragment;
 import tcss450.uw.edu.chatapp.chats.Message;
 import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment;
-import tcss450.uw.edu.chatapp.contacts.AddContactsFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
 import tcss450.uw.edu.chatapp.contacts.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
-import tcss450.uw.edu.chatapp.contacts.SearchContactsFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayLatLngFragment;
@@ -71,9 +69,7 @@ public class HomeActivity extends AppCompatActivity implements
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
         ZipCodeFragment.OnZipCodeFragmentInteractionListener,
-        LandingPageFragment.OnLandingPageFragmentInteractionListener,
-        SearchContactsFragment.OnFragmentInteractionListener,
-        AddContactsFragment.OnFragmentInteractionListener {
+        LandingPageFragment.OnLandingPageFragmentInteractionListener {
 
     public static final String MESSAGE_CHATID = "chat_ID";
     public static final String MESSAGE_NICKNAME = "msg_nickname";
@@ -107,7 +103,7 @@ public class HomeActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle(R.string.app_name);
+
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,11 +132,11 @@ public class HomeActivity extends AppCompatActivity implements
         t.setText(mEmail);
 
         LandingPageFragment landingPageFragment = new LandingPageFragment();
-        //Bundle landingPageBundle = new Bundle();
-        //landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
-        //landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
-        //landingPageFragment.setArguments(landingPageBundle);
-        //landingPageFragment.setArguments(bundle);
+        Bundle landingPageBundle = new Bundle();
+//        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+//        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+        landingPageFragment.setArguments(landingPageBundle);
+        landingPageFragment.setArguments(bundle);
 
         weatherFragment = new WeatherFragment();
 
@@ -270,16 +266,6 @@ public class HomeActivity extends AppCompatActivity implements
                     .replace(R.id.content_home_container, weatherFragment, "MY_FRAGMENT")
                     .addToBackStack(null);
             transaction.commit();
-        } else if (id == R.id.nav_search_contacts) {
-            SearchContactsFragment searchContactsFragment = new SearchContactsFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("email", mEmail);
-            searchContactsFragment.setArguments(bundle);
-            FragmentTransaction transaction = getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.content_home_container, searchContactsFragment)
-                    .addToBackStack(null);
-            transaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -348,10 +334,10 @@ public class HomeActivity extends AppCompatActivity implements
                 ArrayList<Chats> chatList = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject jsonChats = data.getJSONObject(i);
-                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
-                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                    chatList.add(new Chats.Builder("",
+                            "", "")
                             .addChatID(jsonChats.getInt("chatid"))
-                            .addNickname(jsonChats.getString("username"))
+                            .addChatName(jsonChats.getString("name").replace(mEmail, ""))
                             .build());
                 }
                 Chats[] chatsAsArray = new Chats[chatList.size()];
@@ -403,8 +389,8 @@ public class HomeActivity extends AppCompatActivity implements
         MessageFragment messageFragment = new MessageFragment();
         Message msg = new Message.Builder(item.getEmail(), item.getNickname(), item.getChatID()).build();
         Bundle args = new Bundle();
-        args.putString(MESSAGE_NICKNAME, msg.getNickname());
-        args.putInt(MESSAGE_CHATID, msg.getChatId());
+        args.putString(MESSAGE_NICKNAME, item.getChatName());
+        args.putInt(MESSAGE_CHATID, item.getChatID());
         messageFragment.setArguments(args);
         loadFragment(messageFragment);
     }
@@ -466,12 +452,12 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void deleteChatFragmentInteraction(Chats item) {
-    }
+    public void deleteChatFragmentInteraction(Chats item) { }
 
     @Override
     public void newSingleChatFragmentInteraction(Contacts item) {
         //webserivece call to start new chat, retrieve chatid and put into message fragment
+        Log.d("NewChatSingle", "Adding new single chat..." + item.getEmail());
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -480,7 +466,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            messageJson.put("chatName", mEmail + item.getEmail() + "singelchat");
+            messageJson.put("chatName", "Single: "+item.getNickname() + " "+ mEmail);
             messageJson.put("email1", mEmail);
             messageJson.put("email2", item.getEmail());
         } catch (JSONException e) {
@@ -497,57 +483,31 @@ public class HomeActivity extends AppCompatActivity implements
     private void handleNewChat(final String result) {
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("NewChatSingle", "Should be true: " + root.getBoolean("success"));
+            Log.d("NewChatSingle", "Result: "+result);
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
-                Log.d("NewChatSingle", data.toString());
-                String email = "";
-                String nickname = "";
-                int chatid = root.getInt("chatid");
-                for (int i = 0; i < data.length(); i++) {
-                    email = data.getJSONObject(i).getString("email");
-                    nickname = data.getJSONObject(i).getString("username");
-                }
-                Log.d("NewChatSingle", chatid + " " + email + " " + nickname);
+
+                String chatName = root.getString("chatname");
+
+//                JSONArray chatIdArray = root.getJSONArray("chatid");
+//                JSONObject chatIdObj = chatIdArray.getJSONObject(0);
+//                int chatID = chatIdObj.getInt("chatid");
+                int chatID = root.getInt("chatid");
+
+                Log.d("NewChatSingle", "ChatID: "+chatID);
                 MessageFragment messageFragment = new MessageFragment();
-                Message msg = new Message.Builder(email, nickname, chatid).build();
                 Bundle args = new Bundle();
-                args.putString(MESSAGE_NICKNAME, nickname);
-                args.putInt(MESSAGE_CHATID, chatid);
+                args.putString(MESSAGE_NICKNAME, chatName.replace(mEmail, ""));
+                args.putInt(MESSAGE_CHATID, chatID);
                 messageFragment.setArguments(args);
-                Log.d("NewChatSingle", "Please load the message fragment");
                 onWaitFragmentInteractionHide();
                 loadFragment(messageFragment);
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.d("NewChatSingle", e.getMessage());
+            Log.d("NewChatSingle", "ERROR: "+e.getMessage());
             onWaitFragmentInteractionHide();
         }
-    }
-
-    @Override
-    public void onSearchContactsFragmentInteraction(Contacts contact) {
-        AddContactsFragment addContactPageFragment = new AddContactsFragment();
-        //contactPageFragment.setContacts(contact);
-        Bundle args = new Bundle();
-        args.putString("nickname", contact.getNickname());
-        args.putString("email", contact.getEmail());
-        args.putString("firstName", contact.getFirstName());
-        args.putString("lastName", contact.getLastName());
-        args.putString("currEmail", mEmail);
-
-        addContactPageFragment.setArguments(args);
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_home_container, addContactPageFragment)
-                .addToBackStack(null);
-        transaction.commit();
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
@@ -713,6 +673,7 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        getSupportActionBar().setTitle(R.string.app_name);
         startLocationUpdates();
     }
 
