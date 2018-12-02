@@ -55,15 +55,16 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_search_contacts, container, false);
         // Set the adapter
-        if (view instanceof RecyclerView) {
+        //if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
+            //recyclerView = (RecyclerView) view;
+        recyclerView = (RecyclerView) view.findViewById(R.id.Search_Contacts_List);
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-        }
+       // }
         Button button = (Button) view.findViewById(R.id.Search_Contacts_Button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

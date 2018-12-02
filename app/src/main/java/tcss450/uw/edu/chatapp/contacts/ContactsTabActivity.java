@@ -1,6 +1,7 @@
 package tcss450.uw.edu.chatapp.contacts;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +19,8 @@ import tcss450.uw.edu.chatapp.model.Contacts;
 public class ContactsTabActivity extends AppCompatActivity implements
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         ContactsFragment.OnContactListFragmentInteractionListener,
-        SearchContactsFragment.OnSearchContactsFragmentInteractionListener {
+        SearchContactsFragment.OnSearchContactsFragmentInteractionListener,
+        AddContactsFragment.OnFragmentInteractionListener {
 
     private ContactsPagerAdapter mContactsPagerAdapter;
     private ViewPager mViewPager;
@@ -115,6 +117,25 @@ public class ContactsTabActivity extends AppCompatActivity implements
 
     @Override
     public void onSearchContactsFragmentInteraction(Contacts contact) {
+        AddContactsFragment addContactPageFragment = new AddContactsFragment();
+        //contactPageFragment.setContacts(contact);
+        Bundle args = new Bundle();
+        args.putString("nickname", contact.getNickname());
+        args.putString("email", contact.getEmail());
+        args.putString("firstName", contact.getFirstName());
+        args.putString("lastName", contact.getLastName());
+        args.putString("currEmail", mEmail);
+
+        addContactPageFragment.setArguments(args);
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_content, addContactPageFragment)
+                .addToBackStack(null);
+        transaction.commit();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
     }
 }
