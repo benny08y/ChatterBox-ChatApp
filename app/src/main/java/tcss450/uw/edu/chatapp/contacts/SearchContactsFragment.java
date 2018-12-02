@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -25,6 +27,7 @@ import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
+import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
 public class SearchContactsFragment extends Fragment { //implements WaitFragment.OnFragmentInteractionListener {
@@ -34,6 +37,7 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
     private View view;
     private List<Contacts> mContacts;
     private String mEmail;
+    private AutoCompleteTextView mAutoCompleteTextView;
 
     public SearchContactsFragment() {
         // Required empty public constructor
@@ -58,6 +62,7 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         //if (view instanceof RecyclerView) {
             Context context = view.getContext();
             //recyclerView = (RecyclerView) view;
+        mAutoCompleteTextView = view.findViewById(R.id.search_autocomplete_textview);
         recyclerView = (RecyclerView) view.findViewById(R.id.Search_Contacts_List);
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -75,6 +80,43 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_contacts))
+                .appendPath(getString(R.string.ep_contacts_all_members))
+                .build();
+        new GetAsyncTask.Builder(uri.toString())
+                .onPostExecute(this::handleGetAllMembers)
+                .build().execute();
+    }
+
+    private void handleGetAllMembers(final String result) {
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("success") && root.getBoolean("success")){
+                JSONArray dataArray = root.getJSONArray("data");
+                ArrayList<String> emailList = new ArrayList<>();
+                for (int i = 0; i < dataArray.length(); i++){
+                    JSONObject currObj = dataArray.getJSONObject(i);
+                    emailList.add(currObj.getString("email"));
+                }
+                String[] emailArray = new String[emailList.size()];
+                emailArray = emailList.toArray(emailArray);
+                Log.d("SEARCH", "SEARCH" + Arrays.toString(emailArray));
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                                android.R.layout.simple_dropdown_item_1line,
+                                emailArray);
+                mAutoCompleteTextView.setAdapter(adapter);
+            }
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
 
     private void onButtonClick(View v) {
         Uri uri = new Uri.Builder()
@@ -85,8 +127,8 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
                 .build();
         JSONObject messageJson = new JSONObject();
         Bundle bundle = getArguments();
-        EditText input = view.findViewById(R.id.search_contact_email);
-        String stringInput = input.getText().toString();
+//        EditText input = view.findViewById(R.id.search_contact_email);
+        String stringInput = mAutoCompleteTextView.getText().toString();
         //String Email = bundle.getString(stringInput);
         //String Email = "cjkim00@gmail.com";
 
@@ -95,7 +137,7 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
                 messageJson.put("searchEmail", stringInput);
 
             } catch (JSONException e) {
-                input.setError("Enter a valid email");
+                mAutoCompleteTextView.setError("Enter a valid email");
                 Log.e("IN_JSON", "didnt put email");
             }
             new SendPostAsyncTask.Builder(uri.toString(), messageJson)
@@ -104,7 +146,7 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
                     .onCancelled(error -> Log.e("SEND_TAG", error))
                     .build().execute();
         } else {
-            input.setError("Enter a valid email");
+            mAutoCompleteTextView.setError("Enter a valid email");
         }
     }
 

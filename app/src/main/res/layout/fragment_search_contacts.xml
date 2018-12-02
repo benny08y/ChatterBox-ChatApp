@@ -33,19 +33,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_contact_email"
+        app:layout_constraintTop_toBottomOf="@+id/search_autocomplete_textview"
         tools:context=".chats.ChatsFragment"
         tools:listitem="@layout/fragment_chats" />
 
-    <EditText
-        android:id="@+id/search_contact_email"
+    <AutoCompleteTextView
+        android:id="@+id/search_autocomplete_textview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:inputType="textPersonName"
+        android:completionThreshold="1"
+        android:hint="Search for contacts ..."
         app:layout_constraintEnd_toStartOf="@+id/Search_Contacts_Button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
