@@ -2,6 +2,7 @@ package tcss450.uw.edu.chatapp.weather;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -30,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import tcss450.uw.edu.chatapp.LandingPageFragment;
 import tcss450.uw.edu.chatapp.R;
 
 
@@ -38,6 +40,7 @@ import tcss450.uw.edu.chatapp.R;
  */
 public class WeatherDisplayZipCodeFragment extends Fragment {
 
+    private WeatherDisplayZipCodeFragment.OnWeatherDisplayZipCodeFragmentInteractionListener mListener;
     TextView selectZipCode, cityField, detailsField, currentTemperatureField, humidity_field, pressure_field, weatherIcon, updatedField;
     TextView hour4dt, hour8dt, hour12dt, hour16dt, hour20dt, hour24dt, hour28dt, hour32dt, hour36dt;
     TextView hour4icon, hour8icon, hour12icon, hour16icon, hour20icon, hour24icon, hour28icon, hour32icon, hour36icon;
@@ -46,9 +49,11 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
     TextView day1icon, day2icon, day3icon, day4icon, day5icon, day6icon, day7icon, day8icon, day9icon, day10icon;
     TextView day1max, day2max, day3max, day4max, day5max, day6max, day7max, day8max, day9max, day10max;
     TextView day1min, day2min, day3min, day4min, day5min, day6min, day7min, day8min, day9min, day10min;
+    TextView saveLocationButton;
     ProgressBar loader;
     Typeface weatherFont;
     String zipCode = "98006";
+    String cityString;
 
     public WeatherDisplayZipCodeFragment() {
         // Required empty public constructor
@@ -162,6 +167,7 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
         day8min = v.findViewById(R.id.day8min);
         day9min = v.findViewById(R.id.day9min);
         day10min = v.findViewById(R.id.day10min);
+        saveLocationButton = v.findViewById(R.id.saveLocationsButton);
 
         taskLoadUp(zipCode);
 
@@ -192,6 +198,13 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
                             }
                         });
                 alertDialog.show();
+            }
+        });
+
+        saveLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onSaveLocationButtonClicked(cityString);
             }
         });
 
@@ -244,11 +257,12 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
                     DateFormat dfHour = new SimpleDateFormat("ha");
                     DateFormat dfDay = new SimpleDateFormat("EEEEE");
 
-                    cityField.setText(jsonCurrent.getString("name").toUpperCase(Locale.US) + ", " + jsonCurrent.getJSONObject("sys").getString("country"));
+                    cityString = jsonCurrent.getString("name").toUpperCase(Locale.US) + ", " + jsonCurrent.getJSONObject("sys").getString("country");
+                    cityField.setText(cityString);
                     detailsField.setText(details.getString("description").toUpperCase(Locale.US));
                     currentTemperatureField.setText(String.format("%.0f", main.getDouble("temp")) + "°F");
                     humidity_field.setText("Humidity: " + main.getString("humidity") + "%");
-                    pressure_field.setText("Pressure: " + (((double)Math.round(main.getDouble("pressure") / 1013.25 * 1000d)) / 1000d) + " atm");
+                    pressure_field.setText("Pressure: " + (((double) Math.round(main.getDouble("pressure") / 1013.25 * 1000d)) / 1000d) + " atm");
                     updatedField.setText(df.format(new Date(jsonCurrent.getLong("dt") * 1000)));
                     weatherIcon.setText(Html.fromHtml(WeatherHelpers.setWeatherIcon(details.getInt("id"),
                             jsonCurrent.getJSONObject("sys").getLong("sunrise") * 1000,
@@ -419,6 +433,9 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
                     selectZipCode.setText("Change Zip Code");
                     selectZipCode.setTextColor(Color.BLUE);
 
+                    saveLocationButton.setText("Save Location");
+                    saveLocationButton.setTextColor(Color.BLUE);
+
                     loader.setVisibility(View.GONE);
 
                 }
@@ -426,5 +443,20 @@ public class WeatherDisplayZipCodeFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), "Error, Check Zip Code", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof WeatherDisplayZipCodeFragment.OnWeatherDisplayZipCodeFragmentInteractionListener) {
+            mListener = (WeatherDisplayZipCodeFragment.OnWeatherDisplayZipCodeFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnWeatherDisplayZipCodeFragmentInteractionListener");
+        }
+    }
+
+    public interface OnWeatherDisplayZipCodeFragmentInteractionListener {
+        void onSaveLocationButtonClicked(String cityString);
     }
 }

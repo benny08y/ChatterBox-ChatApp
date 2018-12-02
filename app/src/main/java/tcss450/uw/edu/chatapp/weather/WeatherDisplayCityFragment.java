@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,16 +31,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import tcss450.uw.edu.chatapp.LandingPageFragment;
 import tcss450.uw.edu.chatapp.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class WeatherDisplayLatLngFragment extends Fragment {
+public class WeatherDisplayCityFragment extends Fragment {
 
-    private WeatherDisplayLatLngFragment.OnWeatherDisplayLatLngFragmentInteractionListener mListener;
-    TextView displayLatLng, cityField, detailsField, currentTemperatureField, humidity_field, pressure_field, weatherIcon, updatedField;
+    TextView cityField, detailsField, currentTemperatureField, humidity_field, pressure_field, weatherIcon, updatedField;
     TextView hour4dt, hour8dt, hour12dt, hour16dt, hour20dt, hour24dt, hour28dt, hour32dt, hour36dt;
     TextView hour4icon, hour8icon, hour12icon, hour16icon, hour20icon, hour24icon, hour28icon, hour32icon, hour36icon;
     TextView hour4temp, hour8temp, hour12temp, hour16temp, hour20temp, hour24temp, hour28temp, hour32temp, hour36temp;
@@ -47,14 +48,11 @@ public class WeatherDisplayLatLngFragment extends Fragment {
     TextView day1icon, day2icon, day3icon, day4icon, day5icon, day6icon, day7icon, day8icon, day9icon, day10icon;
     TextView day1max, day2max, day3max, day4max, day5max, day6max, day7max, day8max, day9max, day10max;
     TextView day1min, day2min, day3min, day4min, day5min, day6min, day7min, day8min, day9min, day10min;
-    TextView saveLocationButton;
     ProgressBar loader;
     Typeface weatherFont;
-    String lat;
-    String lon;
     String cityString;
 
-    public WeatherDisplayLatLngFragment() {
+    public WeatherDisplayCityFragment() {
         // Required empty public constructor
     }
 
@@ -66,12 +64,11 @@ public class WeatherDisplayLatLngFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_weather_display, container, false);
 
         if (getArguments() != null) {
-            lat = Double.toString(getArguments().getDouble("lat"));
-            lon = Double.toString(getArguments().getDouble("lon"));
+            cityString = getArguments().getString("city");
         }
 
         loader = (ProgressBar) v.findViewById(R.id.loader);
-        displayLatLng = (TextView) v.findViewById(R.id.selectZipCode);
+//        selectZipCode = (TextView) v.findViewById(R.id.selectZipCode);
         cityField = (TextView) v.findViewById(R.id.city_field);
         updatedField = (TextView) v.findViewById(R.id.updated_field);
         detailsField = (TextView) v.findViewById(R.id.details_field);
@@ -167,24 +164,17 @@ public class WeatherDisplayLatLngFragment extends Fragment {
         day8min = v.findViewById(R.id.day8min);
         day9min = v.findViewById(R.id.day9min);
         day10min = v.findViewById(R.id.day10min);
-        saveLocationButton = v.findViewById(R.id.saveLocationsButton);
+//        saveLocationButton = v.findViewById(R.id.saveLocationsButton);
 
-        taskLoadUp(lat, lon);
-
-        saveLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onSaveLocationButtonClicked(cityString);
-            }
-        });
+        taskLoadUp(cityString);
 
         return v;
     }
 
-    public void taskLoadUp(String query1, String query2) {
+    public void taskLoadUp(String query) {
         if (WeatherHelpers.isNetworkAvailable(getActivity().getApplicationContext())) {
             DownloadWeather task = new DownloadWeather();
-            task.execute(query1, query2);
+            task.execute(query);
         } else {
             Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
         }
@@ -199,12 +189,12 @@ public class WeatherDisplayLatLngFragment extends Fragment {
         }
 
         protected String[] doInBackground(String... args) {
-            String current = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/weather?lat=" + args[0] +
-                    "&lon=" + args[1] + "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
-            String hour = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/forecast?lat=" + args[0] +
-                    "&lon=" + args[1] + "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
-            String day = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + args[0] +
-                    "&lon=" + args[1] + "&cnt=10&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
+            String current = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/weather?q=" + args[0] +
+                    "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
+            String hour = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/forecast?q=" + args[0] +
+                    "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
+            String day = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/forecast/daily?q=" + args[0] +
+                    "&cnt=10&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
             String[] xml = new String[3];
             xml[0] = current;
             xml[1] = hour;
@@ -400,32 +390,12 @@ public class WeatherDisplayLatLngFragment extends Fragment {
                     day10max.setText(String.format("%.0f", main.getDouble("max")) + "°F");
                     day10min.setText(String.format("%.0f", main.getDouble("min")) + "°F");
 
-                    displayLatLng.setText(lat + ", " + lon);
-
-                    saveLocationButton.setText("Save Location");
-                    saveLocationButton.setTextColor(Color.BLUE);
-
                     loader.setVisibility(View.GONE);
 
                 }
             } catch (JSONException e) {
-                Toast.makeText(getActivity().getApplicationContext(), "Error, Check Latitude And Longitude", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Error, Check City", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof WeatherDisplayLatLngFragment.OnWeatherDisplayLatLngFragmentInteractionListener) {
-            mListener = (WeatherDisplayLatLngFragment.OnWeatherDisplayLatLngFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnWeatherDisplayLatLngFragmentInteractionListener");
-        }
-    }
-
-    public interface OnWeatherDisplayLatLngFragmentInteractionListener {
-        void onSaveLocationButtonClicked(String cityString);
     }
 }
