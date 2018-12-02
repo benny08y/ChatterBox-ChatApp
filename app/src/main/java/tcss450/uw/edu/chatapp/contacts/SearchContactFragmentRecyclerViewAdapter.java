@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import tcss450.uw.edu.chatapp.contacts.SearchContactsFragment.OnFragmentInteractionListener;
+import tcss450.uw.edu.chatapp.contacts.SearchContactsFragment.OnSearchContactsFragmentInteractionListener;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ import tcss450.uw.edu.chatapp.model.Contacts;
 public class SearchContactFragmentRecyclerViewAdapter extends RecyclerView.Adapter<SearchContactFragmentRecyclerViewAdapter.ViewHolder> {
 
     private final List<Contacts> mValues;
-    private final OnFragmentInteractionListener mListener;
+    private final OnSearchContactsFragmentInteractionListener mListener;
 
-    public SearchContactFragmentRecyclerViewAdapter(List<Contacts> items, OnFragmentInteractionListener listener) {
+    public SearchContactFragmentRecyclerViewAdapter(List<Contacts> items, OnSearchContactsFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }

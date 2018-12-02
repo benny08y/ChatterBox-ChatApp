@@ -20,42 +20,50 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
-import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SearchContactsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- */
-public class SearchContactsFragment extends Fragment implements WaitFragment.OnFragmentInteractionListener {
+public class SearchContactsFragment extends Fragment { //implements WaitFragment.OnFragmentInteractionListener {
     private int mColumnCount = 1;
-    private OnFragmentInteractionListener mListener;
+    private OnSearchContactsFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
-    View view;
+    private View view;
+    private List<Contacts> mContacts;
+    private String mEmail;
+
     public SearchContactsFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mContacts = new ArrayList<>(
+                    Arrays.asList((Contacts[]) getArguments().getSerializable("contacts")));
+            mEmail = getArguments().getSerializable("email").toString();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_search_contacts, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.Search_Contacts_List);
-        if(mColumnCount <= 1) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        } else {
-            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), mColumnCount));
+        // Set the adapter
+        if (view instanceof RecyclerView) {
+            Context context = view.getContext();
+            recyclerView = (RecyclerView) view;
+            if (mColumnCount <= 1) {
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            } else {
+                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            }
         }
-        List<Contacts> results = new ArrayList<>();
-        //recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(results, mListener));
         Button button = (Button) view.findViewById(R.id.Search_Contacts_Button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,10 +71,6 @@ public class SearchContactsFragment extends Fragment implements WaitFragment.OnF
                 onButtonClick(v);
             }
         });
-
-
-
-
         return view;
     }
 
@@ -84,25 +88,30 @@ public class SearchContactsFragment extends Fragment implements WaitFragment.OnF
         String stringInput = input.getText().toString();
         //String Email = bundle.getString(stringInput);
         //String Email = "cjkim00@gmail.com";
-        try {
-            messageJson.put("searchEmail", stringInput);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("IN_JSON", "didnt put email");
-        }
 
-        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                .onPreExecute(this::onWaitFragmentInteractionShow)
-                .onPostExecute(this::handleContactsGetOnPostExecute)
-                .onCancelled(error -> Log.e("SEND_TAG", error))
-                .build().execute();
+        if (!stringInput.isEmpty()) {
+            try {
+                messageJson.put("searchEmail", stringInput);
+
+            } catch (JSONException e) {
+                input.setError("Enter a valid email");
+                Log.e("IN_JSON", "didnt put email");
+            }
+            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                    //.onPreExecute(this::onWaitFragmentInteractionShow)
+                    .onPostExecute(this::handleContactsGetOnPostExecute)
+                    .onCancelled(error -> Log.e("SEND_TAG", error))
+                    .build().execute();
+        } else {
+            input.setError("Enter a valid email");
+        }
     }
 
     private void handleContactsGetOnPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
 
-                Log.e("Successfully sent", "Success");
+                Log.d("SearchContactsFragment: ", "Successfully sent");
                 JSONArray members = root.getJSONArray("data");
                 ArrayList<Contacts> membersArray = new ArrayList<>();
                 for(int i = 0; i < members.length(); i++) {
@@ -119,30 +128,30 @@ public class SearchContactsFragment extends Fragment implements WaitFragment.OnF
                 List<Contacts> results = membersArray;
                 recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(results, mListener));
 
-            onWaitFragmentInteractionHide();
+            //onWaitFragmentInteractionHide();
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e("ERROR!", e.getMessage());
+            Log.e("ERROR in handleContactsGetOnPostExecute: ", e.getMessage());
             //notify user
-            onWaitFragmentInteractionHide();
+            //onWaitFragmentInteractionHide();
         }
     }
 
-    @Override
-    public void onWaitFragmentInteractionShow() {
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.content_home_container, new WaitFragment(), "WAIT")
-                .addToBackStack(null)
-                .commit();
-    }
-    @Override
-    public void onWaitFragmentInteractionHide() {
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .remove(getActivity().getSupportFragmentManager().findFragmentByTag("WAIT"))
-                .commit();
-    }
+//    @Override
+//    public void onWaitFragmentInteractionShow() {
+//        getActivity().getSupportFragmentManager()
+//                .beginTransaction()
+//                .add(R.id.content_home_container, new WaitFragment(), "WAIT")
+//                .addToBackStack(null)
+//                .commit();
+//    }
+//    @Override
+//    public void onWaitFragmentInteractionHide() {
+//        getActivity().getSupportFragmentManager()
+//                .beginTransaction()
+//                .remove(getActivity().getSupportFragmentManager().findFragmentByTag("WAIT"))
+//                .commit();
+//    }
     private void loadFragment(Fragment frag) {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -155,8 +164,8 @@ public class SearchContactsFragment extends Fragment implements WaitFragment.OnF
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnSearchContactsFragmentInteractionListener) {
+            mListener = (OnSearchContactsFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -179,7 +188,7 @@ public class SearchContactsFragment extends Fragment implements WaitFragment.OnF
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnSearchContactsFragmentInteractionListener {
         // TODO: Update argument type and name
         void onSearchContactsFragmentInteraction(Contacts contact);
     }

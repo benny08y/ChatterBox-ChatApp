@@ -46,19 +46,19 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch(position) {
             case 0:
-                Fragment contactsFragment0 = new ContactsFragment();
-                Bundle args0 = new Bundle();
-                args0.putSerializable("email", mEmail);
-                args0.putSerializable("contacts", mContacts);
-                contactsFragment0.setArguments(args0);
-                return contactsFragment0;
+                Fragment contactsFragment = new ContactsFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("email", mEmail);
+                args.putSerializable("contacts", mContacts);
+                contactsFragment.setArguments(args);
+                return contactsFragment;
             case 1:
-                Fragment contactsFragment1 = new ContactsFragment();
+                Fragment searchContacts = new SearchContactsFragment();
                 Bundle args1 = new Bundle();
                 args1.putSerializable("email", mEmail);
                 args1.putSerializable("contacts", mContacts);
-                contactsFragment1.setArguments(args1);
-                return contactsFragment1;
+                searchContacts.setArguments(args1);
+                return searchContacts;
             case 2:
                 Fragment contactsFragment2 = new ContactsFragment();
                 Bundle args2 = new Bundle();

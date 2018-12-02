@@ -2,39 +2,23 @@ package tcss450.uw.edu.chatapp.contacts;
 
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
-import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
-import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
-import tcss450.uw.edu.chatapp.contacts.ContactsPagerAdapter;
 import tcss450.uw.edu.chatapp.model.Contacts;
 
 public class ContactsTabActivity extends AppCompatActivity implements
         ContactPageFragment.OnContactPageFragmentInteractionListener,
-        ContactsFragment.OnContactListFragmentInteractionListener {
+        ContactsFragment.OnContactListFragmentInteractionListener,
+        SearchContactsFragment.OnSearchContactsFragmentInteractionListener {
 
     private ContactsPagerAdapter mContactsPagerAdapter;
     private ViewPager mViewPager;
@@ -127,5 +111,10 @@ public class ContactsTabActivity extends AppCompatActivity implements
                 .replace(R.id.main_content, contactPageFragment) //incorrect container id?
                 .addToBackStack(null);
         transaction.commit();
+    }
+
+    @Override
+    public void onSearchContactsFragmentInteraction(Contacts contact) {
+
     }
 }
