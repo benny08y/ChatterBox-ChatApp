@@ -26,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -53,6 +54,7 @@ import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
+import tcss450.uw.edu.chatapp.weather.WeatherDisplayCityFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayLatLngFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayZipCodeFragment;
 import tcss450.uw.edu.chatapp.weather.MapsActivity;
@@ -69,7 +71,10 @@ public class HomeActivity extends AppCompatActivity implements
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
         ZipCodeFragment.OnZipCodeFragmentInteractionListener,
-        LandingPageFragment.OnLandingPageFragmentInteractionListener {
+        LandingPageFragment.OnLandingPageFragmentInteractionListener,
+        WeatherDisplayZipCodeFragment.OnWeatherDisplayZipCodeFragmentInteractionListener,
+        WeatherDisplayLatLngFragment.OnWeatherDisplayLatLngFragmentInteractionListener,
+        SavedLocationsFragment.OnSavedLocationsFragmentInteractionListener {
 
     public static final String MESSAGE_CHATID = "chat_ID";
     public static final String MESSAGE_NICKNAME = "msg_nickname";
@@ -452,7 +457,8 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void deleteChatFragmentInteraction(Chats item) { }
+    public void deleteChatFragmentInteraction(Chats item) {
+    }
 
     @Override
     public void newSingleChatFragmentInteraction(Contacts item) {
@@ -466,7 +472,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            messageJson.put("chatName", "Single: "+item.getNickname() + " "+ mEmail);
+            messageJson.put("chatName", "Single: " + item.getNickname() + " " + mEmail);
             messageJson.put("email1", mEmail);
             messageJson.put("email2", item.getEmail());
         } catch (JSONException e) {
@@ -505,9 +511,33 @@ public class HomeActivity extends AppCompatActivity implements
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.d("NewChatSingle", "ERROR: "+e.getMessage());
+            Log.d("NewChatSingle", "ERROR: " + e.getMessage());
             onWaitFragmentInteractionHide();
         }
+    }
+
+    @Override
+    public void onSavedLocationClicked(String cityString) {
+        WeatherDisplayCityFragment weatherDisplayCityFragment = new WeatherDisplayCityFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("city", cityString);
+        weatherDisplayCityFragment.setArguments(bundle);
+        loadFragment(weatherDisplayCityFragment);
+    }
+
+    @Override
+    public void onDeleteLocationClicked(String slot) {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        prefs.edit().remove("keys_prefs_location" + slot).apply();
+        Fragment frg = null;
+        frg = getSupportFragmentManager().findFragmentByTag("saved locations fragment");
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commit();
     }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
@@ -578,6 +608,39 @@ public class HomeActivity extends AppCompatActivity implements
             i.putExtra("LOCATION", mCurrentLocation);
             startActivity(i);
         }
+    }
+
+    @Override
+    public void onSavedLocationsButtonClicked() {
+        SavedLocationsFragment savedLocationsFragment = new SavedLocationsFragment();
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_home_container, savedLocationsFragment, "saved locations fragment")
+                .addToBackStack(null);
+        transaction.commit();
+    }
+
+    @Override
+    public void onSaveLocationButtonClicked(String cityString) {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        for (int i = 1; i <= 9; i++) {
+            if (prefs.getString("keys_prefs_location" + Integer.toString(i), "").equals(cityString)) {
+                Toast.makeText(getApplicationContext(), "Error: Location Already Saved", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        for (int i = 1; i <= 9; i++) {
+            if (prefs.getString("keys_prefs_location" + Integer.toString(i), "") == null
+                    || prefs.getString("keys_prefs_location" + Integer.toString(i), "").equals("")) {
+                prefs.edit().putString("keys_prefs_location" + Integer.toString(i), cityString).apply();
+                Toast.makeText(getApplicationContext(), "Location Saved!", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        Toast.makeText(getApplicationContext(), "No Saved Location Space", Toast.LENGTH_LONG).show();
     }
 
     @Override

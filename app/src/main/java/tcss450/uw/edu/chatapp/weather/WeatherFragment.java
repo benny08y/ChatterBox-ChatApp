@@ -48,6 +48,11 @@ public class WeatherFragment extends Fragment {
                 mListener.onMapButtonClicked();
             }
         });
+        b = (Button) v.findViewById(R.id.weatherFragmentSavedLocationsButton);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { mListener.onSavedLocationsButtonClicked(); }
+        });
 
         return v;
     }
@@ -77,5 +82,7 @@ public class WeatherFragment extends Fragment {
         void onZipCodeButtonClicked();
 
         void onMapButtonClicked();
+
+        void onSavedLocationsButtonClicked();
     }
 }

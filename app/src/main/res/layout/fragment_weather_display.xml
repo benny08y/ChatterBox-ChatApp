@@ -254,7 +254,7 @@
         android:id="@+id/day5dt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/day4dt"
@@ -345,17 +345,21 @@
         android:id="@+id/humidity_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/details_field" />
+        android:layout_marginStart="8dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/pressure_field"
+        app:layout_constraintEnd_toStartOf="@+id/pressure_field"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/pressure_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/humidity_field" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/humidity_field"
+        app:layout_constraintTop_toBottomOf="@+id/details_field" />
 
     <TextView
         android:id="@+id/hour24dt"
@@ -703,12 +707,12 @@
         android:id="@+id/hour36dt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/hour32dt"
-        app:layout_constraintTop_toBottomOf="@+id/pressure_field" />
+        app:layout_constraintTop_toBottomOf="@+id/saveLocationsButton" />
 
     <TextView
         android:id="@+id/hour36icon"
@@ -729,5 +733,13 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/hour32temp"
         app:layout_constraintTop_toBottomOf="@+id/hour36icon" />
+
+    <TextView
+        android:id="@+id/saveLocationsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pressure_field" />
 
 </android.support.constraint.ConstraintLayout>
