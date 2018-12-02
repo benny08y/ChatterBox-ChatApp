@@ -17,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,8 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.contacts.Contacts;
-import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
+import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 

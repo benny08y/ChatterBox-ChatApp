@@ -1,4 +1,4 @@
-package tcss450.uw.edu.chatapp.contacts;
+package tcss450.uw.edu.chatapp.model;
 
 import java.io.Serializable;
 

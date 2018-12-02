@@ -8,7 +8,9 @@ import android.widget.TextView;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment.OnContactListFragmentInteractionListener;
+import tcss450.uw.edu.chatapp.model.Contacts;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,6 +24,12 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
 
     public MyContactsRecyclerViewAdapter(List<Contacts> items, ContactsFragment.OnContactListFragmentInteractionListener listener) {
         mValues = items;
+//        mValues = new ArrayList<Contacts>();
+//        Contacts jeff = new Contacts.Builder("Jeffies", "Jeff@email")
+//                .addFirstName("Jeff")
+//                .addLastName("Boi")
+//                .build();
+//        mValues.add(jeff);
         mListener = listener;
     }
 

@@ -1,6 +1,7 @@
 package tcss450.uw.edu.chatapp.contacts;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,11 +12,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import tcss450.uw.edu.chatapp.HomeActivity;
 import tcss450.uw.edu.chatapp.R;
+import tcss450.uw.edu.chatapp.model.Contacts;
+import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
+import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 /**
  * A fragment representing a list of Items.
@@ -33,6 +42,7 @@ public class ContactsFragment extends Fragment {
 
     public static final String ARG_CONTACTS_LIST = "contacts list";
     private List<Contacts> mContacts;
+    private String mEmail;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -56,10 +66,74 @@ public class ContactsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mContacts = new ArrayList<>(
-                    Arrays.asList((Contacts[]) getArguments().getSerializable(ARG_CONTACTS_LIST)));
-            Log.d("CONTACTS FRAGMENT", "args: " + mContacts.listIterator());
+                    Arrays.asList((Contacts[]) getArguments().getSerializable("contacts")));
+            mEmail = getArguments().getSerializable("email").toString();
         }
+        //getContacts();
     }
+
+//    private void getContacts() {
+//        Uri uri = new Uri.Builder()
+//                .scheme("https")
+//                .appendPath(getString(R.string.ep_base_url))
+//                .appendPath(getString(R.string.ep_contacts))
+//                .appendPath(getString(R.string.ep_contacts_getAllContacts))
+//                .build();
+//        JSONObject messageJson = new JSONObject();
+//        try {
+//            messageJson.put("email", mEmail);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+//                //.onPreExecute(this::onWaitFragmentInteractionShow)
+//                .onPostExecute(this::handleContactsGetOnPostExecute)
+//                .onCancelled(error -> Log.e("SEND_TAG", error))
+//                .build().execute();
+//    }
+//
+//    private void handleContactsGetOnPostExecute(final String result) {
+//        //parse JSON
+//        try {
+//            JSONObject root = new JSONObject(result);
+//            if (root.has("success") && root.getBoolean("success")) {
+//                JSONArray data = root.getJSONArray("data");
+//                mContacts = new ArrayList<>();
+//                for (int i = 0; i < data.length(); i++) {
+//                    JSONObject jsonContacts = data.getJSONObject(i);
+//                    mContacts.add(new Contacts.Builder(jsonContacts.getString("username"),
+//                            jsonContacts.getString("email"))
+//                            .addFirstName(jsonContacts.getString("firstname"))
+//                            .addLastName(jsonContacts.getString("lastname"))
+//                            .build());
+//                }
+//                //onWaitFragmentInteractionHide();
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            Log.e("ERROR!", e.getMessage());
+//            //notify user
+//            onWaitFragmentInteractionHide();
+//        }
+//    }
+//
+//    @Override
+//    public void onWaitFragmentInteractionShow() {
+//        getActivity().getSupportFragmentManager()
+//                .beginTransaction()
+//                .add(R.id.content_home_container, new WaitFragment(), "WAIT")
+//                .addToBackStack(null)
+//                .commit();
+//    }
+//
+//    @Override
+//    public void onWaitFragmentInteractionHide() {
+//        getActivity().getSupportFragmentManager()
+//                .beginTransaction()
+//                .remove(getActivity().getSupportFragmentManager().findFragmentByTag("WAIT"))
+//                .commit();
+//    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

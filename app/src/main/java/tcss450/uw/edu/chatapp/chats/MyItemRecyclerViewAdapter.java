@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener;
-import tcss450.uw.edu.chatapp.contacts.Contacts;
+import tcss450.uw.edu.chatapp.model.Contacts;
 
 import java.util.List;
 

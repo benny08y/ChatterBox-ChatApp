@@ -14,7 +14,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +26,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -42,7 +43,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
@@ -50,7 +50,8 @@ import tcss450.uw.edu.chatapp.chats.DeleteChatFragment;
 import tcss450.uw.edu.chatapp.chats.Message;
 import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
-import tcss450.uw.edu.chatapp.contacts.Contacts;
+import tcss450.uw.edu.chatapp.contacts.ContactsPagerAdapter;
+import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
@@ -72,6 +73,8 @@ public class HomeActivity extends AppCompatActivity implements
         WeatherFragment.OnWeatherFragmentInteractionListener,
         ZipCodeFragment.OnZipCodeFragmentInteractionListener{
 
+    public static final String MESSAGE_CONTACTS_CONTACTS = "contacts";
+    public static final String MESSAGE_CONTACTS_EMAIL = "email";
     public static final String MESSAGE_CHATID = "chat_ID";
     public static final String MESSAGE_NICKNAME = "msg_nickname";
     public static final String OPEN_CHAT = "open_chat";
@@ -80,6 +83,8 @@ public class HomeActivity extends AppCompatActivity implements
     private String mEmail;
     private ArrayList<Contacts> mContacts;
     private WeatherFragment weatherFragment;
+    private FragmentPagerAdapter mAdapterViewPager;
+    private ViewPager mViewPager;
 
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
@@ -132,14 +137,11 @@ public class HomeActivity extends AppCompatActivity implements
         TextView t = (TextView) headerView.findViewById(R.id.header_curEmail);
         t.setText(mEmail);
 
-        LandingPageFragment landingPageFragment = new LandingPageFragment();
-        landingPageFragment.setArguments(bundle);
-
         weatherFragment = new WeatherFragment();
 
         if (savedInstanceState == null) {
             if (findViewById(R.id.content_home_container) != null) {
-                Fragment fragment = new LandingPageFragment();
+                //Fragment landing = new LandingPageFragment();
                 if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), true)) {
                     Message msg = (Message) getIntent().getExtras().get("message");
                     Bundle args = new Bundle();
@@ -150,11 +152,8 @@ public class HomeActivity extends AppCompatActivity implements
                     messageFragment.setArguments(args);
                     loadFragment(messageFragment);
                 } else {
-                    Log.v("NOtification", "NO NOITFIY");
-                    fragment.setArguments(bundle);
-                    getSupportFragmentManager().beginTransaction()
-                            .add(R.id.content_home_container, fragment)
-                            .commit();
+                    Fragment landing = new LandingPageFragment();
+                    loadFragment(landing);
                 }
             }
         }
@@ -231,7 +230,6 @@ public class HomeActivity extends AppCompatActivity implements
                     .onCancelled(error -> Log.e("SEND_TAG", error))
                     .build().execute();
         } else if (id == R.id.nav_contacts) {
-            mFab.hide();
             getContacts();
         } else if (id == R.id.nav_logout) {
             AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
@@ -263,6 +261,7 @@ public class HomeActivity extends AppCompatActivity implements
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     private void getContacts() {
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -299,12 +298,19 @@ public class HomeActivity extends AppCompatActivity implements
                 }
                 Contacts[] contactsAsArray = new Contacts[mContacts.size()];
                 contactsAsArray = mContacts.toArray(contactsAsArray);
+                //Bundle args = new Bundle();
+                //args.putSerializable(ContactsFragment.ARG_CONTACTS_LIST, contactsAsArray);
+
                 Bundle args = new Bundle();
-                args.putSerializable(ContactsFragment.ARG_CONTACTS_LIST, contactsAsArray);
-                Fragment frag = new ContactsFragment();
-                frag.setArguments(args);
+                args.putSerializable("email", mEmail);
+                args.putSerializable("contacts", contactsAsArray);
+                Intent intent = new Intent(HomeActivity.this, ContactsTabActivity.class);
+                intent.putExtras(args);
+//                intent.putExtra(MESSAGE_CONTACTS_EMAIL, mEmail);
+//                intent.putExtra(MESSAGE_CONTACTS_CONTACTS, contactsAsArray);
+                HomeActivity.this.startActivity(intent);
+
                 onWaitFragmentInteractionHide();
-                loadFragment(frag);
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -5,18 +5,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import tcss450.uw.edu.chatapp.R;
+import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
 public class ContactPageFragment extends Fragment {

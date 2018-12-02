@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.contacts.Contacts;
+import tcss450.uw.edu.chatapp.model.Contacts;
 
 /**
  * A fragment representing a list of Items.

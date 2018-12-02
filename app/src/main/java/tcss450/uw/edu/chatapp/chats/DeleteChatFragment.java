@@ -24,8 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.contacts.Contacts;
-import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
