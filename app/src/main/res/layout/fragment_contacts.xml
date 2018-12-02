@@ -38,7 +38,7 @@
                 android:layout_marginEnd="8dp"
                 android:text="Nickname"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/contact_button_remove"
                 app:layout_constraintStart_toEndOf="@+id/contact_fragment_icon_person"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,9 +53,19 @@
                 android:text="Email"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/contact_button_remove"
                 app:layout_constraintStart_toEndOf="@+id/contact_fragment_icon_person"
                 app:layout_constraintTop_toBottomOf="@+id/contact_fragment_nickname" />
+
+            <Button
+                android:id="@+id/contact_button_remove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="REMOVE"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 

@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,11 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tcss450.uw.edu.chatapp.HomeActivity;
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
-import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 /**
  * A fragment representing a list of Items.
@@ -43,6 +43,8 @@ public class ContactsFragment extends Fragment {
     public static final String ARG_CONTACTS_LIST = "contacts list";
     private List<Contacts> mContacts;
     private String mEmail;
+    private View view;
+    private RecyclerView recyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -65,8 +67,7 @@ public class ContactsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mContacts = new ArrayList<>(
-                    Arrays.asList((Contacts[]) getArguments().getSerializable("contacts")));
+            mContacts = new ArrayList<>(Arrays.asList((Contacts[]) getArguments().getSerializable("contacts")));
             mEmail = getArguments().getSerializable("email").toString();
         }
         //getContacts();
@@ -111,12 +112,12 @@ public class ContactsFragment extends Fragment {
 //            }
 //        } catch (JSONException e) {
 //            e.printStackTrace();
-//            Log.e("ERROR!", e.getMessage());
+//            Log.e("ContactsFragment handleContactsGetOnPostExecute: ", e.getMessage());
 //            //notify user
-//            onWaitFragmentInteractionHide();
+//            //onWaitFragmentInteractionHide();
 //        }
 //    }
-//
+
 //    @Override
 //    public void onWaitFragmentInteractionShow() {
 //        getActivity().getSupportFragmentManager()
@@ -139,19 +140,23 @@ public class ContactsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_contacts_list, container, false);
+        view = inflater.inflate(R.layout.fragment_contacts_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyContactsRecyclerViewAdapter(mContacts, mListener));
+            recyclerView.setAdapter(new MyContactsRecyclerViewAdapter(mEmail, mContacts, mListener));
         }
+//        Button remove = view.findViewById(R.id.contact_button_remove);
+//        remove.setOnClickListener(e -> {
+//            onRemoveButtonPress();
+//        });
         return view;
     }
 
