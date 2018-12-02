@@ -50,8 +50,10 @@ import tcss450.uw.edu.chatapp.chats.ChatsFragment;
 import tcss450.uw.edu.chatapp.chats.DeleteChatFragment;
 import tcss450.uw.edu.chatapp.chats.Message;
 import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment;
+import tcss450.uw.edu.chatapp.contacts.AddContactsFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactsPagerAdapter;
+import tcss450.uw.edu.chatapp.contacts.SearchContactsFragment;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
@@ -77,7 +79,9 @@ public class HomeActivity extends AppCompatActivity implements
         LandingPageFragment.OnLandingPageFragmentInteractionListener,
         WeatherDisplayZipCodeFragment.OnWeatherDisplayZipCodeFragmentInteractionListener,
         WeatherDisplayLatLngFragment.OnWeatherDisplayLatLngFragmentInteractionListener,
-        SavedLocationsFragment.OnSavedLocationsFragmentInteractionListener {
+        SavedLocationsFragment.OnSavedLocationsFragmentInteractionListener,
+        SearchContactsFragment.OnFragmentInteractionListener,
+        AddContactsFragment.OnFragmentInteractionListener {
 
     public static final String MESSAGE_CONTACTS_CONTACTS = "contacts";
     public static final String MESSAGE_CONTACTS_EMAIL = "email";
@@ -265,6 +269,13 @@ public class HomeActivity extends AppCompatActivity implements
             FragmentTransaction transaction = getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.content_home_container, weatherFragment, "MY_FRAGMENT")
+                    .addToBackStack(null);
+            transaction.commit();
+        } else if (id == R.id.nav_search_contacts) {
+            SearchContactsFragment searchContactsFragment = new SearchContactsFragment();
+            FragmentTransaction transaction = getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content_home_container, searchContactsFragment, "MY_SEARCH_FRAGMENT")
                     .addToBackStack(null);
             transaction.commit();
         }
@@ -543,6 +554,30 @@ public class HomeActivity extends AppCompatActivity implements
         ft.commit();
     }
 
+    @Override
+    public void onSearchContactsFragmentInteraction(Contacts contact) {
+        AddContactsFragment addContactPageFragment = new AddContactsFragment();
+        //contactPageFragment.setContacts(contact);
+        Bundle args = new Bundle();
+        args.putString("nickname", contact.getNickname());
+        args.putString("email", contact.getEmail());
+        args.putString("firstName", contact.getFirstName());
+        args.putString("lastName", contact.getLastName());
+        args.putString("currEmail", mEmail);
+
+        addContactPageFragment.setArguments(args);
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_home_container, addContactPageFragment)
+                .addToBackStack(null);
+        transaction.commit();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
     // we have something that allows us to do that.
     class DeleteTokenAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -758,4 +793,7 @@ public class HomeActivity extends AppCompatActivity implements
         weatherDisplayLatLngFragment.setArguments(bundle);
         loadFragment(weatherDisplayLatLngFragment);
     }
+
+
+
 }
