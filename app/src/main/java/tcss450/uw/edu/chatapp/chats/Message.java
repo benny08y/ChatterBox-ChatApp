@@ -10,6 +10,7 @@ public class Message implements Serializable {
     private final String mNickname;
     private final String mMessage;
     private final String mTimeStamp;
+    private final String mChatName;
     private final int mChatId;
 
     public static class Builder {
@@ -20,6 +21,7 @@ public class Message implements Serializable {
         private String mFirstName="";
         private String mLastName="";
         private String mTimeStamp="";
+        private String mChatName="";
 
         public Builder(String email, String nickname, int chatid) {
             this.mEmail = email;
@@ -47,6 +49,10 @@ public class Message implements Serializable {
             return this;
         }
 
+        public Message.Builder addChatName(final String chatNa){
+            mChatName = chatNa;
+            return this;
+        }
         public Message build() {
             return new Message(this);
         }
@@ -60,6 +66,7 @@ public class Message implements Serializable {
         this.mTimeStamp = builder.mTimeStamp;
         this.mChatId = builder.mChatId;
         this.mNickname = builder.mNickname;
+        this.mChatName = builder.mChatName;
     }
 
     public String getEmail() {
@@ -88,6 +95,9 @@ public class Message implements Serializable {
 
     public String getNickname() {
         return mNickname;
+    }
+    public String getChatName() {
+        return mChatName;
     }
 
 }

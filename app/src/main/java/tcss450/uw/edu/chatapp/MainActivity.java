@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
     private Credentials mCredentials;
     private String mSender;
     private Message mMessage;
+    private Message mNewChatMsg;
     private String mIntentChatId;
     private FirebaseMessageReciever mFirebaseMessageReciever;
 
@@ -44,10 +45,19 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
                 String nickname = getIntent().getExtras().getString("username");
                 String email = getIntent().getExtras().getString("sender");
                 mMessage = new Message.Builder(email, nickname, Integer.parseInt(chatID)).build();
-                Log.d(TAG, "nickname:" +nickname+", CHATID: "+chatID+", EMAIL: "+email );
+                Log.d(TAG, "nickname:" + nickname + ", CHATID: " + chatID + ", EMAIL: " + email);
 //                mLoadFromChatNotification = getIntent().getExtras().getString("type").equals("msg");
+            }
+            if (getIntent().getExtras().containsKey("newchat")){
+                Log.d("newCHatNotif", "got notification");
+                mLoadFromChatNotification = true;
+                String chatID = getIntent().getExtras().getString("chatid");
+                String chatname = getIntent().getExtras().getString("chatname");
+                String email = getIntent().getExtras().getString("sender");
+                mNewChatMsg = new Message.Builder(email, "", Integer.parseInt(chatID)).addChatName(chatname).build();
+                Log.d("newCHatNotif", mNewChatMsg.getChatName());
             } else {
-                Log.d(TAG, "NO MESSAGE");
+                Log.d("newCHatNotif", "NO MESSAGE");
             }
         }
         if (savedInstanceState == null) {
@@ -68,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
         intent.putExtra(HOME_LOGIN_PASSWORD, credentials.getPassword());
         intent.putExtra(getString(R.string.keys_intent_notifification_msg), mLoadFromChatNotification);
         intent.putExtra("message", mMessage);
+        intent.putExtra("newChatMsg", mNewChatMsg);
         MainActivity.this.startActivity(intent);
         //End this Activity and remove it from the Activity back stack.
         finish();
