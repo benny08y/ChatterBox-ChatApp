@@ -16,7 +16,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_rectangle_for_lists">
+            android:background="@drawable/rounded_rect_for_lists">
 
             <TextView
                 android:id="@+id/chat_delete_contactName"

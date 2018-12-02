@@ -77,7 +77,19 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEmail = getArguments().getString("email");
-
+        showFab();
+        setHasOptionsMenu(true);
+        if (getArguments() != null) {
+            mChatsList = new ArrayList<Chats>(
+                    Arrays.asList((Chats[]) getArguments().getSerializable(ARG_CHATS)));
+        }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        showFab();
+    }
+    private void showFab(){
         mFAB = (FloatingActionButton) this.getActivity().findViewById(R.id.fab);
         mFAB.show();
         mFAB.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_chat_black_24dp));
@@ -88,11 +100,6 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
                 makeSingleChat();
             }
         });
-        setHasOptionsMenu(true);
-        if (getArguments() != null) {
-            mChatsList = new ArrayList<Chats>(
-                    Arrays.asList((Chats[]) getArguments().getSerializable(ARG_CHATS)));
-        }
     }
 
     private void makeSingleChat(){
