@@ -50,10 +50,8 @@ import tcss450.uw.edu.chatapp.chats.ChatsFragment;
 import tcss450.uw.edu.chatapp.chats.DeleteChatFragment;
 import tcss450.uw.edu.chatapp.chats.Message;
 import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment;
-import tcss450.uw.edu.chatapp.contacts.AddContactsFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
-import tcss450.uw.edu.chatapp.contacts.ContactsPagerAdapter;
-import tcss450.uw.edu.chatapp.contacts.SearchContactsFragment;
+import tcss450.uw.edu.chatapp.contacts.ContactsTabActivity;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
@@ -79,9 +77,7 @@ public class HomeActivity extends AppCompatActivity implements
         LandingPageFragment.OnLandingPageFragmentInteractionListener,
         WeatherDisplayZipCodeFragment.OnWeatherDisplayZipCodeFragmentInteractionListener,
         WeatherDisplayLatLngFragment.OnWeatherDisplayLatLngFragmentInteractionListener,
-        SavedLocationsFragment.OnSavedLocationsFragmentInteractionListener,
-        SearchContactsFragment.OnFragmentInteractionListener,
-        AddContactsFragment.OnFragmentInteractionListener {
+        SavedLocationsFragment.OnSavedLocationsFragmentInteractionListener {
 
     public static final String MESSAGE_CONTACTS_CONTACTS = "contacts";
     public static final String MESSAGE_CONTACTS_EMAIL = "email";
@@ -118,7 +114,6 @@ public class HomeActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -163,7 +158,9 @@ public class HomeActivity extends AppCompatActivity implements
                     loadFragment(messageFragment);
                 } else {
                     Fragment landing = new LandingPageFragment();
-                    loadFragment(landing);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.content_home_container, landing, "landing page fragment")
+                            .commit();
                 }
             }
         }
@@ -269,13 +266,6 @@ public class HomeActivity extends AppCompatActivity implements
             FragmentTransaction transaction = getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.content_home_container, weatherFragment, "MY_FRAGMENT")
-                    .addToBackStack(null);
-            transaction.commit();
-        } else if (id == R.id.nav_search_contacts) {
-            SearchContactsFragment searchContactsFragment = new SearchContactsFragment();
-            FragmentTransaction transaction = getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.content_home_container, searchContactsFragment, "MY_SEARCH_FRAGMENT")
                     .addToBackStack(null);
             transaction.commit();
         }
@@ -503,7 +493,7 @@ public class HomeActivity extends AppCompatActivity implements
     private void handleNewChat(final String result) {
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("NewChatSingle", "Result: "+result);
+            Log.d("NewChatSingle", "Result: " + result);
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
 
@@ -514,7 +504,7 @@ public class HomeActivity extends AppCompatActivity implements
 //                int chatID = chatIdObj.getInt("chatid");
                 int chatID = root.getInt("chatid");
 
-                Log.d("NewChatSingle", "ChatID: "+chatID);
+                Log.d("NewChatSingle", "ChatID: " + chatID);
                 MessageFragment messageFragment = new MessageFragment();
                 Bundle args = new Bundle();
                 args.putString(MESSAGE_NICKNAME, chatName.replace(mEmail, ""));
@@ -552,30 +542,6 @@ public class HomeActivity extends AppCompatActivity implements
         ft.detach(frg);
         ft.attach(frg);
         ft.commit();
-    }
-
-    @Override
-    public void onSearchContactsFragmentInteraction(Contacts contact) {
-        AddContactsFragment addContactPageFragment = new AddContactsFragment();
-        //contactPageFragment.setContacts(contact);
-        Bundle args = new Bundle();
-        args.putString("nickname", contact.getNickname());
-        args.putString("email", contact.getEmail());
-        args.putString("firstName", contact.getFirstName());
-        args.putString("lastName", contact.getLastName());
-        args.putString("currEmail", mEmail);
-
-        addContactPageFragment.setArguments(args);
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_home_container, addContactPageFragment)
-                .addToBackStack(null);
-        transaction.commit();
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
@@ -720,7 +686,7 @@ public class HomeActivity extends AppCompatActivity implements
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                mCurrentLocation = location;
+                                setLocation(location);
                                 WeatherFragment.setLocation(location);
                                 LandingPageFragment.setLocation(location);
                                 Log.d("LOCATION", location.toString());
@@ -794,6 +760,14 @@ public class HomeActivity extends AppCompatActivity implements
         loadFragment(weatherDisplayLatLngFragment);
     }
 
-
+    private void setLocation(final Location location) {
+        mCurrentLocation = location;
+        Fragment frg = null;
+        frg = getSupportFragmentManager().findFragmentByTag("landing page fragment");
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commit();
+    }
 
 }

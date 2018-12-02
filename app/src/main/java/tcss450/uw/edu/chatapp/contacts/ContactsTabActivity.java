@@ -1,4 +1,4 @@
-package tcss450.uw.edu.chatapp;
+package tcss450.uw.edu.chatapp.contacts;
 
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
@@ -49,13 +50,12 @@ public class ContactsTabActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
-
+        mEmail = args.getSerializable("email").toString();
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mContactsPagerAdapter = new ContactsPagerAdapter(getSupportFragmentManager(),
-                args.getSerializable("email").toString(),
+                mEmail,
                 (Contacts[]) args.getSerializable("contacts"));
-
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.contacts_pager);
         mViewPager.setAdapter(mContactsPagerAdapter);
