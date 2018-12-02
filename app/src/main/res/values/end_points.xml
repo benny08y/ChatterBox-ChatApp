@@ -14,6 +14,7 @@
     <string name="ep_contacts_getAllContacts">getAllContacts</string>
     <string name = "ep_contacts_search_email">search_contact_by_email</string>
     <string name = "ep_contacts_send_request">send_request</string>
+    <string name = "ep_contacts_all_members">get_all_members</string>
 
     <string name="ep_chats_base">chats</string>
     <string name="ep_getallchats">getAllChats</string>
