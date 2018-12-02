@@ -109,6 +109,9 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
                 for (int i = 0; i < dataArray.length(); i++){
                     JSONObject currObj = dataArray.getJSONObject(i);
                     emailList.add(currObj.getString("email"));
+                    emailList.add(currObj.getString("firstname"));
+                    emailList.add(currObj.getString("lastname"));
+                    emailList.add(currObj.getString("username"));
                 }
                 String[] emailArray = new String[emailList.size()];
                 emailArray = emailList.toArray(emailArray);
