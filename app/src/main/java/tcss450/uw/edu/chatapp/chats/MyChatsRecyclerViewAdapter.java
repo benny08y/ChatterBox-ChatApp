@@ -45,9 +45,8 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mContactName.setText( mValues.get(position).getNickname() + " ("
-                +mValues.get(position).getFirstname() + " "+ mValues.get(position).getLastname() +")");
-        holder.mEmail.setText(mValues.get(position).getEmail());
+        holder.mContactName.setText( mValues.get(position).getChatName());
+//        holder.mEmail.setText(mValues.get(position).getEmail());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,14 +68,12 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mContactName;
-        public final TextView mEmail;
         public Chats mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mContactName = (TextView) view.findViewById(R.id.chat_contactName);
-            mEmail = (TextView) view.findViewById(R.id.chat_email);
         }
 
         @Override
