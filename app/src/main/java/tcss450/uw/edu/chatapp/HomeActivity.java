@@ -514,6 +514,21 @@ public class HomeActivity extends AppCompatActivity implements
         loadFragment(weatherDisplayCityFragment);
     }
 
+    @Override
+    public void onDeleteLocationClicked(String slot) {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        prefs.edit().remove("keys_prefs_location" + slot).apply();
+        Fragment frg = null;
+        frg = getSupportFragmentManager().findFragmentByTag("saved locations fragment");
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commit();
+    }
+
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
     // we have something that allows us to do that.
     class DeleteTokenAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -587,7 +602,11 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public void onSavedLocationsButtonClicked() {
         SavedLocationsFragment savedLocationsFragment = new SavedLocationsFragment();
-        loadFragment(savedLocationsFragment);
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_home_container, savedLocationsFragment, "saved locations fragment")
+                .addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
@@ -596,6 +615,12 @@ public class HomeActivity extends AppCompatActivity implements
                 getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
+        for (int i = 1; i <= 9; i++) {
+            if (prefs.getString("keys_prefs_location" + Integer.toString(i), "").equals(cityString)) {
+                Toast.makeText(getApplicationContext(), "Error: Location Already Saved", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
         for (int i = 1; i <= 9; i++) {
             if (prefs.getString("keys_prefs_location" + Integer.toString(i), "") == null
                     || prefs.getString("keys_prefs_location" + Integer.toString(i), "").equals("")) {
