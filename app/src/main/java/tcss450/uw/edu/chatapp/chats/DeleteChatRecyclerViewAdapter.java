@@ -42,7 +42,8 @@ public class DeleteChatRecyclerViewAdapter extends RecyclerView.Adapter<DeleteCh
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mContactName.setText(mValues.get(position).getChatName());
+        holder.mContactName.setText(mValues.get(position).getNickname());
+        holder.mEmail.setText(mValues.get(position).getEmail());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +82,7 @@ public class DeleteChatRecyclerViewAdapter extends RecyclerView.Adapter<DeleteCh
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mContactName;
+        public final TextView mEmail;
         public final CheckBox mCheckBox;
         public Chats mItem;
 
@@ -88,6 +90,7 @@ public class DeleteChatRecyclerViewAdapter extends RecyclerView.Adapter<DeleteCh
             super(view);
             mView = view;
             mContactName = (TextView) view.findViewById(R.id.chat_delete_contactName);
+            mEmail = (TextView) view.findViewById(R.id.chat_delete_email);
             mCheckBox = view.findViewById(R.id.chat_delete_checkbox);
         }
 

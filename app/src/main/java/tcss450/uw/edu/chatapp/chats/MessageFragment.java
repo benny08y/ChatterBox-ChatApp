@@ -128,7 +128,8 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
             JSONObject root = new JSONObject(result);
             int chatid = root.getInt("chatid");
             JSONArray data = root.getJSONArray("messages");
-            for (int i =data.length()-1; i >= 0; i--){
+//            for (int i =data.length()-1; i >= 0; i--){
+            for (int i =0; i< data.length(); i++){
                 JSONObject jsonMsg = data.getJSONObject(i);
                 String sender = jsonMsg.getString("email");
                 String msg = jsonMsg.getString("message");
@@ -139,11 +140,13 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
 //                    mMessageOutputTextView.append(System.lineSeparator());
 //                    mMessageOutputTextView.append(System.lineSeparator());
             }
+            Log.d("MesgAdapter", "MessageFragment_after_parse" + mGetAllMessagesList.get(0));
             mMessageAdapter = new MessageListAdapter(getContext(), mGetAllMessagesList, mEmail);
             LinearLayoutManager linearLayout = new LinearLayoutManager(getActivity());
+//            linearLayout.setReverseLayout(true);
+            linearLayout.setStackFromEnd(true);
             mMessageRecycler.setLayoutManager(linearLayout);
             mMessageRecycler.setAdapter(mMessageAdapter);
-            mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
         } catch (JSONException e) {
             Log.e("JSON PARSE", e.toString());
         }
@@ -196,7 +199,6 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                 String message = res.getString("msg");
                 Message curMsg = new Message.Builder(mEmail, "", 0).addMessage(message).build();
                 mMessageAdapter.addNewMessage(curMsg);
-                mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
             }
         } catch (JSONException e) {
             Log.d("SENT_MSG", "Failed to recieve");

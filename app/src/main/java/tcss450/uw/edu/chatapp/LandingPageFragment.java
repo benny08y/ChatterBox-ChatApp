@@ -57,10 +57,6 @@ public class LandingPageFragment extends Fragment {
             lat = mCurrentLocation.getLatitude();
             lon = mCurrentLocation.getLongitude();
         }
-        if (getArguments() != null) {
-            lat = getArguments().getDouble("lat");
-            lon = getArguments().getDouble("lon");
-        }
 
         weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weathericonsregularwebfont.ttf");
 

@@ -9,14 +9,14 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:outlineProvider="none">
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:outlineProvider="bounds">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_rectangle_for_lists">
+            android:background="@android:color/holo_orange_light">
 
             <TextView
                 android:id="@+id/chat_delete_contactName"
@@ -24,13 +24,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Contact Name"
                 android:textAppearance="?attr/textAppearanceListItem"
-                android:textColor="@color/very_black"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/chat_delete_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="1"
+                android:text="Email"
+                android:textAppearance="?attr/textAppearanceListItem"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/chat_delete_contactName" />
 
             <CheckBox
                 android:id="@+id/chat_delete_checkbox"

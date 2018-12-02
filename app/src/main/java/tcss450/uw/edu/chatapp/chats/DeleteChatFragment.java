@@ -127,7 +127,7 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setCancelable(true);
                 builder.setTitle("Are you sure you want to delete these chat(s)?");
-                builder.setMessage("This will delete all messages in the chat(s).");
+                builder.setMessage("This will permanetely delete the chat(s).");
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -158,16 +158,17 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
                     .appendPath(getString(R.string.ep_chats_base))
                     .appendPath(getString(R.string.ep_delete_chats))
                     .build();
-            onWaitFragmentInteractionShow();
+
             for (int i = 0; i < checkedChats.size(); i++){
                 JSONObject messageJson = new JSONObject();
                 try {
-                    Log.d("deleteCHAT", "post body"+ checkedChats.get(i).getChatName() +" "+checkedChats.get(i).getChatID());
+                    Log.e("IN_JSON", "post body email"+ checkedChats.get(i).getChatID());
                     messageJson.put("chatid", checkedChats.get(i).getChatID());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                        .onPreExecute(this::onWaitFragmentInteractionShow)
                         .onPostExecute(this::handleDeleteChatPostExecute)
                         .onCancelled(error -> Log.e("SEND_TAG", error))
                         .build().execute();
@@ -179,7 +180,6 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("deleteCHAT", result);
             if (root.has("success") && root.getBoolean("success")) {
                 Uri uri = new Uri.Builder()
                         .scheme("https")
@@ -196,14 +196,14 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
                     Log.e("IN_JSON", "didnt put email");
                 }
                 new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-//                        .onPreExecute(this::onWaitFragmentInteractionShow)
+                        .onPreExecute(this::onWaitFragmentInteractionShow)
                         .onPostExecute(this::handleChatsPostExecute)
                         .onCancelled(error -> Log.e("SEND_TAG", error))
                         .build().execute();
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.d("deleteCHAT", e.getMessage());
+            Log.e("ERROR!", e.getMessage());
             //notify user
             onWaitFragmentInteractionHide();
         }
@@ -211,22 +211,23 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
     private void handleChatsPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
+            Log.d("DELETCHAT", "result is valid");
             if (root.has("success") && root.getBoolean("success")) {
-
+                Log.d("DELETCHAT", "success is true");
                 JSONArray data = root.getJSONArray("data");
                 ArrayList<Chats> chatList = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject jsonChats = data.getJSONObject(i);
-                    chatList.add(new Chats.Builder("",
-                            "", "")
+                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
+                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
                             .addChatID(jsonChats.getInt("chatid"))
-                            .addChatName(jsonChats.getString("name"))
+                            .addNickname(jsonChats.getString("username"))
                             .build());
                 }
+                Log.d("DELETCHAT", "got data so it should work...");
                 Chats[] chatsAsArray = new Chats[chatList.size()];
                 chatsAsArray = chatList.toArray(chatsAsArray);
                 Bundle args = new Bundle();
-                args.putString("email", mEmail);
                 args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
                 ChatsFragment chatFrag = new ChatsFragment();
                 chatFrag.setArguments(args);
@@ -235,8 +236,7 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e("ERROR!", e.getMessage());
-            //notify user
+            Log.d("DELETCHAT", e.getMessage());
             onWaitFragmentInteractionHide();
         }
     }
