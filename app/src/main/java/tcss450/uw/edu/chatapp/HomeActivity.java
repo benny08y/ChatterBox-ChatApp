@@ -136,7 +136,7 @@ public class HomeActivity extends AppCompatActivity implements
         t.setText(mEmail);
 
         LandingPageFragment landingPageFragment = new LandingPageFragment();
-        Bundle landingPageBundle = new Bundle();
+        //Bundle landingPageBundle = new Bundle();
         //landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
         //landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
         //landingPageFragment.setArguments(landingPageBundle);
@@ -270,11 +270,14 @@ public class HomeActivity extends AppCompatActivity implements
                     .replace(R.id.content_home_container, weatherFragment, "MY_FRAGMENT")
                     .addToBackStack(null);
             transaction.commit();
-        } else if (id == R.id.nav_search) {
+        } else if (id == R.id.nav_search_contacts) {
             SearchContactsFragment searchContactsFragment = new SearchContactsFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("email", mEmail);
+            searchContactsFragment.setArguments(bundle);
             FragmentTransaction transaction = getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.content_home_container, searchContactsFragment, "MY_FRAGMENT")
+                    .replace(R.id.content_home_container, searchContactsFragment)
                     .addToBackStack(null);
             transaction.commit();
         }
@@ -525,8 +528,8 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onSearchContactsFragmentInteraction(Contacts contact) {
-        AddContactsFragment searchPageFragment = new AddContactsFragment();
-        //searchPageFragment.setContacts(contact);
+        AddContactsFragment addContactPageFragment = new AddContactsFragment();
+        //contactPageFragment.setContacts(contact);
         Bundle args = new Bundle();
         args.putString("nickname", contact.getNickname());
         args.putString("email", contact.getEmail());
@@ -534,10 +537,10 @@ public class HomeActivity extends AppCompatActivity implements
         args.putString("lastName", contact.getLastName());
         args.putString("currEmail", mEmail);
 
-        searchPageFragment.setArguments(args);
+        addContactPageFragment.setArguments(args);
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content_home_container, searchPageFragment)
+                .replace(R.id.content_home_container, addContactPageFragment)
                 .addToBackStack(null);
         transaction.commit();
     }
