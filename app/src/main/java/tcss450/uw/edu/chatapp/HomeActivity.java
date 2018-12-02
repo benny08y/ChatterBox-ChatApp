@@ -115,7 +115,6 @@ public class HomeActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,7 +158,9 @@ public class HomeActivity extends AppCompatActivity implements
                     loadFragment(messageFragment);
                 } else {
                     Fragment landing = new LandingPageFragment();
-                    loadFragment(landing);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.content_home_container, landing, "landing page fragment")
+                            .commit();
                 }
             }
         }
@@ -492,7 +493,7 @@ public class HomeActivity extends AppCompatActivity implements
     private void handleNewChat(final String result) {
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("NewChatSingle", "Result: "+result);
+            Log.d("NewChatSingle", "Result: " + result);
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
 
@@ -503,7 +504,7 @@ public class HomeActivity extends AppCompatActivity implements
 //                int chatID = chatIdObj.getInt("chatid");
                 int chatID = root.getInt("chatid");
 
-                Log.d("NewChatSingle", "ChatID: "+chatID);
+                Log.d("NewChatSingle", "ChatID: " + chatID);
                 MessageFragment messageFragment = new MessageFragment();
                 Bundle args = new Bundle();
                 args.putString(MESSAGE_NICKNAME, chatName.replace(mEmail, ""));
@@ -685,7 +686,7 @@ public class HomeActivity extends AppCompatActivity implements
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                mCurrentLocation = location;
+                                setLocation(location);
                                 WeatherFragment.setLocation(location);
                                 LandingPageFragment.setLocation(location);
                                 Log.d("LOCATION", location.toString());
@@ -758,4 +759,15 @@ public class HomeActivity extends AppCompatActivity implements
         weatherDisplayLatLngFragment.setArguments(bundle);
         loadFragment(weatherDisplayLatLngFragment);
     }
+
+    private void setLocation(final Location location) {
+        mCurrentLocation = location;
+        Fragment frg = null;
+        frg = getSupportFragmentManager().findFragmentByTag("landing page fragment");
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commit();
+    }
+
 }
