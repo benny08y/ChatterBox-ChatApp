@@ -1,9 +1,8 @@
-package tcss450.uw.edu.chatapp;
+package tcss450.uw.edu.chatapp.weather;
 
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,7 +12,7 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
-import tcss450.uw.edu.chatapp.weather.WeatherFragment;
+import tcss450.uw.edu.chatapp.R;
 
 
 /**
@@ -236,6 +235,43 @@ public class SavedLocationsFragment extends Fragment {
                     mListener.onDeleteLocationClicked("9");
                 }
             });
+        }
+
+        if (savedLocation1.getText().toString().equals("") || savedLocation1.getText().toString() == null) {
+            savedLocation1.setVisibility(View.GONE);
+            delete1.setVisibility(View.GONE);
+        }
+        if (savedLocation2.getText().toString().equals("") || savedLocation2.getText().toString() == null) {
+            savedLocation2.setVisibility(View.GONE);
+            delete2.setVisibility(View.GONE);
+        }
+        if (savedLocation3.getText().toString().equals("") || savedLocation3.getText().toString() == null) {
+            savedLocation3.setVisibility(View.GONE);
+            delete3.setVisibility(View.GONE);
+        }
+        if (savedLocation4.getText().toString().equals("") || savedLocation4.getText().toString() == null) {
+            savedLocation4.setVisibility(View.GONE);
+            delete4.setVisibility(View.GONE);
+        }
+        if (savedLocation5.getText().toString().equals("") || savedLocation5.getText().toString() == null) {
+            savedLocation5.setVisibility(View.GONE);
+            delete5.setVisibility(View.GONE);
+        }
+        if (savedLocation6.getText().toString().equals("") || savedLocation6.getText().toString() == null) {
+            savedLocation6.setVisibility(View.GONE);
+            delete6.setVisibility(View.GONE);
+        }
+        if (savedLocation7.getText().toString().equals("") || savedLocation7.getText().toString() == null) {
+            savedLocation7.setVisibility(View.GONE);
+            delete7.setVisibility(View.GONE);
+        }
+        if (savedLocation8.getText().toString().equals("") || savedLocation8.getText().toString() == null) {
+            savedLocation8.setVisibility(View.GONE);
+            delete8.setVisibility(View.GONE);
+        }
+        if (savedLocation9.getText().toString().equals("") || savedLocation9.getText().toString() == null) {
+            savedLocation9.setVisibility(View.GONE);
+            delete9.setVisibility(View.GONE);
         }
 
         return v;

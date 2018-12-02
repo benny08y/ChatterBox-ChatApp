@@ -57,6 +57,7 @@ import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
+import tcss450.uw.edu.chatapp.weather.SavedLocationsFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayCityFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayLatLngFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayZipCodeFragment;

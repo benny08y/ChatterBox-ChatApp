@@ -30,11 +30,16 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
     private final OnContactListFragmentInteractionListener mListener;
     private String mEmail;
     private String mRemovedEmail;
+    private RecyclerView mRecyclerView;
 
-    public MyContactsRecyclerViewAdapter(String email, List<Contacts> items, ContactsFragment.OnContactListFragmentInteractionListener listener) {
+    public MyContactsRecyclerViewAdapter(RecyclerView recyclerView,
+                                         String email,
+                                         List<Contacts> items,
+                                         ContactsFragment.OnContactListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
         mEmail = email;
+        mRecyclerView = recyclerView;
     }
 
     @Override
@@ -67,6 +72,10 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
                     .onPostExecute(this::handleContactRemoveOnPostExecute)
                     .onCancelled(error -> Log.e("SEND_TAG", error))
                     .build().execute();
+            mValues.remove(position);
+            mRecyclerView.removeViewAt(position);
+            this.notifyItemRemoved(position);
+            this.notifyItemRangeChanged(position, mValues.size());
         } else {
             Log.d("ContactsFragment onButtonPress: ", "invalid user email");
         }

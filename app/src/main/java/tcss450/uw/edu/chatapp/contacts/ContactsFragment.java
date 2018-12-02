@@ -151,7 +151,7 @@ public class ContactsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyContactsRecyclerViewAdapter(mEmail, mContacts, mListener));
+            recyclerView.setAdapter(new MyContactsRecyclerViewAdapter(recyclerView, mEmail, mContacts, mListener));
         }
 //        Button remove = view.findViewById(R.id.contact_button_remove);
 //        remove.setOnClickListener(e -> {

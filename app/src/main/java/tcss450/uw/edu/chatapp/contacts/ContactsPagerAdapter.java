@@ -18,7 +18,7 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
 
     public ContactsPagerAdapter(FragmentManager fm, String email, Contacts[] contacts) {
         super(fm);
-        mTabCount = 3;
+        mTabCount = 4;
         mEmail = email;
         mContacts = contacts;
     }
@@ -28,19 +28,19 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
         return mTabCount;
     }
 
-    @Override
-    public CharSequence getPageTitle(int position) {
-        switch(position) {
-            case 0:
-                return "Contacts";
-            case 1:
-                return "Add Contact";
-            case 2:
-                return "Pending Requests";
-            default:
-                return null;
-        }
-    }
+//    @Override
+//    public CharSequence getPageTitle(int position) {
+//        switch(position) {
+//            case 0:
+//                return "Contacts";
+//            case 1:
+//                return "Add Contact";
+//            case 2:
+//                return "Pending Requests";
+//            default:
+//                return null;
+//        }
+//    }
 
     @Override
     public Fragment getItem(int position) {
@@ -66,6 +66,13 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
                 args2.putSerializable("contacts", mContacts);
                 contactsFragment2.setArguments(args2);
                 return contactsFragment2;
+            case 3:
+                Fragment contactsFragment3 = new ContactsFragment();
+                Bundle args3 = new Bundle();
+                args3.putSerializable("email", mEmail);
+                args3.putSerializable("contacts", mContacts);
+                contactsFragment3.setArguments(args3);
+                return contactsFragment3;
             default:
                 return null;
         }
