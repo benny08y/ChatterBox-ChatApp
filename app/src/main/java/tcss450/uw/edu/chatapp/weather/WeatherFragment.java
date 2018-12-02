@@ -48,6 +48,11 @@ public class WeatherFragment extends Fragment {
                 mListener.onMapButtonClicked();
             }
         });
+        b = (Button) v.findViewById(R.id.weatherFragmentSavedLocationsButton);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { mListener.onSavedLocationsButtonClicked(); }
+        });
 
         return v;
     }
@@ -66,7 +71,7 @@ public class WeatherFragment extends Fragment {
     public static void setLocation(final Location location) {
         mCurrentLocation = location;
         if (mMyCurrentLocationButton != null) {
-            mMyCurrentLocationButton.setText("MY CURRENT LOCATION: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
+            mMyCurrentLocationButton.setText("MY CURRENT LOCATION: " + "\n" + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
         }
     }
 
@@ -77,5 +82,7 @@ public class WeatherFragment extends Fragment {
         void onZipCodeButtonClicked();
 
         void onMapButtonClicked();
+
+        void onSavedLocationsButtonClicked();
     }
 }

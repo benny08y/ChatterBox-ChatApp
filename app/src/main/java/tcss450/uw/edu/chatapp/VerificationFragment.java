@@ -163,7 +163,6 @@ public class VerificationFragment extends Fragment implements View.OnClickListen
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnVerificationFragmentInteractionListener {
-        // TODO: Update argument type and name
 //        void onResendClicked();
         void onLoginClicked();
     }

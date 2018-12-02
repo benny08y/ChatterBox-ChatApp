@@ -9,12 +9,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -48,23 +50,32 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
     private String mNickname;
     private int mChatId;
 
+    private RecyclerView mMessageRecycler;
+    private MessageListAdapter mMessageAdapter;
+    private List<Message> mGetAllMessagesList;
+
     public MessageFragment() {    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootLayout = inflater.inflate(R.layout.fragment_message, container, false);
-        mMessageOutputTextView = rootLayout.findViewById(R.id.text_chat_message_display);
+        SharedPreferences prefs =
+                getActivity().getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        if (prefs.contains(getString(R.string.keys_prefs_email))) {
+            mEmail = prefs.getString(getString(R.string.keys_prefs_email), "");
+        } else {
+            throw new IllegalStateException("No EMAIL in prefs!");
+        }
+//        mMessageOutputTextView = rootLayout.findViewById(R.id.text_chat_message_display);
         mMessageInputEditText = rootLayout.findViewById(R.id.edit_chat_message_input);
-
-        ScrollView scrollView = rootLayout.findViewById(R.id.scrollView_msg_display);
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                scrollView.fullScroll(View.FOCUS_DOWN);
-            }
-        });
+        mGetAllMessagesList = new ArrayList<>();
         rootLayout.findViewById(R.id.button_chat_send).setOnClickListener(this::handleSendClick);
+
+        mMessageRecycler = (RecyclerView) rootLayout.findViewById(R.id.reyclerview_message_list);
+//        mMessageRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         return rootLayout;
     }
 
@@ -85,7 +96,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
         mNickname = getArguments().getString(HomeActivity.MESSAGE_NICKNAME);
         TextView msg_contactname = getActivity().findViewById(R.id.message_contactname);
         msg_contactname.setText(mNickname);
-        //We will use this url every time the user hits send. Let's only build it once, ya?
+
         mSendUrl = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -100,34 +111,39 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                 .appendPath(getString(R.string.ep_messaging_getAll))
                 .build();
         JSONObject messageJson = new JSONObject();
-//        if(mChats != null ) {
-            try {
-                messageJson.put("chatId", mChatId);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                    .onPostExecute(this::getMessagesPostExecute)
-                    .onCancelled(error -> Log.e("SEND_TAG", error))
-                    .build().execute();
-//        }
+        try {
+            messageJson.put("chatId", mChatId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                .onPostExecute(this::getMessagesPostExecute)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
+
     }
 
     private void getMessagesPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
+            int chatid = root.getInt("chatid");
             JSONArray data = root.getJSONArray("messages");
             for (int i =data.length()-1; i >= 0; i--){
                 JSONObject jsonMsg = data.getJSONObject(i);
-                if(jsonMsg.has("message") && jsonMsg.has("email")) {
-                    String sender = jsonMsg.getString("email");
-                    String msg = jsonMsg.getString("message");
-                    mMessageOutputTextView.append(sender + ":" + msg);
-                    mMessageOutputTextView.append(System.lineSeparator());
-                    mMessageOutputTextView.append(System.lineSeparator());
-                    Log.i("FCM Chat Frag", sender + " " + msg);
-                }
+                String sender = jsonMsg.getString("email");
+                String msg = jsonMsg.getString("message");
+                String nickname = jsonMsg.getString("username");
+                Message curMsg = new Message.Builder(sender, nickname, chatid).addMessage(msg).build();
+                mGetAllMessagesList.add(curMsg);
+//                    mMessageOutputTextView.append(sender + ":" + msg);
+//                    mMessageOutputTextView.append(System.lineSeparator());
+//                    mMessageOutputTextView.append(System.lineSeparator());
             }
+            mMessageAdapter = new MessageListAdapter(getContext(), mGetAllMessagesList, mEmail);
+            LinearLayoutManager linearLayout = new LinearLayoutManager(getActivity());
+            mMessageRecycler.setLayoutManager(linearLayout);
+            mMessageRecycler.setAdapter(mMessageAdapter);
+            mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
         } catch (JSONException e) {
             Log.e("JSON PARSE", e.toString());
         }
@@ -175,9 +191,12 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
             if(res.has("success") ) {
                 //The web service got our message. Time to clear out the input EditText
                 mMessageInputEditText.setText("");
-                Log.d("SENT_MSG", "SUCCESS SENT " + res.getBoolean("success"));
                 //its up to you to decide if you want to send the message to the output here
                 //or wait for the message to come back from the web service.
+                String message = res.getString("msg");
+                Message curMsg = new Message.Builder(mEmail, "", 0).addMessage(message).build();
+                mMessageAdapter.addNewMessage(curMsg);
+                mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
             }
         } catch (JSONException e) {
             Log.d("SENT_MSG", "Failed to recieve");
@@ -213,10 +232,14 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                     jObj = new JSONObject(data);
                     if(jObj.has("message") && jObj.has("sender")) {
                         String sender = jObj.getString("sender");
+                        String nickname = jObj.getString("username");
+                        int chatid = jObj.getInt("chatid");
                         String msg = jObj.getString("message");
-                        mMessageOutputTextView.append(sender + ":" + msg);
-                        mMessageOutputTextView.append(System.lineSeparator());
-                        mMessageOutputTextView.append(System.lineSeparator());
+//                        Message curMsg = new Message.Builder(sender, nickname, chatid).addMessage(msg).build();
+//                        mMessageAdapter.addNewMessage(curMsg);
+//                        mMessageOutputTextView.append(sender + ":" + msg);
+//                        mMessageOutputTextView.append(System.lineSeparator());
+//                        mMessageOutputTextView.append(System.lineSeparator());
                         Log.d("SENT_MSG", sender + " " + msg);
                     }
                 } catch (JSONException e) {

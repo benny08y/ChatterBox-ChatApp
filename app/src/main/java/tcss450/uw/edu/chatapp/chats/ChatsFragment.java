@@ -84,7 +84,6 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
         mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("LoadNewChat", mEmail);
                 mFAB.hide();
                 makeSingleChat();
             }
@@ -105,7 +104,6 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            Log.d("LoadNewChat", mEmail);
             messageJson.put("email", mEmail);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -120,7 +118,6 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("LoadNewChat", "Should be true: "+root.getBoolean("success"));
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
                 ArrayList<Contacts> contactsList = new ArrayList<>();

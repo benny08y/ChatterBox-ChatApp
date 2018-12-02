@@ -28,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -56,8 +57,9 @@ import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
-import tcss450.uw.edu.chatapp.weather.CurrentConditionsLatLngFragment;
-import tcss450.uw.edu.chatapp.weather.CurrentConditionsZipCodeFragment;
+import tcss450.uw.edu.chatapp.weather.WeatherDisplayCityFragment;
+import tcss450.uw.edu.chatapp.weather.WeatherDisplayLatLngFragment;
+import tcss450.uw.edu.chatapp.weather.WeatherDisplayZipCodeFragment;
 import tcss450.uw.edu.chatapp.weather.MapsActivity;
 import tcss450.uw.edu.chatapp.weather.WeatherFragment;
 import tcss450.uw.edu.chatapp.weather.ZipCodeFragment;
@@ -71,7 +73,11 @@ public class HomeActivity extends AppCompatActivity implements
         WaitFragment.OnFragmentInteractionListener,
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
-        ZipCodeFragment.OnZipCodeFragmentInteractionListener{
+        ZipCodeFragment.OnZipCodeFragmentInteractionListener,
+        LandingPageFragment.OnLandingPageFragmentInteractionListener,
+        WeatherDisplayZipCodeFragment.OnWeatherDisplayZipCodeFragmentInteractionListener,
+        WeatherDisplayLatLngFragment.OnWeatherDisplayLatLngFragmentInteractionListener,
+        SavedLocationsFragment.OnSavedLocationsFragmentInteractionListener {
 
     public static final String MESSAGE_CONTACTS_CONTACTS = "contacts";
     public static final String MESSAGE_CONTACTS_EMAIL = "email";
@@ -109,7 +115,7 @@ public class HomeActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle(R.string.app_name);
+
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,6 +189,7 @@ public class HomeActivity extends AppCompatActivity implements
                     // ...
                     mCurrentLocation = location;
                     WeatherFragment.setLocation(location);
+                    LandingPageFragment.setLocation(location);
                     Log.d("LOCATION UPDATE!", location.toString());
                 }
             }
@@ -208,7 +215,12 @@ public class HomeActivity extends AppCompatActivity implements
 
         if (id == R.id.nav_home) {
             mFab.hide();
-            loadFragment(new LandingPageFragment());
+            LandingPageFragment landingPageFragment = new LandingPageFragment();
+            Bundle landingPageBundle = new Bundle();
+            landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+            landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+            landingPageFragment.setArguments(landingPageBundle);
+            loadFragment(landingPageFragment);
         } else if (id == R.id.nav_chat) {
             Uri uri = new Uri.Builder()
                     .scheme("https")
@@ -281,6 +293,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .onCancelled(error -> Log.e("SEND_TAG", error))
                 .build().execute();
     }
+
     private void handleContactsGetOnPostExecute(final String result) {
         //parse JSON
         try {
@@ -319,6 +332,7 @@ public class HomeActivity extends AppCompatActivity implements
             onWaitFragmentInteractionHide();
         }
     }
+
     private void handleChatsPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
@@ -328,10 +342,10 @@ public class HomeActivity extends AppCompatActivity implements
                 ArrayList<Chats> chatList = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject jsonChats = data.getJSONObject(i);
-                    chatList.add(new Chats.Builder(jsonChats.getString("email"),
-                            jsonChats.getString("firstname"), jsonChats.getString("lastname"))
+                    chatList.add(new Chats.Builder("",
+                            "", "")
                             .addChatID(jsonChats.getInt("chatid"))
-                            .addNickname(jsonChats.getString("username"))
+                            .addChatName(jsonChats.getString("name").replace(mEmail, ""))
                             .build());
                 }
                 Chats[] chatsAsArray = new Chats[chatList.size()];
@@ -383,8 +397,8 @@ public class HomeActivity extends AppCompatActivity implements
         MessageFragment messageFragment = new MessageFragment();
         Message msg = new Message.Builder(item.getEmail(), item.getNickname(), item.getChatID()).build();
         Bundle args = new Bundle();
-        args.putString(MESSAGE_NICKNAME, msg.getNickname());
-        args.putInt(MESSAGE_CHATID, msg.getChatId());
+        args.putString(MESSAGE_NICKNAME, item.getChatName());
+        args.putInt(MESSAGE_CHATID, item.getChatID());
         messageFragment.setArguments(args);
         loadFragment(messageFragment);
     }
@@ -438,7 +452,7 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onSearchButtonClicked(String zipCodeString) {
-        CurrentConditionsZipCodeFragment frag = new CurrentConditionsZipCodeFragment();
+        WeatherDisplayZipCodeFragment frag = new WeatherDisplayZipCodeFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("zip code", zipCodeString);
         frag.setArguments(bundle);
@@ -446,11 +460,13 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void deleteChatFragmentInteraction(Chats item) { }
+    public void deleteChatFragmentInteraction(Chats item) {
+    }
 
     @Override
     public void newSingleChatFragmentInteraction(Contacts item) {
         //webserivece call to start new chat, retrieve chatid and put into message fragment
+        Log.d("NewChatSingle", "Adding new single chat..." + item.getEmail());
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -459,7 +475,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            messageJson.put("chatName", mEmail+item.getEmail()+"singelchat");
+            messageJson.put("chatName", "Single: " + item.getNickname() + " " + mEmail);
             messageJson.put("email1", mEmail);
             messageJson.put("email2", item.getEmail());
         } catch (JSONException e) {
@@ -472,36 +488,59 @@ public class HomeActivity extends AppCompatActivity implements
                 .onCancelled(error -> Log.e("SEND_TAG", error))
                 .build().execute();
     }
+
     private void handleNewChat(final String result) {
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("NewChatSingle", "Should be true: "+root.getBoolean("success"));
+            Log.d("NewChatSingle", "Result: "+result);
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
-                Log.d("NewChatSingle", data.toString());
-                String email="";
-                String nickname="";
-                int chatid=root.getInt("chatid");
-                for (int i = 0; i < data.length(); i++){
-                    email = data.getJSONObject(i).getString("email");
-                    nickname = data.getJSONObject(i).getString("username");
-                }
-                Log.d("NewChatSingle", chatid+" "+email+ " "+nickname);
+
+                String chatName = root.getString("chatname");
+
+//                JSONArray chatIdArray = root.getJSONArray("chatid");
+//                JSONObject chatIdObj = chatIdArray.getJSONObject(0);
+//                int chatID = chatIdObj.getInt("chatid");
+                int chatID = root.getInt("chatid");
+
+                Log.d("NewChatSingle", "ChatID: "+chatID);
                 MessageFragment messageFragment = new MessageFragment();
-                Message msg = new Message.Builder(email, nickname, chatid).build();
                 Bundle args = new Bundle();
-                args.putString(MESSAGE_NICKNAME, nickname);
-                args.putInt(MESSAGE_CHATID, chatid);
+                args.putString(MESSAGE_NICKNAME, chatName.replace(mEmail, ""));
+                args.putInt(MESSAGE_CHATID, chatID);
                 messageFragment.setArguments(args);
-                Log.d("NewChatSingle", "Please load the message fragment");
                 onWaitFragmentInteractionHide();
                 loadFragment(messageFragment);
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.d("NewChatSingle", e.getMessage());
+            Log.d("NewChatSingle", "ERROR: " + e.getMessage());
             onWaitFragmentInteractionHide();
         }
+    }
+
+    @Override
+    public void onSavedLocationClicked(String cityString) {
+        WeatherDisplayCityFragment weatherDisplayCityFragment = new WeatherDisplayCityFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("city", cityString);
+        weatherDisplayCityFragment.setArguments(bundle);
+        loadFragment(weatherDisplayCityFragment);
+    }
+
+    @Override
+    public void onDeleteLocationClicked(String slot) {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        prefs.edit().remove("keys_prefs_location" + slot).apply();
+        Fragment frg = null;
+        frg = getSupportFragmentManager().findFragmentByTag("saved locations fragment");
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commit();
     }
 
     // Deleting the InstanceId (Firebase token) must be done asynchronously. Good thing
@@ -547,12 +586,12 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onMyCurrentLocationButtonClicked(Double lat, Double lon) {
-        CurrentConditionsLatLngFragment currentConditionsLatLngFragment = new CurrentConditionsLatLngFragment();
+        WeatherDisplayLatLngFragment weatherDisplayLatLngFragment = new WeatherDisplayLatLngFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("lat", lat);
         bundle.putSerializable("lon", lon);
-        currentConditionsLatLngFragment.setArguments(bundle);
-        loadFragment(currentConditionsLatLngFragment);
+        weatherDisplayLatLngFragment.setArguments(bundle);
+        loadFragment(weatherDisplayLatLngFragment);
     }
 
     @Override
@@ -572,6 +611,39 @@ public class HomeActivity extends AppCompatActivity implements
             i.putExtra("LOCATION", mCurrentLocation);
             startActivity(i);
         }
+    }
+
+    @Override
+    public void onSavedLocationsButtonClicked() {
+        SavedLocationsFragment savedLocationsFragment = new SavedLocationsFragment();
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_home_container, savedLocationsFragment, "saved locations fragment")
+                .addToBackStack(null);
+        transaction.commit();
+    }
+
+    @Override
+    public void onSaveLocationButtonClicked(String cityString) {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        for (int i = 1; i <= 9; i++) {
+            if (prefs.getString("keys_prefs_location" + Integer.toString(i), "").equals(cityString)) {
+                Toast.makeText(getApplicationContext(), "Error: Location Already Saved", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        for (int i = 1; i <= 9; i++) {
+            if (prefs.getString("keys_prefs_location" + Integer.toString(i), "") == null
+                    || prefs.getString("keys_prefs_location" + Integer.toString(i), "").equals("")) {
+                prefs.edit().putString("keys_prefs_location" + Integer.toString(i), cityString).apply();
+                Toast.makeText(getApplicationContext(), "Location Saved!", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        Toast.makeText(getApplicationContext(), "No Saved Location Space", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -615,6 +687,7 @@ public class HomeActivity extends AppCompatActivity implements
                             if (location != null) {
                                 mCurrentLocation = location;
                                 WeatherFragment.setLocation(location);
+                                LandingPageFragment.setLocation(location);
                                 Log.d("LOCATION", location.toString());
                             }
                         }
@@ -661,5 +734,28 @@ public class HomeActivity extends AppCompatActivity implements
         // stopped state. Doing so helps battery performance and is especially
         // recommended in applications that request frequent location updates.
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSupportActionBar().setTitle(R.string.app_name);
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    @Override
+    public void onWeatherClicked(Double lat, Double lon) {
+        WeatherDisplayLatLngFragment weatherDisplayLatLngFragment = new WeatherDisplayLatLngFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("lat", lat);
+        bundle.putSerializable("lon", lon);
+        weatherDisplayLatLngFragment.setArguments(bundle);
+        loadFragment(weatherDisplayLatLngFragment);
     }
 }

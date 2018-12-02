@@ -1,7 +1,9 @@
 package tcss450.uw.edu.chatapp.weather;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -10,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,9 +23,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.weather.CurrentConditionsLatLngFragment;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+        GoogleMap.OnMapClickListener,
+        WeatherDisplayLatLngFragment.OnWeatherDisplayLatLngFragmentInteractionListener {
 
     private GoogleMap mMap;
     private Location mCurrentLocation;
@@ -56,7 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapClick(LatLng latLng) {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.map);
-        if (!(currentFragment instanceof CurrentConditionsLatLngFragment)) {
+        if (!(currentFragment instanceof WeatherDisplayLatLngFragment)) {
             Log.d("LAT/LONG", latLng.toString());
 
             Marker marker = mMap.addMarker(new MarkerOptions()
@@ -76,14 +80,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             alertDialog.setPositiveButton("Select",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            CurrentConditionsLatLngFragment currentConditionsLatLngFragment = new CurrentConditionsLatLngFragment();
+                            WeatherDisplayLatLngFragment weatherDisplayLatLngFragment = new WeatherDisplayLatLngFragment();
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("lat", latLng.latitude);
                             bundle.putSerializable("lon", latLng.longitude);
-                            currentConditionsLatLngFragment.setArguments(bundle);
+                            weatherDisplayLatLngFragment.setArguments(bundle);
                             FragmentTransaction transaction = getSupportFragmentManager()
                                     .beginTransaction()
-                                    .replace(R.id.map, currentConditionsLatLngFragment)
+                                    .replace(R.id.map, weatherDisplayLatLngFragment)
                                     .addToBackStack(null);
                             transaction.commit();
                         }
@@ -96,5 +100,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
             alertDialog.show();
         }
+    }
+
+    @Override
+    public void onSaveLocationButtonClicked(String cityString) {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        for (int i = 1; i <= 9; i++) {
+            if (prefs.getString("keys_prefs_location" + Integer.toString(i), "") == null
+                    || prefs.getString("keys_prefs_location" + Integer.toString(i), "").equals("")) {
+                prefs.edit().putString("keys_prefs_location" + Integer.toString(i), cityString).apply();
+                Toast.makeText(getApplicationContext(), "Location Saved!", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        Toast.makeText(getApplicationContext(), "No Saved Location Space", Toast.LENGTH_LONG).show();
     }
 }

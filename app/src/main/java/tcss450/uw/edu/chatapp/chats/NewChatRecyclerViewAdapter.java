@@ -1,15 +1,18 @@
 package tcss450.uw.edu.chatapp.chats;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener;
 import tcss450.uw.edu.chatapp.model.Contacts;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,14 +20,18 @@ import java.util.List;
  * specified {@link OnNewSingleChatListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
+public class NewChatRecyclerViewAdapter extends RecyclerView.Adapter<NewChatRecyclerViewAdapter.ViewHolder> {
 
     private final List<Contacts> mValues;
     private final OnNewSingleChatListFragmentInteractionListener mListener;
+    private boolean isCheckBoxVisible;
+    private boolean mIsEnabled;
+    private ArrayList<Contacts> mCheckedContacts;
 
-    public MyItemRecyclerViewAdapter(List<Contacts> items, NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener listener) {
+    public NewChatRecyclerViewAdapter(List<Contacts> items, NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
+        mCheckedContacts=  new ArrayList<>();
     }
 
     @Override
@@ -39,17 +46,52 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mItem = mValues.get(position);
         holder.mContactName.setText(mValues.get(position).getNickname());
         holder.mEmail.setText(mValues.get(position).getEmail());
+        if (isCheckBoxVisible){
+            holder.mCheckBox.setVisibility(View.VISIBLE);
+        } else {
+            holder.mCheckBox.setVisibility(View.INVISIBLE);
+        }
+        if (mIsEnabled){
+            holder.mCheckBox.setChecked(false);
+            mCheckedContacts.clear();
+            Log.d("NewChat", mCheckedContacts.toString());
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.newSingleChatFragmentInteraction(holder.mItem);
+                    if (isCheckBoxVisible){
+                        if (holder.mCheckBox.isChecked()){
+                            holder.mCheckBox.setChecked(false);
+                            mCheckedContacts.remove(mValues.get(position));
+                            Log.d("NewChat", "remove"+mCheckedContacts.toString());
+                        } else {
+                            holder.mCheckBox.setChecked(true);
+                            mCheckedContacts.add(mValues.get(position));
+                            Log.d("NewChat", "add"+mCheckedContacts.toString());
+                        }
+                    } else {
+                        // Notify the active callbacks interface (the activity, if the
+                        // fragment is attached to one) that an item has been selected.
+                        mListener.newSingleChatFragmentInteraction(holder.mItem);
+                    }
                 }
             }
         });
+    }
+
+    public ArrayList<Contacts> getCheckedContacts(){
+        if (mCheckedContacts.isEmpty()){
+            return null;
+        }
+        return mCheckedContacts;
+    }
+    public void setCheckBoxes(boolean ischecked){
+        isCheckBoxVisible = ischecked;
+    }
+    public void setEnabledCheckBoxes(boolean isEnabled){
+        mIsEnabled = isEnabled;
     }
 
     @Override
@@ -61,6 +103,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final View mView;
         public final TextView mContactName;
         public final TextView mEmail;
+        public final CheckBox mCheckBox;
         public Contacts mItem;
 
         public ViewHolder(View view) {
@@ -68,6 +111,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mView = view;
             mContactName = (TextView) view.findViewById(R.id.newchat_single_nickname);
             mEmail = (TextView) view.findViewById(R.id.newchat_single_email);
+            mCheckBox = view.findViewById(R.id.new_chat_checkbox);
         }
 
         @Override
