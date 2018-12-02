@@ -34,13 +34,13 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         Message message = (Message) mMessageList.get(position);
 
 //        for (int i = 0; i < mMessageList.size(); i++){
-            if (message.getEmail().equals(mCurrentUserEmail)) {
-                // If the current user is the sender of the message
-                return VIEW_TYPE_MESSAGE_SENT;
-            } else {
-                // If some other user sent the message
-                return VIEW_TYPE_MESSAGE_RECEIVED;
-            }
+        if (message.getEmail().equals(mCurrentUserEmail)) {
+            // If the current user is the sender of the message
+            return VIEW_TYPE_MESSAGE_SENT;
+        } else {
+            // If some other user sent the message
+            return VIEW_TYPE_MESSAGE_RECEIVED;
+        }
 //        }
 //        return 0;
     }

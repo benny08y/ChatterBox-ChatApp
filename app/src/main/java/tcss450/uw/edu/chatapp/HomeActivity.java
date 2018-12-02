@@ -108,7 +108,7 @@ public class HomeActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle(R.string.app_name);
+
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +136,36 @@ public class HomeActivity extends AppCompatActivity implements
         TextView t = (TextView) headerView.findViewById(R.id.header_curEmail);
         t.setText(mEmail);
 
+        LandingPageFragment landingPageFragment = new LandingPageFragment();
+        Bundle landingPageBundle = new Bundle();
+//        landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
+//        landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
+        landingPageFragment.setArguments(landingPageBundle);
+        landingPageFragment.setArguments(bundle);
+
+        weatherFragment = new WeatherFragment();
+
+        if (savedInstanceState == null) {
+            if (findViewById(R.id.content_home_container) != null) {
+                Fragment fragment = new LandingPageFragment();
+                if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), true)) {
+                    Message msg = (Message) getIntent().getExtras().get("message");
+                    Bundle args = new Bundle();
+//                    args.putSerializable(MESSAGE_NOTIFICATION, msg);
+                    args.putInt(MESSAGE_CHATID, msg.getChatId());
+                    args.putString(MESSAGE_NICKNAME, msg.getNickname());
+                    MessageFragment messageFragment = new MessageFragment();
+                    messageFragment.setArguments(args);
+                    loadFragment(messageFragment);
+                } else {
+                    Log.v("NOtification", "NO NOITFIY");
+                    fragment.setArguments(bundle);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.content_home_container, fragment)
+                            .commit();
+                }
+            }
+        }
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -160,40 +190,14 @@ public class HomeActivity extends AppCompatActivity implements
                 for (Location location : locationResult.getLocations()) {
                     // Update UI with location data
                     // ...
+                    mCurrentLocation = location;
                     WeatherFragment.setLocation(location);
                     LandingPageFragment.setLocation(location);
+                    Log.d("LOCATION UPDATE!", location.toString());
                 }
             }
         };
         createLocationRequest();
-
-        weatherFragment = new WeatherFragment();
-
-        if (savedInstanceState == null) {
-            if (findViewById(R.id.content_home_container) != null) {
-                LandingPageFragment landingPageFragment = new LandingPageFragment();
-//                Bundle landingPageBundle = new Bundle();
-//                landingPageBundle.putSerializable("lat", mCurrentLocation.getLatitude());
-//                landingPageBundle.putSerializable("lon", mCurrentLocation.getLongitude());
-//                fragment.setArguments(landingPageBundle);
-                if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), true)) {
-                    Message msg = (Message) getIntent().getExtras().get("message");
-                    Bundle args = new Bundle();
-//                    args.putSerializable(MESSAGE_NOTIFICATION, msg);
-                    args.putInt(MESSAGE_CHATID, msg.getChatId());
-                    args.putString(MESSAGE_NICKNAME, msg.getNickname());
-                    MessageFragment messageFragment = new MessageFragment();
-                    messageFragment.setArguments(args);
-                    loadFragment(messageFragment);
-                } else {
-                    Log.v("NOtification", "NO NOITFIY");
-//                    fragment.setArguments(bundle);
-                    getSupportFragmentManager().beginTransaction()
-                            .add(R.id.content_home_container, landingPageFragment, "landing page fragment")
-                            .commit();
-                }
-            }
-        }
     }
 
     @Override
@@ -459,6 +463,7 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public void newSingleChatFragmentInteraction(Contacts item) {
         //webserivece call to start new chat, retrieve chatid and put into message fragment
+        Log.d("NewChatSingle", "Adding new single chat..." + item.getEmail());
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -484,12 +489,18 @@ public class HomeActivity extends AppCompatActivity implements
     private void handleNewChat(final String result) {
         try {
             JSONObject root = new JSONObject(result);
-//            Log.d("NewChatSingle", "Should be true: "+root.getBoolean("success"));
+            Log.d("NewChatSingle", "Result: "+result);
             if (root.has("success") && root.getBoolean("success")) {
                 JSONArray data = root.getJSONArray("data");
+
                 String chatName = root.getString("chatname");
+
+//                JSONArray chatIdArray = root.getJSONArray("chatid");
+//                JSONObject chatIdObj = chatIdArray.getJSONObject(0);
+//                int chatID = chatIdObj.getInt("chatid");
                 int chatID = root.getInt("chatid");
-                Log.d("NewChatSingle", chatName.replace(mEmail, ""));
+
+                Log.d("NewChatSingle", "ChatID: "+chatID);
                 MessageFragment messageFragment = new MessageFragment();
                 Bundle args = new Bundle();
                 args.putString(MESSAGE_NICKNAME, chatName.replace(mEmail, ""));
@@ -671,9 +682,10 @@ public class HomeActivity extends AppCompatActivity implements
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                setLocation(location);
+                                mCurrentLocation = location;
                                 WeatherFragment.setLocation(location);
                                 LandingPageFragment.setLocation(location);
+                                Log.d("LOCATION", location.toString());
                             }
                         }
                     });
@@ -724,6 +736,7 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        getSupportActionBar().setTitle(R.string.app_name);
         startLocationUpdates();
     }
 
@@ -741,15 +754,5 @@ public class HomeActivity extends AppCompatActivity implements
         bundle.putSerializable("lon", lon);
         weatherDisplayLatLngFragment.setArguments(bundle);
         loadFragment(weatherDisplayLatLngFragment);
-    }
-
-    private void setLocation(final Location location) {
-        mCurrentLocation = location;
-        Fragment frg = null;
-        frg = getSupportFragmentManager().findFragmentByTag("landing page fragment");
-        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.detach(frg);
-        ft.attach(frg);
-        ft.commit();
     }
 }

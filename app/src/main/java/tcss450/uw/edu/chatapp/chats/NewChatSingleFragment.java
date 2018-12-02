@@ -152,18 +152,18 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
                     jsonArray.put(listOfContacts.get(i).getEmail());
                 }
 //                for (int i =0; i < listOfContacts.size(); i++){
-                    try {
-                        messageJson.put("chatName", "Group: " + groupName);  //NEED TO CREATE UNIQUE group chatname
-                        messageJson.put("emaillist", jsonArray);
-                    } catch (JSONException e) {
-                        Log.d("NEWCHAT", "array wrong");
-                        e.printStackTrace();
-                    }
-                    new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                            .onPreExecute(this::onWaitFragmentInteractionShow)
-                            .onPostExecute(this::handleNewChat)
-                            .onCancelled(error -> Log.e("SEND_TAG", error))
-                            .build().execute();
+                try {
+                    messageJson.put("chatName", "Group: " + groupName);  //NEED TO CREATE UNIQUE group chatname
+                    messageJson.put("emaillist", jsonArray);
+                } catch (JSONException e) {
+                    Log.d("NEWCHAT", "array wrong");
+                    e.printStackTrace();
+                }
+                new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                        .onPreExecute(this::onWaitFragmentInteractionShow)
+                        .onPostExecute(this::handleNewChat)
+                        .onCancelled(error -> Log.e("SEND_TAG", error))
+                        .build().execute();
 //                }
             }
 

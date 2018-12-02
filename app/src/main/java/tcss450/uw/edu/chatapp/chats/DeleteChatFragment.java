@@ -162,7 +162,7 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
             for (int i = 0; i < checkedChats.size(); i++){
                 JSONObject messageJson = new JSONObject();
                 try {
-                    Log.d("deleteCHAT", "post body email"+ checkedChats.get(i).getChatID());
+                    Log.d("deleteCHAT", "post body"+ checkedChats.get(i).getChatName() +" "+checkedChats.get(i).getChatID());
                     messageJson.put("chatid", checkedChats.get(i).getChatID());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -179,7 +179,7 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
         //parse JSON
         try {
             JSONObject root = new JSONObject(result);
-            Log.d("deleteCHAT", "Success boolean: "+root.getBoolean("success"));
+            Log.d("deleteCHAT", result);
             if (root.has("success") && root.getBoolean("success")) {
                 Uri uri = new Uri.Builder()
                         .scheme("https")
@@ -203,7 +203,7 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e("ERROR!", e.getMessage());
+            Log.d("deleteCHAT", e.getMessage());
             //notify user
             onWaitFragmentInteractionHide();
         }

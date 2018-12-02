@@ -57,10 +57,6 @@ public class LandingPageFragment extends Fragment {
             lat = mCurrentLocation.getLatitude();
             lon = mCurrentLocation.getLongitude();
         }
-        if (getArguments() != null) {
-            lat = getArguments().getDouble("lat");
-            lon = getArguments().getDouble("lon");
-        }
 
         weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weathericonsregularwebfont.ttf");
 
@@ -123,7 +119,7 @@ public class LandingPageFragment extends Fragment {
 
                     String s = jsonCurrent.getString("name").toUpperCase(Locale.US) + ", " + jsonCurrent.getJSONObject("sys").getString("country") + "\n" +
                             details.getString("description").toUpperCase(Locale.US) + "\n" +
-                                    String.format("%.0f", main.getDouble("temp")) + "°F";
+                            String.format("%.0f", main.getDouble("temp")) + "°F";
                     weatherInfo.setText(s);
                     weatherIcon.setText(Html.fromHtml(WeatherHelpers.setWeatherIcon(details.getInt("id"),
                             jsonCurrent.getJSONObject("sys").getLong("sunrise") * 1000,
