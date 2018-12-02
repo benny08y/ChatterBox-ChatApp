@@ -10,6 +10,7 @@ import tcss450.uw.edu.chatapp.contacts.SearchContactsFragment.OnFragmentInteract
 import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
+import tcss450.uw.edu.chatapp.model.Contacts;
 
 public class SearchContactFragmentRecyclerViewAdapter extends RecyclerView.Adapter<SearchContactFragmentRecyclerViewAdapter.ViewHolder> {
 

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
+import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
