@@ -51,7 +51,7 @@ import tcss450.uw.edu.chatapp.chats.DeleteChatFragment;
 import tcss450.uw.edu.chatapp.chats.Message;
 import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
-import tcss450.uw.edu.chatapp.contacts.ContactsPagerAdapter;
+import tcss450.uw.edu.chatapp.contacts.ContactsTabActivity;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;

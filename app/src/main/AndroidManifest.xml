@@ -64,7 +64,7 @@
             android:name=".weather.MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".ContactsTabActivity"
+            android:name=".contacts.ContactsTabActivity"
             android:label="@string/title_activity_contacts_tab"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
