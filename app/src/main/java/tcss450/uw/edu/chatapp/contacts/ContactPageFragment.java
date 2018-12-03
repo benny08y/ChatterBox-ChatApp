@@ -59,8 +59,8 @@ public class ContactPageFragment extends Fragment {
         firstNameView.setText(mFirstname);
         lastNameView.setText(mLastName);
 
-        FloatingActionButton newChatFab = getActivity().findViewById(R.id.contact_page_newchat_fab);
-        newChatFab.setOnClickListener(v -> onFabPressed(mEmail));
+//        FloatingActionButton newChatFab = getActivity().findViewById(R.id.contact_page_newchat_fab);
+//        newChatFab.setOnClickListener(v -> onFabPressed(mEmail));
     }
 
     public void onFabPressed(String email) {
@@ -109,6 +109,8 @@ public class ContactPageFragment extends Fragment {
                     + " must implement OnContactPageFragmentInteractionListener");
         }
     }
+
+
 
     @Override
     public void onDetach() {

@@ -44,8 +44,13 @@ public class ContactsTabActivity extends AppCompatActivity implements
         contactsViewPager.setArguments(args);
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.contacts_container, contactsViewPager).commitNow();
+                .add(R.id.contacts_container, contactsViewPager)
+                .commit();
 
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.contacts_toolbar);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     @Override
