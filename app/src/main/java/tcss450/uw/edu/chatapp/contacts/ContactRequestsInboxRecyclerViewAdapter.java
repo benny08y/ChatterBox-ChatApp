@@ -51,12 +51,15 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            messageJson.put("senderEmail", mValues.get(position).getEmail());
-            messageJson.put("receiverEmail", mEmail);
+            messageJson.put("senderEmail", mEmail);
+            messageJson.put("receiverEmail", mValues.get(position).getEmail());
             messageJson.put("response", 1);
+            Log.e("Inbox Recycler: ", "senderEmail: " + mEmail
+                    + " receiverEmail: " + mValues.get(position).getEmail());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.e("Inbox Recycler: ", "reached before confirmed send async");
         new SendPostAsyncTask.Builder(uri.toString(), messageJson)
                 //.onPreExecute(this::onWaitFragmentInteractionShow)
                 .onPostExecute(this::handleConfirmOnPostExecute)
@@ -71,10 +74,14 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
 
     private void handleConfirmOnPostExecute(final String result) {
         try {
+            Log.e("Inbox Recycler: ", "reached after confirmed send async");
             JSONObject root = new JSONObject(result);
             boolean success = root.getBoolean("success");
             if (success) {
-                Log.d("ContactsFragment: ", "Successfully sent");
+                Log.d("Inbox Recycler: ", "Successfully confirmed");
+            } else {
+
+                Log.e("Inbox Recycler: ", "Failed to confirm");
             }
             //onWaitFragmentInteractionHide();
         } catch (JSONException e) {
@@ -117,7 +124,7 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
             JSONObject root = new JSONObject(result);
             boolean success = root.getBoolean("success");
             if (success) {
-                Log.d("ContactsFragment: ", "Successfully sent");
+                Log.d("Inbox Recycler: ", "Successfully rejected");
             }
             //onWaitFragmentInteractionHide();
         } catch (JSONException e) {

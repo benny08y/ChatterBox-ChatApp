@@ -91,12 +91,12 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
                 requestsInbox.setArguments(args2);
                 return requestsInbox;
             case 3:
-                Fragment contactsFragment3 = new ContactsFragment();
+                Fragment sentRequests = new ContactSentRequests();
                 Bundle args3 = new Bundle();
                 args3.putSerializable("email", mEmail);
-                args3.putSerializable("contacts", mContacts);
-                contactsFragment3.setArguments(args3);
-                return contactsFragment3;
+                //args3.putSerializable("contacts", mContacts);
+                sentRequests.setArguments(args3);
+                return sentRequests;
             default:
                 return null;
         }

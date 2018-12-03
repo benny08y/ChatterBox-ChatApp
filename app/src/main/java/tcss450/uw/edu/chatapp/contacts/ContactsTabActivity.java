@@ -21,7 +21,8 @@ public class ContactsTabActivity extends AppCompatActivity implements
         ContactsFragment.OnContactListFragmentInteractionListener,
         SearchContactsFragment.OnSearchContactsFragmentInteractionListener,
         AddContactsFragment.OnFragmentInteractionListener,
-        ContactRequestsInbox.OnContactRequestsInboxFragmentInteractionListener {
+        ContactRequestsInbox.OnContactRequestsInboxFragmentInteractionListener,
+        ContactSentRequests.OnContactSentRequestsFragmentInteractionListener {
 
     private ContactsPagerAdapter mContactsPagerAdapter;
     private ViewPager mViewPager;
@@ -150,5 +151,10 @@ public class ContactsTabActivity extends AppCompatActivity implements
     @Override
     public void onContactRequestsInboxFragmentInteraction(Contacts contacts) {
         
+    }
+
+    @Override
+    public void onContactSentRequestsFragmentInteraction(Contacts contacts) {
+
     }
 }
