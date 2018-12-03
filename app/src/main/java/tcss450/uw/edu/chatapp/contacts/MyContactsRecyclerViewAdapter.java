@@ -119,6 +119,16 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
         });
     }
 
+    public void clear() {
+        mValues.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<Contacts> contacts) {
+        mValues.addAll(contacts);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return mValues.size();
