@@ -61,7 +61,6 @@ public class ContactRequestsInbox extends Fragment {
             //mRequests = new ArrayList<>(Arrays.asList((Contacts[]) getArguments().getSerializable("requests")));
         }
 
-        getRequests();
     }
 
     private void getRequests() {
@@ -127,6 +126,7 @@ public class ContactRequestsInbox extends Fragment {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_contact_requests_inbox_list, container, false);
 
+        getRequests();
 
         return view;
     }
