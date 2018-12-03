@@ -34,23 +34,34 @@ public class ContactsTabActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         Bundle intentExtras = intent.getExtras();
         mEmail = intentExtras.getSerializable("email").toString();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.contacts_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
+        mContactsPagerAdapter = new ContactsPagerAdapter(getSupportFragmentManager(),
+                mEmail,
+                (Contacts[]) intentExtras.getSerializable("contacts"));
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.contacts_pager);
+        mViewPager.setAdapter(mContactsPagerAdapter);
 
-        ContactsViewPager contactsViewPager = new ContactsViewPager();
-        Bundle args = new Bundle();
-        args.putSerializable("email", mEmail);
-        args.putSerializable("contacts", (Contacts[]) intentExtras.getSerializable("contacts"));
-        contactsViewPager.setArguments(args);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.contacts_container, contactsViewPager)
-                .commit();
-
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.contacts_toolbar);
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+//        ContactsViewPager contactsViewPager = new ContactsViewPager();
+//        Bundle args = new Bundle();
+//        args.putSerializable("email", mEmail);
+//        args.putSerializable("contacts", (Contacts[]) intentExtras.getSerializable("contacts"));
+//        contactsViewPager.setArguments(args);
+//
+//        getSupportFragmentManager().beginTransaction()
+//                .add(R.id.contacts_container, contactsViewPager)
+//                .commit();
     }
 
     @Override
@@ -83,51 +94,51 @@ public class ContactsTabActivity extends AppCompatActivity implements
 
     @Override
     public void onContactPageFragmentInteraction(String name) {
-        MessageFragment messageFragment = new MessageFragment();
-//        messageFragment.setName(name);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.contacts_container, messageFragment)
-                .addToBackStack(null)
-                .commit();
+//        MessageFragment messageFragment = new MessageFragment();
+////        messageFragment.setName(name);
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.contacts_container, messageFragment)
+//                .addToBackStack(null)
+//                .commit();
     }
 
     @Override
     public void onContactListFragmentInteraction(Contacts contact) {
-        ContactPageFragment contactPageFragment = new ContactPageFragment();
-
-        Bundle args = new Bundle();
-        args.putString("nickname", contact.getNickname());
-        args.putString("email", contact.getEmail());
-        args.putString("firstName", contact.getFirstName());
-        args.putString("lastName", contact.getLastName());
-        args.putString("currEmail", mEmail);
-        contactPageFragment.setArguments(args);
-
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.contacts_container, contactPageFragment)
-                .addToBackStack(null);
-        transaction.commit();
+//        ContactPageFragment contactPageFragment = new ContactPageFragment();
+//
+//        Bundle args = new Bundle();
+//        args.putString("nickname", contact.getNickname());
+//        args.putString("email", contact.getEmail());
+//        args.putString("firstName", contact.getFirstName());
+//        args.putString("lastName", contact.getLastName());
+//        args.putString("currEmail", mEmail);
+//        contactPageFragment.setArguments(args);
+//
+//        FragmentTransaction transaction = getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.contacts_container, contactPageFragment)
+//                .addToBackStack(null);
+//        transaction.commit();
     }
 
     @Override
     public void onSearchContactsFragmentInteraction(Contacts contact) {
-        AddContactsFragment addContactPageFragment = new AddContactsFragment();
-        //contactPageFragment.setContacts(contact);
-        Bundle args = new Bundle();
-        args.putString("nickname", contact.getNickname());
-        args.putString("email", contact.getEmail());
-        args.putString("firstName", contact.getFirstName());
-        args.putString("lastName", contact.getLastName());
-        args.putString("currEmail", mEmail);
-
-        addContactPageFragment.setArguments(args);
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.contacts_container, addContactPageFragment)
-                .addToBackStack(null);
-        transaction.commit();
+//        AddContactsFragment addContactPageFragment = new AddContactsFragment();
+//        //contactPageFragment.setContacts(contact);
+//        Bundle args = new Bundle();
+//        args.putString("nickname", contact.getNickname());
+//        args.putString("email", contact.getEmail());
+//        args.putString("firstName", contact.getFirstName());
+//        args.putString("lastName", contact.getLastName());
+//        args.putString("currEmail", mEmail);
+//
+//        addContactPageFragment.setArguments(args);
+//        FragmentTransaction transaction = getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.contacts_container, addContactPageFragment)
+//                .addToBackStack(null);
+//        transaction.commit();
     }
 
     @Override

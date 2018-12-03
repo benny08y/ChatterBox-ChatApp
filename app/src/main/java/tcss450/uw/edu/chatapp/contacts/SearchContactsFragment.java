@@ -214,12 +214,12 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
                 Contacts[] resultsArray = new Contacts[membersArray.size()];
                 //resultsArray = membersArray.toArray(resultsArray);
                 List<Contacts> results = membersArray;
-                recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(results, mListener));
+                recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(getActivity(), mEmail, results, mListener));
 
                 //onWaitFragmentInteractionHide();
             } else {
                 List<Contacts> results = new ArrayList<>();
-                recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(results, mListener));
+                recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(getActivity(), mEmail, results, mListener));
             }
         } catch (JSONException e) {
             e.printStackTrace();
