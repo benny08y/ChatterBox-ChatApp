@@ -283,12 +283,12 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                         int hour = Integer.parseInt(time.substring(0, 2));
                         Log.d("TIMEDATE", "Hour:" +hour +", " + time.substring(3, time.length()));
                         String am_pm = "AM";
-                        if (hour > 12 ){
-                            am_pm = "PM";
+                        if (hour > 12 || hour == 0){
                             if (hour % 12 == 0){
                                 hour = 12;
                             } else {
                                 hour = hour % 12;
+                                am_pm = "PM";
                             }
                         }
                         String new_time = String.valueOf(hour) + ":"+time.substring(3, time.length()) +am_pm;

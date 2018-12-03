@@ -1,14 +1,23 @@
 package tcss450.uw.edu.chatapp.chats;
 
+import android.net.Uri;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment.OnChatListFragmentInteractionListener;
+import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
 import java.util.List;
 
@@ -22,6 +31,8 @@ public class MyChatsRecyclerViewAdapter extends RecyclerView.Adapter<MyChatsRecy
     private final List<Chats> mValues;
     private final OnChatListFragmentInteractionListener mListener;
     private static boolean isDeletChat;
+    private TextView mLastMessageDisplay;
+    private ViewHolder mHolder;
 
     public MyChatsRecyclerViewAdapter(List<Chats> items, OnChatListFragmentInteractionListener listener) {
         mValues = items;
