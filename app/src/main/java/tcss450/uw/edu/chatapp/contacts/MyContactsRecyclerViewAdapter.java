@@ -103,6 +103,9 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
         holder.mItem = mValues.get(position);
         holder.nicknameView.setText(mValues.get(position).getNickname());
         holder.emailView.setText(mValues.get(position).getEmail());
+        holder.fnameView.setText(mValues.get(position).getFirstName());
+        holder.lnameView.setText(mValues.get(position).getLastName());
+
         holder.mRemoveButton.setOnClickListener(e -> {
             onRemoveButtonPress(holder, position);
         });
@@ -138,6 +141,8 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
         public final View mView;
         public final TextView nicknameView;
         public final TextView emailView;
+        public final TextView fnameView;
+        public final TextView lnameView;
         public Contacts mItem;
         public Button mRemoveButton;
 
@@ -147,6 +152,8 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
             nicknameView = view.findViewById(R.id.contact_fragment_nickname);
             emailView = view.findViewById(R.id.contact_fragment_email);
             mRemoveButton = view.findViewById(R.id.contact_button_remove);
+            fnameView = view.findViewById(R.id.contact_fragment_firstname);
+            lnameView = view.findViewById(R.id.contact_fragment_lastname);
         }
     }
 }

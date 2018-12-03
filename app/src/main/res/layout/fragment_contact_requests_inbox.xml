@@ -20,19 +20,17 @@
             android:background="@drawable/rounded_rect_contacts_yellow">
 
             <ImageView
-                android:id="@+id/contact_fragment_icon_person"
+                android:id="@+id/contact_inbox_icon_person"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_person_black_24dp" />
 
             <TextView
-                android:id="@+id/contact_fragment_nickname"
+                android:id="@+id/contact_inbox_nickname"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -40,12 +38,12 @@
                 android:layout_marginEnd="8dp"
                 android:text="Nickname"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
-                app:layout_constraintEnd_toStartOf="@+id/contact_button_remove"
-                app:layout_constraintStart_toEndOf="@+id/contact_fragment_icon_person"
+                app:layout_constraintEnd_toStartOf="@+id/contact_button_confirm"
+                app:layout_constraintStart_toEndOf="@+id/contact_inbox_icon_person"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/contact_fragment_email"
+                android:id="@+id/contact_inbox_email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -55,47 +53,29 @@
                 android:text="Email"
                 android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/contact_button_remove"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/contact_fragment_icon_person"
-                app:layout_constraintTop_toBottomOf="@+id/contact_fragment_nickname"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintEnd_toStartOf="@+id/contact_button_confirm"
+                app:layout_constraintStart_toEndOf="@+id/contact_inbox_icon_person"
+                app:layout_constraintTop_toBottomOf="@+id/contact_inbox_nickname" />
 
             <Button
-                android:id="@+id/contact_button_remove"
+                android:id="@+id/contact_button_confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="REMOVE"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:text="CONFIRM"
+                app:layout_constraintEnd_toStartOf="@+id/contact_button_reject"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/contact_fragment_firstname"
-                android:layout_width="0dp"
+            <Button
+                android:id="@+id/contact_button_reject"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="First Name"
-                app:layout_constraintEnd_toStartOf="@+id/contact_button_remove"
-                app:layout_constraintStart_toEndOf="@+id/contact_fragment_icon_person"
-                app:layout_constraintTop_toBottomOf="@+id/contact_fragment_email" />
-
-            <TextView
-                android:id="@+id/contact_fragment_lastname"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="Last Name"
-                app:layout_constraintEnd_toStartOf="@+id/contact_button_remove"
-                app:layout_constraintStart_toEndOf="@+id/contact_fragment_icon_person"
-                app:layout_constraintTop_toBottomOf="@+id/contact_fragment_firstname" />
+                android:text="REJECT"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 
