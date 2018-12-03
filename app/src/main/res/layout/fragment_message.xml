@@ -81,6 +81,7 @@
         android:ems="10"
         android:hint="Type a message..."
         android:inputType="textPersonName"
+        android:textColorLink="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_chat_send"
         app:layout_constraintStart_toStartOf="parent"

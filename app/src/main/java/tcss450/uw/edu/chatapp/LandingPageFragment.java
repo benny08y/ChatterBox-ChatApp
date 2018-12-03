@@ -1,8 +1,11 @@
 package tcss450.uw.edu.chatapp;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
@@ -10,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +30,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import tcss450.uw.edu.chatapp.chats.Message;
+import tcss450.uw.edu.chatapp.chats.MessageFragment;
+import tcss450.uw.edu.chatapp.utils.MyFirebaseMessagingService;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayLatLngFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherHelpers;
@@ -42,6 +49,8 @@ public class LandingPageFragment extends Fragment {
     Double lat;
     Double lon;
     private static Location mCurrentLocation;
+    private FirebaseMessageReciever mFirebaseMessageReciever;
+
 
     public LandingPageFragment() {
         // Required empty public constructor
@@ -150,6 +159,56 @@ public class LandingPageFragment extends Fragment {
     public interface OnLandingPageFragmentInteractionListener {
 
         void onWeatherClicked(Double lat, Double lon);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mFirebaseMessageReciever == null) {
+            mFirebaseMessageReciever = new FirebaseMessageReciever();
+        }
+        IntentFilter iFilter = new IntentFilter(MyFirebaseMessagingService.RECEIVED_NEW_MESSAGE);
+        getActivity().registerReceiver(mFirebaseMessageReciever, iFilter);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mFirebaseMessageReciever != null){
+            getActivity().unregisterReceiver(mFirebaseMessageReciever);
+        }
+    }
+
+    /**
+     * A BroadcastReceiver setup to listen for messages sent from
+     MyFirebaseMessagingService
+     * that Android allows to run all the time.
+     */
+    private class FirebaseMessageReciever extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.hasExtra("DATA")) {
+                String data = intent.getStringExtra("DATA");
+                Log.d("SENT_MSG", "Landing fragment start onRecieve" + data);
+
+
+                JSONObject jObj = null;
+                try {
+                    jObj = new JSONObject(data);
+                    Log.d("SENT_MSG",  "IN landing page" + jObj.has("message") +" "+ jObj.has("sender"));
+                    if(jObj.has("message") && jObj.has("sender")) {
+                        String sender = jObj.getString("sender");
+                        String nickname = jObj.getString("username");
+                        int chatid = jObj.getInt("chatid");
+                        String msg = jObj.getString("message");
+                        Message curMsg = new Message.Builder(sender, nickname, chatid).addMessage(msg).build();
+//                        mMessageAdapter.addNewMessage(curMsg);
+                        Log.d("SENT_MSG", sender + " " + msg);
+                    }
+                } catch (JSONException e) {
+                    Log.e("JSON PARSE", e.toString());
+                }
+            }
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package tcss450.uw.edu.chatapp.chats;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,14 +88,13 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             super(itemView);
 
             messageText = (TextView) itemView.findViewById(R.id.text_message_body);
-//            timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+            timeText = (TextView) itemView.findViewById(R.id.txt_msg_time);
         }
 
         void bind(Message message) {
             messageText.setText(message.getMessage());
-
             // Format the stored timestamp into a readable String using method.
-//            timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
+            timeText.setText(message.getTimeStamp());
         }
     }
 
@@ -113,18 +113,16 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
             messageText = (TextView) itemView.findViewById(R.id.text_message_body);
             nameText = (TextView) itemView.findViewById(R.id.text_message_name);
-
-//            timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+            timeText = (TextView) itemView.findViewById(R.id.text_message_time);
 //            profileImage = (ImageView) itemView.findViewById(R.id.image_message_profile);
         }
 
         void bind(Message message) {
             messageText.setText(message.getMessage());
             nameText.setText(message.getNickname());
-
 //            // Format the stored timestamp into a readable String using method.
-//            timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
-//            // Insert the profile image from the URL into the ImageView.
+            timeText.setText(message.getTimeStamp());//            // Insert the profile image from the URL into the ImageView.
+
 //            Utils.displayRoundImageFromUrl(mContext, message.getSender().getProfileUrl(), profileImage);
         }
     }
