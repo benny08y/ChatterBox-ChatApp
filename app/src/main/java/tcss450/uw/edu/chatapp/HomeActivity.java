@@ -443,7 +443,6 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public void onContactListFragmentInteraction(Contacts contact) {
         ContactPageFragment contactPageFragment = new ContactPageFragment();
-        contactPageFragment.setContacts(contact);
         Bundle args = new Bundle();
         args.putString("nickname", contact.getNickname());
         args.putString("email", contact.getEmail());

@@ -27,7 +27,6 @@ public class ContactPageFragment extends Fragment {
     private String mNickname;
     private String mFirstname;
     private String mLastName;
-    private Contacts mContacts;
 
     public ContactPageFragment() {
         // Required empty public constructor
@@ -70,6 +69,7 @@ public class ContactPageFragment extends Fragment {
 //            mListener.onContactPageFragmentInteraction(email);
         }
     }
+
     private void startNewChat(){
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -114,10 +114,6 @@ public class ContactPageFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    public void setContacts(Contacts contacts){
-        mContacts = contacts;
     }
 
     public interface OnContactPageFragmentInteractionListener {

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ public class SavedLocationsFragment extends Fragment {
             savedLocation6, savedLocation7, savedLocation8, savedLocation9;
     private Button delete1, delete2, delete3, delete4, delete5, delete6, delete7, delete8, delete9;
     private SavedLocationsFragment.OnSavedLocationsFragmentInteractionListener mListener;
+    private TextView noSavedLocations;
 
     public SavedLocationsFragment() {
         // Required empty public constructor
@@ -46,6 +48,8 @@ public class SavedLocationsFragment extends Fragment {
                 locationsList.add(prefs.getString("keys_prefs_location" + Integer.toString(i), ""));
             }
         }
+
+        noSavedLocations = v.findViewById(R.id.noSavedLocationsTextView);
 
         delete1 = v.findViewById(R.id.delete1);
         delete2 = v.findViewById(R.id.delete2);
@@ -237,41 +241,65 @@ public class SavedLocationsFragment extends Fragment {
             });
         }
 
+        boolean content = false;
+
         if (savedLocation1.getText().toString().equals("") || savedLocation1.getText().toString() == null) {
             savedLocation1.setVisibility(View.GONE);
             delete1.setVisibility(View.GONE);
+        } else {
+            content = true;
         }
         if (savedLocation2.getText().toString().equals("") || savedLocation2.getText().toString() == null) {
             savedLocation2.setVisibility(View.GONE);
             delete2.setVisibility(View.GONE);
+        } else {
+            content = true;
         }
         if (savedLocation3.getText().toString().equals("") || savedLocation3.getText().toString() == null) {
             savedLocation3.setVisibility(View.GONE);
             delete3.setVisibility(View.GONE);
+        } else {
+            content = true;
         }
         if (savedLocation4.getText().toString().equals("") || savedLocation4.getText().toString() == null) {
             savedLocation4.setVisibility(View.GONE);
             delete4.setVisibility(View.GONE);
+        } else {
+            content = true;
         }
         if (savedLocation5.getText().toString().equals("") || savedLocation5.getText().toString() == null) {
             savedLocation5.setVisibility(View.GONE);
             delete5.setVisibility(View.GONE);
+        } else {
+            content = true;
         }
         if (savedLocation6.getText().toString().equals("") || savedLocation6.getText().toString() == null) {
             savedLocation6.setVisibility(View.GONE);
             delete6.setVisibility(View.GONE);
+        } else {
+            content = true;
         }
         if (savedLocation7.getText().toString().equals("") || savedLocation7.getText().toString() == null) {
             savedLocation7.setVisibility(View.GONE);
             delete7.setVisibility(View.GONE);
+        } else {
+            content = true;
         }
         if (savedLocation8.getText().toString().equals("") || savedLocation8.getText().toString() == null) {
             savedLocation8.setVisibility(View.GONE);
             delete8.setVisibility(View.GONE);
+        } else {
+            content = true;
         }
         if (savedLocation9.getText().toString().equals("") || savedLocation9.getText().toString() == null) {
             savedLocation9.setVisibility(View.GONE);
             delete9.setVisibility(View.GONE);
+        } else {
+            content = true;
+        }
+
+        if (!content) {
+            noSavedLocations.setVisibility(View.VISIBLE);
         }
 
         return v;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,6 +46,8 @@ public class ContactsFragment extends Fragment {
     private String mEmail;
     private View view;
     private RecyclerView recyclerView;
+    private MyContactsRecyclerViewAdapter mAdapter;
+    private SwipeRefreshLayout mSwipeContainer;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -73,50 +76,50 @@ public class ContactsFragment extends Fragment {
         //getContacts();
     }
 
-//    private void getContacts() {
-//        Uri uri = new Uri.Builder()
-//                .scheme("https")
-//                .appendPath(getString(R.string.ep_base_url))
-//                .appendPath(getString(R.string.ep_contacts))
-//                .appendPath(getString(R.string.ep_contacts_getAllContacts))
-//                .build();
-//        JSONObject messageJson = new JSONObject();
-//        try {
-//            messageJson.put("email", mEmail);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-//                //.onPreExecute(this::onWaitFragmentInteractionShow)
-//                .onPostExecute(this::handleContactsGetOnPostExecute)
-//                .onCancelled(error -> Log.e("SEND_TAG", error))
-//                .build().execute();
-//    }
-//
-//    private void handleContactsGetOnPostExecute(final String result) {
-//        //parse JSON
-//        try {
-//            JSONObject root = new JSONObject(result);
-//            if (root.has("success") && root.getBoolean("success")) {
-//                JSONArray data = root.getJSONArray("data");
-//                mContacts = new ArrayList<>();
-//                for (int i = 0; i < data.length(); i++) {
-//                    JSONObject jsonContacts = data.getJSONObject(i);
-//                    mContacts.add(new Contacts.Builder(jsonContacts.getString("username"),
-//                            jsonContacts.getString("email"))
-//                            .addFirstName(jsonContacts.getString("firstname"))
-//                            .addLastName(jsonContacts.getString("lastname"))
-//                            .build());
-//                }
-//                //onWaitFragmentInteractionHide();
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            Log.e("ContactsFragment handleContactsGetOnPostExecute: ", e.getMessage());
-//            //notify user
-//            //onWaitFragmentInteractionHide();
-//        }
-//    }
+    private void getContacts() {
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_contacts))
+                .appendPath(getString(R.string.ep_contacts_getAllContacts))
+                .build();
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put("email", mEmail);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                //.onPreExecute(this::onWaitFragmentInteractionShow)
+                .onPostExecute(this::handleContactsGetOnPostExecute)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
+    }
+
+    private void handleContactsGetOnPostExecute(final String result) {
+        //parse JSON
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("success") && root.getBoolean("success")) {
+                JSONArray data = root.getJSONArray("data");
+                mContacts = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonContacts = data.getJSONObject(i);
+                    mContacts.add(new Contacts.Builder(jsonContacts.getString("username"),
+                            jsonContacts.getString("email"))
+                            .addFirstName(jsonContacts.getString("firstname"))
+                            .addLastName(jsonContacts.getString("lastname"))
+                            .build());
+                }
+                //onWaitFragmentInteractionHide();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("ContactsFragment handleContactsGetOnPostExecute: ", e.getMessage());
+            //notify user
+            //onWaitFragmentInteractionHide();
+        }
+    }
 
 //    @Override
 //    public void onWaitFragmentInteractionShow() {
@@ -151,12 +154,21 @@ public class ContactsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyContactsRecyclerViewAdapter(recyclerView, mEmail, mContacts, mListener));
+            mAdapter = new MyContactsRecyclerViewAdapter(recyclerView, mEmail, mContacts, mListener);
+            recyclerView.setAdapter(mAdapter);
+
+//            mSwipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.contacts_swipe);
+//            mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//                @Override
+//                public void onRefresh() {
+//                    getContacts();
+//                    mAdapter.clear();
+//                    mAdapter.addAll(mContacts);
+//                    mSwipeContainer.setRefreshing(false);
+//                }
+//            });
         }
-//        Button remove = view.findViewById(R.id.contact_button_remove);
-//        remove.setOnClickListener(e -> {
-//            onRemoveButtonPress();
-//        });
+
         return view;
     }
 
