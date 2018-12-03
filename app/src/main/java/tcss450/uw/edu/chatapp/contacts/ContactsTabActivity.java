@@ -20,7 +20,8 @@ public class ContactsTabActivity extends AppCompatActivity implements
         ContactPageFragment.OnContactPageFragmentInteractionListener,
         ContactsFragment.OnContactListFragmentInteractionListener,
         SearchContactsFragment.OnSearchContactsFragmentInteractionListener,
-        AddContactsFragment.OnFragmentInteractionListener {
+        AddContactsFragment.OnFragmentInteractionListener,
+        ContactRequestsInbox.OnContactRequestsInboxFragmentInteractionListener {
 
     private ContactsPagerAdapter mContactsPagerAdapter;
     private ViewPager mViewPager;
@@ -40,7 +41,7 @@ public class ContactsTabActivity extends AppCompatActivity implements
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        // Create the adapter that will return a fragment for each of the three
+        // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
         mContactsPagerAdapter = new ContactsPagerAdapter(getSupportFragmentManager(),
                 mEmail,
@@ -144,5 +145,10 @@ public class ContactsTabActivity extends AppCompatActivity implements
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onContactRequestsInboxFragmentInteraction(Contacts contacts) {
+        
     }
 }

@@ -16,6 +16,7 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
     private int mTabCount;
     private String mEmail;
     private Contacts[] mContacts;
+    private Contacts[] mRequests;
     private Fragment mFragmentAtPos0;
 
     public ContactsPagerAdapter(FragmentManager fm, String email, Contacts[] contacts) {
@@ -23,6 +24,7 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
         mTabCount = 4;
         mEmail = email;
         mContacts = contacts;
+        //mRequests = requests;
     }
 
     @Override
@@ -82,12 +84,12 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
                 searchContacts.setArguments(args1);
                 return searchContacts;
             case 2:
-                Fragment contactsFragment2 = new ContactsFragment();
+                Fragment requestsInbox = new ContactRequestsInbox();
                 Bundle args2 = new Bundle();
                 args2.putSerializable("email", mEmail);
-                args2.putSerializable("contacts", mContacts);
-                contactsFragment2.setArguments(args2);
-                return contactsFragment2;
+                //args2.putSerializable("requests", mRequests);
+                requestsInbox.setArguments(args2);
+                return requestsInbox;
             case 3:
                 Fragment contactsFragment3 = new ContactsFragment();
                 Bundle args3 = new Bundle();

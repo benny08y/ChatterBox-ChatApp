@@ -87,7 +87,6 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
             boolean success = root.getBoolean("success");
             if (success) {
                 Log.d("ContactsFragment: ", "Successfully sent");
-                //update recycler here
             }
             //onWaitFragmentInteractionHide();
         } catch (JSONException e) {
@@ -122,15 +121,15 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
         });
     }
 
-    public void clear() {
-        mValues.clear();
-        notifyDataSetChanged();
-    }
-
-    public void addAll(List<Contacts> contacts) {
-        mValues.addAll(contacts);
-        notifyDataSetChanged();
-    }
+//    public void clear() {
+//        mValues.clear();
+//        notifyDataSetChanged();
+//    }
+//
+//    public void addAll(List<Contacts> contacts) {
+//        mValues.addAll(contacts);
+//        notifyDataSetChanged();
+//    }
 
     @Override
     public int getItemCount() {

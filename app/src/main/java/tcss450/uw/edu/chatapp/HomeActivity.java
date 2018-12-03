@@ -329,17 +329,15 @@ public class HomeActivity extends AppCompatActivity implements
                 }
                 Contacts[] contactsAsArray = new Contacts[mContacts.size()];
                 contactsAsArray = mContacts.toArray(contactsAsArray);
-                //Bundle args = new Bundle();
-                //args.putSerializable(ContactsFragment.ARG_CONTACTS_LIST, contactsAsArray);
 
                 Bundle args = new Bundle();
                 args.putSerializable("email", mEmail);
                 args.putSerializable("contacts", contactsAsArray);
-                Intent intent = new Intent(HomeActivity.this, ContactsTabActivity.class);
-                intent.putExtras(args);
-//                intent.putExtra(MESSAGE_CONTACTS_EMAIL, mEmail);
-//                intent.putExtra(MESSAGE_CONTACTS_CONTACTS, contactsAsArray);
-                HomeActivity.this.startActivity(intent);
+
+                Intent contactIntent = new Intent(HomeActivity.this, ContactsTabActivity.class);
+                contactIntent.putExtras(args);
+
+                HomeActivity.this.startActivity(contactIntent);
 
                 onWaitFragmentInteractionHide();
             }
