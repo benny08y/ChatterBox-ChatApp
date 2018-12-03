@@ -57,10 +57,6 @@ public class ContactsViewPager extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_contacts_view_pager, container, false);
 
-//        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         mContactsPagerAdapter = new ContactsPagerAdapter(getActivity().getSupportFragmentManager(),
                 mEmail,

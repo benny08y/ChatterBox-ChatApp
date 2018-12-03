@@ -70,9 +70,7 @@ public class HomeActivity extends AppCompatActivity implements
         ChatsFragment.OnChatListFragmentInteractionListener,
         DeleteChatFragment.DeleteChatFragmentInteractionListener,
         NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener,
-        ContactsFragment.OnContactListFragmentInteractionListener,
         WaitFragment.OnFragmentInteractionListener,
-        ContactPageFragment.OnContactPageFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
         ZipCodeFragment.OnZipCodeFragmentInteractionListener,
         LandingPageFragment.OnLandingPageFragmentInteractionListener,
@@ -440,34 +438,6 @@ public class HomeActivity extends AppCompatActivity implements
                 .commit();
     }
 
-    @Override
-    public void onContactListFragmentInteraction(Contacts contact) {
-        ContactPageFragment contactPageFragment = new ContactPageFragment();
-        Bundle args = new Bundle();
-        args.putString("nickname", contact.getNickname());
-        args.putString("email", contact.getEmail());
-        args.putString("firstName", contact.getFirstName());
-        args.putString("lastName", contact.getLastName());
-        args.putString("currEmail", mEmail);
-
-        contactPageFragment.setArguments(args);
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_home_container, contactPageFragment)
-                .addToBackStack(null);
-        transaction.commit();
-    }
-
-    @Override
-    public void onContactPageFragmentInteraction(String name) {
-        MessageFragment messageFragment = new MessageFragment();
-//        messageFragment.setName(name);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_home_container, messageFragment)
-                .addToBackStack(null)
-                .commit();
-    }
 
     @Override
     public void onSearchButtonClicked(String zipCodeString) {
