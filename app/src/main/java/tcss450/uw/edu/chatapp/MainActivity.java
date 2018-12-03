@@ -39,14 +39,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
         setContentView(R.layout.activity_main);
 
         if (getIntent().getExtras() != null) {
-            if (getIntent().getExtras().containsKey("type")) {
+            if (getIntent().getExtras().containsKey("msgnotif")) {
                 mLoadFromChatNotification = true;
                 String chatID = getIntent().getExtras().getString("chatid");
                 String nickname = getIntent().getExtras().getString("username");
                 String email = getIntent().getExtras().getString("sender");
-                mMessage = new Message.Builder(email, nickname, Integer.parseInt(chatID)).build();
-                Log.d(TAG, "nickname:" + nickname + ", CHATID: " + chatID + ", EMAIL: " + email);
-//                mLoadFromChatNotification = getIntent().getExtras().getString("type").equals("msg");
+                Log.d("NOTIF_MSG", ""+email);
+
+                mMessage = new Message.Builder(email, "", Integer.parseInt(chatID)).addChatName(nickname).build();
             }
             if (getIntent().getExtras().containsKey("newchat")){
                 Log.d("newCHatNotif", "got notification");
@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
         intent.putExtra(HOME_LOGIN_EMAIL, credentials.getEmail());
         intent.putExtra(HOME_LOGIN_PASSWORD, credentials.getPassword());
         intent.putExtra(getString(R.string.keys_intent_notifification_msg), mLoadFromChatNotification);
+//        intent.putExtra(getString(R.string.keys_intent_notifification_msg), false);
         intent.putExtra("message", mMessage);
         intent.putExtra("newChatMsg", mNewChatMsg);
         MainActivity.this.startActivity(intent);
