@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnL
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
         intent.putExtra(HOME_LOGIN_EMAIL, credentials.getEmail());
         intent.putExtra(HOME_LOGIN_PASSWORD, credentials.getPassword());
-        intent.putExtra(getString(R.string.keys_intent_notifification_msg), mLoadFromChatNotification);
-//        intent.putExtra(getString(R.string.keys_intent_notifification_msg), false);
+//        intent.putExtra(getString(R.string.keys_intent_notifification_msg), mLoadFromChatNotification);
+        intent.putExtra(getString(R.string.keys_intent_notifification_msg), false);
         intent.putExtra("message", mMessage);
         intent.putExtra("newChatMsg", mNewChatMsg);
         MainActivity.this.startActivity(intent);

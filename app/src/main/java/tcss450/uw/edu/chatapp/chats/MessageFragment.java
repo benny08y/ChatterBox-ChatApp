@@ -25,9 +25,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import tcss450.uw.edu.chatapp.HomeActivity;
 import tcss450.uw.edu.chatapp.R;
@@ -133,7 +141,34 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                 String sender = jsonMsg.getString("email");
                 String msg = jsonMsg.getString("message");
                 String nickname = jsonMsg.getString("username");
-                Message curMsg = new Message.Builder(sender, nickname, chatid).addMessage(msg).build();
+
+                String timestamp = jsonMsg.getString("timestamp");
+                int iend = timestamp.indexOf('.');
+                if (iend != -1){
+                    timestamp = timestamp.substring(0, iend);
+                }
+                int dend = timestamp.indexOf(' ');
+                String date = timestamp.substring(0, dend);
+                String time = timestamp.substring(dend+1, timestamp.length() - 3);
+                Log.d("TIMEDATE", time + " " +date);
+                int hour = Integer.parseInt(time.substring(0, 2));
+                Log.d("TIMEDATE", "Hour:" +hour +" " + time.substring(3, time.length()));
+                String am_pm = "AM";
+                if (hour > 12 || hour == 0){
+                    if (hour % 12 == 0){
+                        hour = 12;
+                    } else {
+                        hour = hour % 12;
+                        am_pm = "PM";
+                    }
+                }
+                String new_time = String.valueOf(hour) + ":"+time.substring(3, time.length()) +am_pm;
+                Log.d("TIMEDATE", new_time);
+
+                Message curMsg = new Message.Builder(sender, nickname, chatid)
+                        .addMessage(msg)
+                        .addTimeStamp(new_time +"  "+date)
+                        .build();
                 mGetAllMessagesList.add(curMsg);
 //                    mMessageOutputTextView.append(sender + ":" + msg);
 //                    mMessageOutputTextView.append(System.lineSeparator());
@@ -195,8 +230,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                 //or wait for the message to come back from the web service.
                 String message = res.getString("msg");
                 Message curMsg = new Message.Builder(mEmail, "", 0).addMessage(message).build();
-                mMessageAdapter.addNewMessage(curMsg);
-                mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
+
             }
         } catch (JSONException e) {
             Log.d("SENT_MSG", "Failed to recieve");
@@ -224,9 +258,10 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
     private class FirebaseMessageReciever extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("SENT_MSG", "start onRecieve");
             if(intent.hasExtra("DATA")) {
                 String data = intent.getStringExtra("DATA");
+                Log.d("SENT_MSG", "start onRecieve" + data);
+
                 JSONObject jObj = null;
                 try {
                     jObj = new JSONObject(data);
@@ -235,12 +270,37 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                         String nickname = jObj.getString("username");
                         int chatid = jObj.getInt("chatid");
                         String msg = jObj.getString("message");
-//                        Message curMsg = new Message.Builder(sender, nickname, chatid).addMessage(msg).build();
-//                        mMessageAdapter.addNewMessage(curMsg);
-//                        mMessageOutputTextView.append(sender + ":" + msg);
-//                        mMessageOutputTextView.append(System.lineSeparator());
-//                        mMessageOutputTextView.append(System.lineSeparator());
-                        Log.d("SENT_MSG", sender + " " + msg);
+                        String timestamp = jObj.getString("timestamp");
+
+                        int iend = timestamp.indexOf('.');
+                        if (iend != -1){
+                            timestamp = timestamp.substring(0, iend);
+                        }
+                        int dend = timestamp.indexOf(' ');
+                        String date = timestamp.substring(0, dend);
+                        String time = timestamp.substring(dend+1, timestamp.length() - 3);
+                        Log.d("TIMEDATE", time + " " +date);
+                        int hour = Integer.parseInt(time.substring(0, 2));
+                        Log.d("TIMEDATE", "Hour:" +hour +", " + time.substring(3, time.length()));
+                        String am_pm = "AM";
+                        if (hour > 12 ){
+                            am_pm = "PM";
+                            if (hour % 12 == 0){
+                                hour = 12;
+                            } else {
+                                hour = hour % 12;
+                            }
+                        }
+                        String new_time = String.valueOf(hour) + ":"+time.substring(3, time.length()) +am_pm;
+                        Log.d("TIMEDATE", new_time);
+
+                        Message curMsg = new Message.Builder(sender, nickname, chatid)
+                                .addMessage(msg)
+                                .addTimeStamp(new_time +" "+ date)
+                                .build();
+                        mMessageAdapter.addNewMessage(curMsg);
+                        mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
+                        Log.d("SENT_MSG", nickname + " " + msg);
                     }
                 } catch (JSONException e) {
                     Log.e("JSON PARSE", e.toString());
