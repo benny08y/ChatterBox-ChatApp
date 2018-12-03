@@ -31,6 +31,11 @@ import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
 public class SearchContactsFragment extends Fragment { //implements WaitFragment.OnFragmentInteractionListener {
+    private final int MAX_LENGTH = 3;
+    private final int ZERO = 0;
+    private final int ONE = 1;
+    private final int TWO = 2;
+
     private int mColumnCount = 1;
     private OnSearchContactsFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
@@ -104,6 +109,9 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
                 for (int i = 0; i < dataArray.length(); i++){
                     JSONObject currObj = dataArray.getJSONObject(i);
                     emailList.add(currObj.getString("email"));
+                    emailList.add(currObj.getString("firstname"));
+                    emailList.add(currObj.getString("lastname"));
+                    emailList.add(currObj.getString("username"));
                 }
                 String[] emailArray = new String[emailList.size()];
                 emailArray = emailList.toArray(emailArray);
@@ -118,20 +126,13 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         }
     }
 
-    private void onButtonClick(View v) {
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_contacts))
-                .appendPath(getString(R.string.ep_contacts_search_email))
-                .build();
-        JSONObject messageJson = new JSONObject();
-        Bundle bundle = getArguments();
+    //private void onButtonClick(View v) {
+
 //        EditText input = view.findViewById(R.id.search_contact_email);
-        String stringInput = mAutoCompleteTextView.getText().toString();
+        //String stringInput = mAutoCompleteTextView.getText().toString();
         //String Email = bundle.getString(stringInput);
         //String Email = "cjkim00@gmail.com";
-
+        /*
         if (!stringInput.isEmpty()) {
             try {
                 messageJson.put("searchEmail", stringInput);
@@ -148,16 +149,60 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         } else {
             mAutoCompleteTextView.setError("Enter a valid email");
         }
+        */
+
+    //}
+
+    private void onButtonClick(View v) {
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_contacts))
+                .appendPath(getString(R.string.ep_search_contact))
+                .build();
+        JSONObject messageJson = new JSONObject();
+        Bundle bundle = getArguments();
+        //EditText input = view.findViewById(R.id.search_contact_email);
+        //String stringInput = input.getText().toString();
+        String stringInput = mAutoCompleteTextView.getText().toString();
+        String[] words = stringInput.split(" ");
+
+        if (!stringInput.isEmpty() && words.length < MAX_LENGTH) {
+            try {
+                if (words.length == TWO) {
+                    messageJson.put("first", words[ZERO]);
+                    messageJson.put("second", words[ONE]);
+                } else {
+                    messageJson.put("first", words[ZERO]);
+                }
+
+            } catch (JSONException e) {
+                //mAutoCompleteTextView.setError("Enter a valid email");
+                Log.e("IN_JSON", "didnt put email");
+            }
+            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                    //.onPreExecute(this::onWaitFragmentInteractionShow)
+                    .onPostExecute(this::handleContactsGetOnPostExecute)
+                    .onCancelled(error -> Log.e("SEND_TAG", error))
+                    .build().execute();
+        } else {
+            //input.setError("Enter a valid email");
+            new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                    //.onPreExecute(this::onWaitFragmentInteractionShow)
+                    .onPostExecute(this::handleContactsGetOnPostExecute)
+                    .onCancelled(error -> Log.e("SEND_TAG", error))
+                    .build().execute();
+        }
     }
 
     private void handleContactsGetOnPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
-
+            if (root.has("success") && root.getBoolean("success")) {
                 Log.d("SearchContactsFragment: ", "Successfully sent");
                 JSONArray members = root.getJSONArray("data");
                 ArrayList<Contacts> membersArray = new ArrayList<>();
-                for(int i = 0; i < members.length(); i++) {
+                for (int i = 0; i < members.length(); i++) {
                     JSONObject search = members.getJSONObject(i);
                     membersArray.add(new Contacts.Builder(search.getString("username"),
                             search.getString("email"))
@@ -171,7 +216,11 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
                 List<Contacts> results = membersArray;
                 recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(results, mListener));
 
-            //onWaitFragmentInteractionHide();
+                //onWaitFragmentInteractionHide();
+            } else {
+                List<Contacts> results = new ArrayList<>();
+                recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(results, mListener));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             Log.e("ERROR in handleContactsGetOnPostExecute: ", e.getMessage());

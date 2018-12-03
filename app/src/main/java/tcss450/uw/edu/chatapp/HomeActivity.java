@@ -57,6 +57,7 @@ import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
+import tcss450.uw.edu.chatapp.weather.SavedLocationsFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayCityFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayLatLngFragment;
 import tcss450.uw.edu.chatapp.weather.WeatherDisplayZipCodeFragment;
@@ -148,14 +149,29 @@ public class HomeActivity extends AppCompatActivity implements
             if (findViewById(R.id.content_home_container) != null) {
                 //Fragment landing = new LandingPageFragment();
                 if (getIntent().getBooleanExtra(getString(R.string.keys_intent_notifification_msg), true)) {
-                    Message msg = (Message) getIntent().getExtras().get("message");
-                    Bundle args = new Bundle();
+                    Log.d("newCHatNotif", "Homectivty: "+getIntent().getExtras().get("newChatMsg").toString());
+
+                    if (getIntent().getExtras().get("newChatMsg") != null){
+                        Message newChatMsg = (Message) getIntent().getExtras().get("newChatMsg");
+                        Bundle args = new Bundle();
+                        Log.d("newCHatNotif", "Homectivty: " + newChatMsg.getChatId() +" "+ newChatMsg.getChatName());
+//                        args.putInt(MESSAGE_CHATID, newChatMsg.getChatId());
+//                        args.putString(MESSAGE_NICKNAME, newChatMsg.getChatName());
+                        MessageFragment messageFragment = new MessageFragment();
+                        messageFragment.setArguments(args);
+                        getSupportFragmentManager().beginTransaction()
+                                .add(R.id.content_home_container, messageFragment)
+                                .commit();
+                    } else {
+                        Message msg = (Message) getIntent().getExtras().get("message");
+                        Bundle args = new Bundle();
 //                    args.putSerializable(MESSAGE_NOTIFICATION, msg);
-                    args.putInt(MESSAGE_CHATID, msg.getChatId());
-                    args.putString(MESSAGE_NICKNAME, msg.getNickname());
-                    MessageFragment messageFragment = new MessageFragment();
-                    messageFragment.setArguments(args);
-                    loadFragment(messageFragment);
+                        args.putInt(MESSAGE_CHATID, msg.getChatId());
+                        args.putString(MESSAGE_NICKNAME, msg.getNickname());
+                        MessageFragment messageFragment = new MessageFragment();
+                        messageFragment.setArguments(args);
+                        loadFragment(messageFragment);
+                    }
                 } else {
                     Fragment landing = new LandingPageFragment();
                     getSupportFragmentManager().beginTransaction()
