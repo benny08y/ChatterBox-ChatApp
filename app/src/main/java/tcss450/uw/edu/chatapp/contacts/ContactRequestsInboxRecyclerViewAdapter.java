@@ -51,8 +51,8 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            messageJson.put("senderEmail", mEmail);
-            messageJson.put("receiverEmail", mValues.get(position).getEmail());
+            messageJson.put("senderEmail", mValues.get(position).getEmail());
+            messageJson.put("receiverEmail", mEmail);
             messageJson.put("response", 1);
             Log.e("Inbox Recycler: ", "senderEmail: " + mEmail
                     + " receiverEmail: " + mValues.get(position).getEmail());
