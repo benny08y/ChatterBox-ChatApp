@@ -13,15 +13,16 @@
         android:layout_height="107dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="156dp"
-        android:background="@android:color/holo_blue_light"
         android:backgroundTint="@android:color/holo_blue_light"
         android:paddingLeft="5sp"
         android:paddingTop="5sp"
+        android:textColor="@color/design_default_color_primary_dark"
         android:textSize="18dp"
         app:layout_constraintEnd_toStartOf="@+id/landingPage_weatherIcon"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/rounded_corner_left" />
 
     <TextView
         android:id="@+id/landingPage_weatherIcon"
@@ -29,11 +30,12 @@
         android:layout_height="107dp"
         android:layout_marginTop="156dp"
         android:layout_marginEnd="8dp"
-        android:background="@android:color/holo_blue_light"
         android:gravity="center"
+        android:textColor="@color/design_default_color_primary_dark"
         android:textSize="70sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/rounded_corner_right" />
 
     <ImageView
         android:id="@+id/imageView3"
