@@ -50,6 +50,7 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
     public static final String ARG_NEWSINGLE_CHAT = "list of contacts";
     private List<Contacts> mContactsList;
     private String mEmail;
+    private String mCurrentuser;
     private boolean newGroupChatSelected=false;
     private NewChatRecyclerViewAdapter mNewChatAdapter;
 
@@ -74,6 +75,8 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mEmail = getArguments().getString("email");
+        mCurrentuser = getArguments().getString("currentUser");
+        Log.d("CURRENTUSER", "NewChatFrag: " + mCurrentuser);
         if (getArguments() != null) {
             mContactsList = new ArrayList<Contacts>(
                     Arrays.asList((Contacts[]) getArguments().getSerializable(ARG_NEWSINGLE_CHAT)));
@@ -94,7 +97,8 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            mNewChatAdapter = new NewChatRecyclerViewAdapter(mContactsList, mListener);
+            Log.d("CURRENTUSER", "NewChatFrag oncreateview: " + mCurrentuser);
+            mNewChatAdapter = new NewChatRecyclerViewAdapter(mContactsList, mListener, mCurrentuser);
             recyclerView.setAdapter(mNewChatAdapter);
         }
         return view;
@@ -148,12 +152,12 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
                 jsonArray.put(mEmail);
                 String groupName = "";
                 for (int i =0; i < listOfContacts.size(); i++){
-                    groupName += listOfContacts.get(i).getNickname() + " ";
+                    groupName += listOfContacts.get(i).getNickname() + ", ";
                     jsonArray.put(listOfContacts.get(i).getEmail());
                 }
 //                for (int i =0; i < listOfContacts.size(); i++){
                 try {
-                    messageJson.put("chatName", "Group: " + groupName);  //NEED TO CREATE UNIQUE group chatname
+                    messageJson.put("chatName", "Group: " + groupName + mCurrentuser);
                     messageJson.put("emaillist", jsonArray);
                 } catch (JSONException e) {
                     Log.d("NEWCHAT", "array wrong");
@@ -265,6 +269,6 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
      */
     public interface OnNewSingleChatListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void newSingleChatFragmentInteraction(Contacts item);
+        void newSingleChatFragmentInteraction(Contacts item, String currentUsername);
     }
 }

@@ -51,6 +51,7 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
     private MyChatsRecyclerViewAdapter mChatsAdapters;
     private Menu mMenu;
     private String mEmail;
+    private String mCurrentuser;
 
 
     /**
@@ -77,6 +78,8 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEmail = getArguments().getString("email");
+        mCurrentuser = getArguments().getString("currentUser");
+        Log.d("CURRENTUSER", "ChatsFrag" + mCurrentuser);
         showFab();
         setHasOptionsMenu(true);
         if (getArguments() != null) {
@@ -140,6 +143,7 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
                 contactsAsArray = contactsList.toArray(contactsAsArray);
                 Bundle args = new Bundle();
                 args.putString("email", mEmail);
+                args.putString("currentUser", mCurrentuser);
                 args.putSerializable(NewChatSingleFragment.ARG_NEWSINGLE_CHAT, contactsAsArray);
                 NewChatSingleFragment singleChatFragment = new NewChatSingleFragment();
                 singleChatFragment.setArguments(args);

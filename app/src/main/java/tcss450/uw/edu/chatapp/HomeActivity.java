@@ -364,10 +364,14 @@ public class HomeActivity extends AppCompatActivity implements
                             .addChatName(jsonChats.getString("name").replace(mEmail, ""))
                             .build());
                 }
+                JSONObject usernamObj = root.getJSONObject("currentuser");
+                String currentUsername = usernamObj.getString("username");
+                Log.d("GETALLCHATS", currentUsername);
                 Chats[] chatsAsArray = new Chats[chatList.size()];
                 chatsAsArray = chatList.toArray(chatsAsArray);
                 Bundle args = new Bundle();
                 args.putString("email", mEmail);
+                args.putString("currentUser", currentUsername);
                 args.putSerializable(ChatsFragment.ARG_CHATS, chatsAsArray);
                 ChatsFragment chatFrag = new ChatsFragment();
                 chatFrag.setArguments(args);
@@ -451,7 +455,7 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void newSingleChatFragmentInteraction(Contacts item) {
+    public void newSingleChatFragmentInteraction(Contacts item, String currentUsername) {
         //webserivece call to start new chat, retrieve chatid and put into message fragment
         Log.d("NewChatSingle", "Adding new single chat..." + item.getEmail());
         Uri uri = new Uri.Builder()
@@ -462,7 +466,7 @@ public class HomeActivity extends AppCompatActivity implements
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            messageJson.put("chatName", "Single: " + item.getNickname() + " " + mEmail);
+            messageJson.put("chatName", "Single: " + item.getNickname() + ", " + currentUsername);
             messageJson.put("email1", mEmail);
             messageJson.put("email2", item.getEmail());
         } catch (JSONException e) {

@@ -27,11 +27,15 @@ public class NewChatRecyclerViewAdapter extends RecyclerView.Adapter<NewChatRecy
     private boolean isCheckBoxVisible;
     private boolean mIsEnabled;
     private ArrayList<Contacts> mCheckedContacts;
+    private String mCurrentUsername;
 
-    public NewChatRecyclerViewAdapter(List<Contacts> items, NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener listener) {
+    public NewChatRecyclerViewAdapter(List<Contacts> items,
+                                      NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener listener, String username) {
         mValues = items;
         mListener = listener;
         mCheckedContacts=  new ArrayList<>();
+        mCurrentUsername = username;
+        Log.d("CURRENTUSER", "NewChatFrag NewCHatRecycler: " + mCurrentUsername);
     }
 
     @Override
@@ -74,11 +78,14 @@ public class NewChatRecyclerViewAdapter extends RecyclerView.Adapter<NewChatRecy
                     } else {
                         // Notify the active callbacks interface (the activity, if the
                         // fragment is attached to one) that an item has been selected.
-                        mListener.newSingleChatFragmentInteraction(holder.mItem);
+                        addSingleChat(holder);
                     }
                 }
             }
         });
+    }
+    private void addSingleChat(ViewHolder holder){
+        mListener.newSingleChatFragmentInteraction(holder.mItem, mCurrentUsername);
     }
 
     public ArrayList<Contacts> getCheckedContacts(){
