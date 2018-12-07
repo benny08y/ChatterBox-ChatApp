@@ -2,6 +2,10 @@ package tcss450.uw.edu.chatapp.chats;
 
 import java.io.Serializable;
 
+/**
+ * Benjamin Yuen
+ * Message class utilizing Builder design pattern for easy instantiation.
+ */
 public class Message implements Serializable {
 
     private final String mEmail;

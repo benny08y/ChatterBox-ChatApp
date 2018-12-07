@@ -49,11 +49,9 @@ import tcss450.uw.edu.chatapp.chats.Chats;
 import tcss450.uw.edu.chatapp.chats.ChatsFragment;
 import tcss450.uw.edu.chatapp.chats.DeleteChatFragment;
 import tcss450.uw.edu.chatapp.chats.Message;
-import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment;
-import tcss450.uw.edu.chatapp.contacts.ContactPageFragment;
+import tcss450.uw.edu.chatapp.chats.NewChatFragment;
 import tcss450.uw.edu.chatapp.contacts.ContactsTabActivity;
 import tcss450.uw.edu.chatapp.model.Contacts;
-import tcss450.uw.edu.chatapp.contacts.ContactsFragment;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
@@ -69,7 +67,7 @@ public class HomeActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ChatsFragment.OnChatListFragmentInteractionListener,
         DeleteChatFragment.DeleteChatFragmentInteractionListener,
-        NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener,
+        NewChatFragment.OnNewChatListFragmentInteractionListener,
         WaitFragment.OnFragmentInteractionListener,
         WeatherFragment.OnWeatherFragmentInteractionListener,
         ZipCodeFragment.OnZipCodeFragmentInteractionListener,
@@ -455,7 +453,7 @@ public class HomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void newSingleChatFragmentInteraction(Contacts item, String currentUsername) {
+    public void newChatFragmentInteraction(Contacts item, String currentUsername) {
         //webserivece call to start new chat, retrieve chatid and put into message fragment
         Log.d("NewChatSingle", "Adding new single chat..." + item.getEmail());
         Uri uri = new Uri.Builder()

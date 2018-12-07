@@ -15,6 +15,10 @@ import java.util.List;
 
 import tcss450.uw.edu.chatapp.R;
 
+/**
+ * Benjamin Yuen
+ * MessageListAdapter that displays the messages sent by you and messages recieved from people in chat.
+ */
 public class MessageListAdapter extends RecyclerView.Adapter {
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
@@ -34,7 +38,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     public int getItemViewType(int position) {
         Message message = (Message) mMessageList.get(position);
 
-//        for (int i = 0; i < mMessageList.size(); i++){
+        // CHecks whether or not the message was sent by you or a recieved message
         if (message.getEmail().equals(mCurrentUserEmail)) {
             // If the current user is the sender of the message
             return VIEW_TYPE_MESSAGE_SENT;
@@ -50,6 +54,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
+        // Decides which message bubble to use (sent/received messages)
         if (viewType == VIEW_TYPE_MESSAGE_SENT){
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_message_sent, parent, false);

@@ -27,6 +27,12 @@ import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
 /**
+ * Chris Kim
+ * The AddContactsFragment is a fragment that shows the searched user's info and has a FAB to add them if the user wants
+ * (This class is not used in the final product)
+ */
+
+/**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link AddContactsFragment.OnFragmentInteractionListener} interface
@@ -48,7 +54,13 @@ public class AddContactsFragment extends Fragment {
         // Required empty public constructor
     }
 
-
+    /**
+     * Hides the keyboard when this fragment is selected
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -66,18 +78,11 @@ public class AddContactsFragment extends Fragment {
         }
     }
 
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager inputManager = (InputMethodManager) activity
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        // check if no view has focus:
-        View currentFocusedView = activity.getCurrentFocus();
-        if (currentFocusedView != null) {
-            inputManager.hideSoftInputFromWindow(currentFocusedView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
-
+    /**
+     * Sets the information to the correct text views on start
+     * and also sets the FAB's image
+     */
     public void onStart() {
         super.onStart();
 
@@ -106,6 +111,11 @@ public class AddContactsFragment extends Fragment {
         addContactFab.setOnClickListener(v -> onFabPressed(mCurrEmail, mEmail));
     }
 
+    /**
+     * When the FAB is pressed in this class is sends a contact request to the user whose information was displayed
+     * @param userEmail the user's email
+     * @param receiverEmail the email of the user whose information is displayed
+     */
     public void onFabPressed(String userEmail, String receiverEmail) {
         if (mListener != null) {
             //send contact request using curremail and memail
@@ -138,6 +148,10 @@ public class AddContactsFragment extends Fragment {
         }
     }
 
+    /**
+     * logs the result of the execute
+     * @param result
+     */
     private void handleContactsGetOnPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
