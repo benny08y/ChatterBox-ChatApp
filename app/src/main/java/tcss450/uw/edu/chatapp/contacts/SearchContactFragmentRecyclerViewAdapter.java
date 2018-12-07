@@ -23,6 +23,10 @@ import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
+/**
+ * Chris Kim,
+ * Sets the recycler view inside of the fragmenr_search_contacts fragment
+ */
 public class SearchContactFragmentRecyclerViewAdapter extends RecyclerView.Adapter<SearchContactFragmentRecyclerViewAdapter.ViewHolder> {
 
     private final List<Contacts> mValues;
