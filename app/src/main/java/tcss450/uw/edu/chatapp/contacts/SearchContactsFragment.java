@@ -30,6 +30,11 @@ import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.GetAsyncTask;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
+
+/**
+ * Chris Kim,
+ * SearchContactsFragment that handles searching for contacts
+ */
 public class SearchContactsFragment extends Fragment { //implements WaitFragment.OnFragmentInteractionListener {
     private final int MAX_LENGTH = 3;
     private final int ZERO = 0;
@@ -48,6 +53,10 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         // Required empty public constructor
     }
 
+    /**
+     * Gets the list of the user's contacts and puts them into an array list for display on another fragment
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +66,13 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         }
     }
 
+    /**
+     * Sets the recycler view on onCreateView
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -84,6 +100,9 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         return view;
     }
 
+    /**
+     * Gets the list of members to populate the auto-fill text box
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -99,6 +118,10 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
                 .build().execute();
     }
 
+    /**
+     * Gets the list of members from the backend to populate the auto-fill text box
+     * @param result if the call to the webservice was successful or not
+     */
     private void handleGetAllMembers(final String result) {
         try {
             JSONObject root = new JSONObject(result);
@@ -152,6 +175,11 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
 
     //}
 
+
+    /**
+     * Checks to see if the user inputted a valid number of words into the search box
+     * @param v the view
+     */
     private void onButtonClick(View v) {
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -165,9 +193,10 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         //String stringInput = input.getText().toString();
         String stringInput = mAutoCompleteTextView.getText().toString();
         String[] words = stringInput.split(" ");
-
+        //if the user inputted one or two words
         if (!stringInput.isEmpty() && words.length < MAX_LENGTH) {
             try {
+                //if there were two words then send the two words to the endpoint, if there was only one then send just the one
                 if (words.length == TWO) {
                     messageJson.put("first", words[ZERO]);
                     messageJson.put("second", words[ONE]);
@@ -194,6 +223,10 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
         }
     }
 
+    /**
+     * Gets the results of the search
+     * @param result
+     */
     private void handleContactsGetOnPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);

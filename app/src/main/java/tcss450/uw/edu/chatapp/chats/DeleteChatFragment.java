@@ -32,8 +32,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Benjamin Yuen
+ * Delete Fragment that displays all chats that can be deleted.
+ * Uses DeleteChatRecyclerViewAdapter to display list of chats.
+ *
  * A fragment representing a list of Items.
- * <p/>
  * Activities containing this fragment MUST implement the {@link DeleteChatFragmentInteractionListener}
  * interface.
  */
@@ -104,7 +107,7 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
         int id = item.getItemId();
         boolean result = false;
         if(id == R.id.menu_delete_chats_cancel){
-            //open ChatsFragment
+            //open ChatsFragment, and cancel delete
             Chats[] chatsAsArray = new Chats[mChatsList.size()];
             chatsAsArray = mChatsList.toArray(chatsAsArray);
             Bundle args = new Bundle();
@@ -118,10 +121,12 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
                     .commit();
             result = true;
         } else if(id == R.id.menu_delete_icon){
+            //Error checking to make sure 1 or more chats were selected
             if (mDeleteChatAdapter.getCheckedChats() == null){
                 Snackbar.make(getView(), "Please select 1 or more chats to delete", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             } else {
+                //Warning user that they are about to delete chats
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setCancelable(true);
                 builder.setTitle("Are you sure you want to delete these chat(s)?");
@@ -144,8 +149,11 @@ public class DeleteChatFragment extends Fragment implements WaitFragment.OnFragm
         }
         return result;
     }
+
+    //Helper to delete chats
     private void deleteChats(){
         ArrayList<Chats> checkedChats=null;
+        //Making sure something is checked form list of chats
         if (mDeleteChatAdapter.getCheckedChats() != null){
             checkedChats = mDeleteChatAdapter.getCheckedChats();
             Log.d("Checked_Items", checkedChats.get(0).getChatID()+"");

@@ -9,28 +9,31 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.chats.NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener;
+import tcss450.uw.edu.chatapp.chats.NewChatFragment.OnNewChatListFragmentInteractionListener;
 import tcss450.uw.edu.chatapp.model.Contacts;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Benjamin Yuen
+ * NewChatRecyclerViewAdapter that displays the all of the current user's contacts that the user can start a chat with.
+ *
  * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
- * specified {@link OnNewSingleChatListFragmentInteractionListener}.
+ * specified {@link OnNewChatListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class NewChatRecyclerViewAdapter extends RecyclerView.Adapter<NewChatRecyclerViewAdapter.ViewHolder> {
 
     private final List<Contacts> mValues;
-    private final OnNewSingleChatListFragmentInteractionListener mListener;
+    private final OnNewChatListFragmentInteractionListener mListener;
     private boolean isCheckBoxVisible;
     private boolean mIsEnabled;
     private ArrayList<Contacts> mCheckedContacts;
     private String mCurrentUsername;
 
     public NewChatRecyclerViewAdapter(List<Contacts> items,
-                                      NewChatSingleFragment.OnNewSingleChatListFragmentInteractionListener listener, String username) {
+                                      OnNewChatListFragmentInteractionListener listener, String username) {
         mValues = items;
         mListener = listener;
         mCheckedContacts=  new ArrayList<>();
@@ -55,6 +58,7 @@ public class NewChatRecyclerViewAdapter extends RecyclerView.Adapter<NewChatRecy
         } else {
             holder.mCheckBox.setVisibility(View.INVISIBLE);
         }
+        //Clear all checked contacts
         if (mIsEnabled){
             holder.mCheckBox.setChecked(false);
             mCheckedContacts.clear();
@@ -66,6 +70,7 @@ public class NewChatRecyclerViewAdapter extends RecyclerView.Adapter<NewChatRecy
             public void onClick(View v) {
                 if (null != mListener) {
                     if (isCheckBoxVisible){
+                        // Add or remove contacts to be selected for a group chat
                         if (holder.mCheckBox.isChecked()){
                             holder.mCheckBox.setChecked(false);
                             mCheckedContacts.remove(mValues.get(position));
@@ -84,8 +89,10 @@ public class NewChatRecyclerViewAdapter extends RecyclerView.Adapter<NewChatRecy
             }
         });
     }
+
+    //Make a new single chat
     private void addSingleChat(ViewHolder holder){
-        mListener.newSingleChatFragmentInteraction(holder.mItem, mCurrentUsername);
+        mListener.newChatFragmentInteraction(holder.mItem, mCurrentUsername);
     }
 
     public ArrayList<Contacts> getCheckedContacts(){

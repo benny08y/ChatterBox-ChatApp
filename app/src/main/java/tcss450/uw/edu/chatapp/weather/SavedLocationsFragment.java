@@ -17,7 +17,8 @@ import tcss450.uw.edu.chatapp.R;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Fragment that automatically populates a list of saved locations from shared preferences to
+ * display the weather in each shared location.
  */
 public class SavedLocationsFragment extends Fragment {
 
@@ -31,7 +32,20 @@ public class SavedLocationsFragment extends Fragment {
         // Required empty public constructor
     }
 
-
+    /**
+     * Creates a list of all saved city strings from shared preferences.
+     * Initializes all fragment buttons (location buttons and delete buttons) and populates buttons
+     * with city string for however many saved locations.
+     *
+     * Listeners are attached to each set button.
+     *
+     * Also sets element visibility to "GONE" if buttons are not loaded with a location.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -305,6 +319,11 @@ public class SavedLocationsFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Ensure interface is implemented.
+     *
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -316,6 +335,9 @@ public class SavedLocationsFragment extends Fragment {
         }
     }
 
+    /**
+     * Interface for communicating with activities.
+     */
     public interface OnSavedLocationsFragmentInteractionListener {
 
         void onSavedLocationClicked(String cityString);

@@ -34,7 +34,7 @@ import tcss450.uw.edu.chatapp.R;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * This class displays the weather from latitude and longitude text strings.
  */
 public class WeatherDisplayLatLngFragment extends Fragment {
 
@@ -58,7 +58,14 @@ public class WeatherDisplayLatLngFragment extends Fragment {
         // Required empty public constructor
     }
 
-
+    /**
+     * Initializes fragment elements.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -172,6 +179,11 @@ public class WeatherDisplayLatLngFragment extends Fragment {
         taskLoadUp(lat, lon);
 
         saveLocationButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Calls the activity to save location.
+             *
+             * @param v
+             */
             @Override
             public void onClick(View v) {
                 mListener.onSaveLocationButtonClicked(cityString);
@@ -181,6 +193,11 @@ public class WeatherDisplayLatLngFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Starts API information retrieval from latitude string and longitude string.
+     *
+     * @param query
+     */
     public void taskLoadUp(String query1, String query2) {
         if (WeatherHelpers.isNetworkAvailable(getActivity().getApplicationContext())) {
             DownloadWeather task = new DownloadWeather();
@@ -190,7 +207,15 @@ public class WeatherDisplayLatLngFragment extends Fragment {
         }
     }
 
+    /**
+     * Fetches weather information from API calls for current conditions, 24-hour, and 10-day weather
+     * using a String for the latitude and string for longitude.
+     */
     class DownloadWeather extends AsyncTask<String, Void, String[]> {
+
+        /**
+         * Displays the loader while information is being loaded onto fragment.
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -198,6 +223,12 @@ public class WeatherDisplayLatLngFragment extends Fragment {
 
         }
 
+        /**
+         * API information retrieval from webservice and stores JSON string results into a list.
+         *
+         * @param args
+         * @return
+         */
         protected String[] doInBackground(String... args) {
             String current = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/weather?lat=" + args[0] +
                     "&lon=" + args[1] + "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
@@ -213,6 +244,12 @@ public class WeatherDisplayLatLngFragment extends Fragment {
             return xml;
         }
 
+        /**
+         * Parses JSON of the current conditions, 24-hour, and 10-day weather into String fields
+         * and sets fragment display elements to display the correct information.
+         *
+         * @param xml
+         */
         @Override
         protected void onPostExecute(String[] xml) {
 
@@ -414,6 +451,11 @@ public class WeatherDisplayLatLngFragment extends Fragment {
         }
     }
 
+    /**
+     * Ensures activities implement a listener to enable location saving button.
+     *
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -425,6 +467,9 @@ public class WeatherDisplayLatLngFragment extends Fragment {
         }
     }
 
+    /**
+     * Interface for activity interaction.
+     */
     public interface OnWeatherDisplayLatLngFragmentInteractionListener {
         void onSaveLocationButtonClicked(String cityString);
     }

@@ -10,13 +10,27 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 
+/**
+ * Class containing helper methods for weather information retrieval and display.
+ */
 public class WeatherHelpers {
 
+    /**
+     * Checks network connectivity.
+     *
+     * @param context
+     * @return
+     */
     public static boolean isNetworkAvailable(Context context) {
         return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
     }
 
-
+    /**
+     * Accepts an input URL call to the API and returns a JSON string result of information.
+     *
+     * @param targetURL
+     * @return
+     */
     public static String excuteGet(String targetURL) {
         URL url;
         HttpURLConnection connection = null;
@@ -54,7 +68,15 @@ public class WeatherHelpers {
         }
     }
 
-
+    /**
+     * Method that helps choose the correct icon for the weather.
+     * Depending on the sunrise and sunset times, icon is chosen.
+     *
+     * @param actualId
+     * @param sunrise
+     * @param sunset
+     * @return
+     */
     public static String setWeatherIcon(int actualId, long sunrise, long sunset) {
         int id = actualId / 100;
         String icon = "";
@@ -90,6 +112,14 @@ public class WeatherHelpers {
         return icon;
     }
 
+    /**
+     * Method that helps choose the icon for weather using different parameters.
+     * Night or day string is used to select correct icon.
+     *
+     * @param actualId
+     * @param nd
+     * @return
+     */
     public static String setWeatherIconHour(int actualId, String nd) {
         int id = actualId / 100;
         String icon = "";

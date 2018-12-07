@@ -11,6 +11,10 @@ import android.widget.Button;
 
 import tcss450.uw.edu.chatapp.R;
 
+/**
+ * This class is the secondary landing page for weather functionality, providing the user with
+ * several options for weather displays.
+ */
 public class WeatherFragment extends Fragment {
 
     private WeatherFragment.OnWeatherFragmentInteractionListener mListener;
@@ -21,6 +25,15 @@ public class WeatherFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Initializes the four buttons on the fragment and attaches listeners that communicate with the
+     * activity to switch fragments.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,6 +70,11 @@ public class WeatherFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Ensures activities implement fragment listener.
+     *
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -68,6 +86,11 @@ public class WeatherFragment extends Fragment {
         }
     }
 
+    /**
+     * This is a helper method to help set the current location field to the device location.
+     *
+     * @param location
+     */
     public static void setLocation(final Location location) {
         mCurrentLocation = location;
         if (mMyCurrentLocationButton != null) {
@@ -75,6 +98,9 @@ public class WeatherFragment extends Fragment {
         }
     }
 
+    /**
+     * Interface for activity interaction.
+     */
     public interface OnWeatherFragmentInteractionListener {
 
         void onMyCurrentLocationButtonClicked(Double lat, Double lon);

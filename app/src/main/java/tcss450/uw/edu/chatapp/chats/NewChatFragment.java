@@ -1,13 +1,11 @@
 package tcss450.uw.edu.chatapp.chats;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,18 +32,18 @@ import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 /**
+ * Benjamin Yuen
+ * NewChat Fragment that displays the all of the current user's contacts that the user can start a chat with.
+ *
  * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnNewSingleChatListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnNewChatListFragmentInteractionListener}
  * interface.
  */
-public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFragmentInteractionListener {
+public class NewChatFragment extends Fragment implements WaitFragment.OnFragmentInteractionListener {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnNewSingleChatListFragmentInteractionListener mListener;
+    private OnNewChatListFragmentInteractionListener mListener;
 
     public static final String ARG_NEWSINGLE_CHAT = "list of contacts";
     private List<Contacts> mContactsList;
@@ -58,12 +56,11 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public NewChatSingleFragment() {    }
+    public NewChatFragment() {    }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static NewChatSingleFragment newInstance(int columnCount) {
-        NewChatSingleFragment fragment = new NewChatSingleFragment();
+    public static NewChatFragment newInstance(int columnCount) {
+        NewChatFragment fragment = new NewChatFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -129,15 +126,18 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
         boolean result = false;
         getActivity().invalidateOptionsMenu();
         if (id == R.id.menu_new_chat_group_icon) {
+            // User pressed Add group button, so all checkboxes will be visible and enabled
             newGroupChatSelected = true;
             mNewChatAdapter.setCheckBoxes(true);
             result = true;
         } else if (id == R.id.menu_newchat_comfirmGroup){
-            newGroupChatSelected = true;        //get list of contacts and call endpoint to make new group chat
+            newGroupChatSelected = true;
+            //Making sure that at least 1 or more conatcts were selected.
             if (mNewChatAdapter.getCheckedContacts() == null){
                 Snackbar.make(getView(), "Please select 1 or more contacts", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             } else {
+                //get list of contacts and call endpoint to make new group chat
                 ArrayList<Contacts> listOfContacts = mNewChatAdapter.getCheckedContacts();
                 Uri uri = new Uri.Builder()
                         .scheme("https")
@@ -173,10 +173,12 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
 
             result = true;
         } else if (id == R.id.menu_new_chat_single_icon){
+            //Move back to single chat
             newGroupChatSelected = false;
             mNewChatAdapter.setCheckBoxes(false);
             result = true;
         } else if (id == R.id.menu_new_chat_cleargroup){
+            //Clear the selected contacts
             newGroupChatSelected = true;
             mNewChatAdapter.setEnabledCheckBoxes(true);
             result = true;
@@ -227,11 +229,11 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnNewSingleChatListFragmentInteractionListener) {
-            mListener = (OnNewSingleChatListFragmentInteractionListener) context;
+        if (context instanceof OnNewChatListFragmentInteractionListener) {
+            mListener = (OnNewChatListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnNewSingleChatListFragmentInteractionListener");
+                    + " must implement OnNewChatListFragmentInteractionListener");
         }
     }
     @Override
@@ -267,8 +269,8 @@ public class NewChatSingleFragment extends Fragment implements WaitFragment.OnFr
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnNewSingleChatListFragmentInteractionListener {
+    public interface OnNewChatListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void newSingleChatFragmentInteraction(Contacts item, String currentUsername);
+        void newChatFragmentInteraction(Contacts item, String currentUsername);
     }
 }

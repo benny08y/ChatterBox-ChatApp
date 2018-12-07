@@ -113,7 +113,6 @@ public class LandingPageFragment extends Fragment {
         protected String doInBackground(String... args) {
             String xml = WeatherHelpers.excuteGet("http://api.openweathermap.org/data/2.5/weather?lat=" + args[0] +
                     "&lon=" + args[1] + "&units=imperial&appid=" + "4dfb61d8cb257761ac107050df586c2d");
-
             return xml;
         }
 
