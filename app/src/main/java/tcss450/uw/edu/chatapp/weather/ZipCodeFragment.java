@@ -14,7 +14,7 @@ import tcss450.uw.edu.chatapp.R;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Fragment prompting the user for a zip code input to display the weather results.
  */
 public class ZipCodeFragment extends Fragment {
 
@@ -26,6 +26,14 @@ public class ZipCodeFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Initializes fragment elements and sets button listener to open weather display fragment.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -35,6 +43,12 @@ public class ZipCodeFragment extends Fragment {
         mZipCodeEditText = (EditText) v.findViewById(R.id.zipCodeFragmentEditText);
         mButton = (Button) v.findViewById(R.id.zipCodeFragmentSearchButton);
         mButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Clicking button will send the zip code input to a new fragment displaying weather
+             * for that zip code.
+             *
+             * @param v
+             */
             @Override
             public void onClick(View v) {
                 String zipCodeString = mZipCodeEditText.getText().toString();
@@ -45,6 +59,11 @@ public class ZipCodeFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Ensures activities implement fragment listener.
+     *
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -56,6 +75,9 @@ public class ZipCodeFragment extends Fragment {
         }
     }
 
+    /**
+     * Interface for activity interaction.
+     */
     public interface OnZipCodeFragmentInteractionListener {
         void onSearchButtonClicked(String zipCodeString);
     }

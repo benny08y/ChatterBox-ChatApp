@@ -24,6 +24,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import tcss450.uw.edu.chatapp.R;
 
+/**
+ * This class is the activity that handles the Google Map view for choosing a new location to
+ * display weather.
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
         WeatherDisplayLatLngFragment.OnWeatherDisplayLatLngFragmentInteractionListener {
@@ -31,6 +35,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Location mCurrentLocation;
 
+    /**
+     * This method creates the activity, getting the current location passed from intent and
+     * readying the map.
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +67,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapClickListener(this);
     }
 
+    /**
+     * Listener for when the user clicks the map, prompting the user if they would like to change
+     * the weather location to the latitude and longitude of the area that was clicked.
+     *
+     * @param latLng
+     */
     @Override
     public void onMapClick(LatLng latLng) {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.map);
@@ -102,6 +118,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Method to handle the "Save Location" button being pressed from the display weather fragment.
+     * Saves the name of the city, country to shared preferences to be displayed in the saved
+     * locations page.
+     *
+     * @param cityString
+     */
     @Override
     public void onSaveLocationButtonClicked(String cityString) {
         SharedPreferences prefs =
