@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".chats.NewChatSingleFragment"
+    tools:context=".chats.NewChatFragment"
     tools:listitem="@layout/new_chat_single_frag" />

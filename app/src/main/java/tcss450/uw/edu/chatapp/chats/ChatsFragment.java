@@ -32,8 +32,11 @@ import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 /**
+ * Benjamin Yuen
+ * Chats Fragment that displays all chats for the current user.
+ * Uses MyChatsRecyclerViewAdapter to display list of chats.
+ *
  * A fragment representing a list of Items.
- * <p/>
  * Activities containing this fragment MUST implement the {@link OnChatListFragmentInteractionListener}
  * interface.
  */
@@ -80,6 +83,7 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
         mEmail = getArguments().getString("email");
         mCurrentuser = getArguments().getString("currentUser");
         Log.d("CURRENTUSER", "ChatsFrag" + mCurrentuser);
+
         showFab();
         setHasOptionsMenu(true);
         if (getArguments() != null) {
@@ -92,6 +96,8 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
         super.onResume();
         showFab();
     }
+
+    //Helper method to show the FAB, and set the image icon
     private void showFab(){
         mFAB = (FloatingActionButton) this.getActivity().findViewById(R.id.fab);
         mFAB.show();
@@ -105,6 +111,7 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
         });
     }
 
+    // Helper method to make a post call to Get ALl CONtacts
     private void makeSingleChat(){
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -144,8 +151,8 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
                 Bundle args = new Bundle();
                 args.putString("email", mEmail);
                 args.putString("currentUser", mCurrentuser);
-                args.putSerializable(NewChatSingleFragment.ARG_NEWSINGLE_CHAT, contactsAsArray);
-                NewChatSingleFragment singleChatFragment = new NewChatSingleFragment();
+                args.putSerializable(NewChatFragment.ARG_NEWSINGLE_CHAT, contactsAsArray);
+                NewChatFragment singleChatFragment = new NewChatFragment();
                 singleChatFragment.setArguments(args);
                 loadFragment(singleChatFragment);
             }
@@ -188,7 +195,7 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
         int id = item.getItemId();
         boolean result = false;
         if(id == R.id.menu_delete_chats){
-            //open DeleteChatFragment
+            //open DeleteChatFragment, ActionBar menu item that allows users to delete Chats
             mFAB.hide();
             Chats[] chatsAsArray = new Chats[mChatsList.size()];
             chatsAsArray = mChatsList.toArray(chatsAsArray);
@@ -203,6 +210,7 @@ public class ChatsFragment extends Fragment implements WaitFragment.OnFragmentIn
         return result;
     }
 
+    // Helper to load fragments
     private void loadFragment(Fragment frag) {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager()
                 .beginTransaction()

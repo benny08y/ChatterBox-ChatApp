@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Benjamin Yuen
+ *
  * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
  * specified {@link DeleteChatFragment.DeleteChatFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.

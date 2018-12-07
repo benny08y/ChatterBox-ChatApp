@@ -45,7 +45,8 @@ import tcss450.uw.edu.chatapp.utils.WaitFragment;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Benjamin Yuen
+ * Message Fragment that displays the messages sent by you and messages recieved from people in chat.
  */
 public class MessageFragment extends Fragment implements WaitFragment.OnFragmentInteractionListener {
     private static final String TAG = "CHAT_FRAG";
@@ -105,6 +106,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
         TextView msg_contactname = getActivity().findViewById(R.id.message_contactname);
         msg_contactname.setText(mNickname);
 
+        //Building url to send messages
         mSendUrl = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -112,6 +114,8 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                 .appendPath(getString(R.string.ep_messaging_send))
                 .build()
                 .toString();
+
+        //Building url to get all messages and display past messages from a recent chat
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -130,7 +134,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                 .build().execute();
 
     }
-
+    //Post execute for getting all messages.
     private void getMessagesPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
@@ -141,8 +145,9 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                 String sender = jsonMsg.getString("email");
                 String msg = jsonMsg.getString("message");
                 String nickname = jsonMsg.getString("username");
-
+                // Getting timestamp
                 String timestamp = jsonMsg.getString("timestamp");
+                //Formatting timestamp into readable format for users
                 int iend = timestamp.indexOf('.');
                 if (iend != -1){
                     timestamp = timestamp.substring(0, iend);
@@ -178,6 +183,8 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
             LinearLayoutManager linearLayout = new LinearLayoutManager(getActivity());
             mMessageRecycler.setLayoutManager(linearLayout);
             mMessageRecycler.setAdapter(mMessageAdapter);
+
+            //Set recycler view to bottom so that users can see most recent message
             mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
         } catch (JSONException e) {
             Log.e("JSON PARSE", e.toString());
@@ -200,7 +207,7 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
             getActivity().unregisterReceiver(mFirebaseMessageReciever);
         }
     }
-
+    //Post excute for sending messages
     private void handleSendClick(final View theButton) {
         String msg = mMessageInputEditText.getText().toString();
         JSONObject messageJson = new JSONObject();
@@ -271,7 +278,6 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                         int chatid = jObj.getInt("chatid");
                         String msg = jObj.getString("message");
                         String timestamp = jObj.getString("timestamp");
-
                         int iend = timestamp.indexOf('.');
                         if (iend != -1){
                             timestamp = timestamp.substring(0, iend);
@@ -298,7 +304,10 @@ public class MessageFragment extends Fragment implements WaitFragment.OnFragment
                                 .addMessage(msg)
                                 .addTimeStamp(new_time +" "+ date)
                                 .build();
+
+                        //Add sent message to the recycler view
                         mMessageAdapter.addNewMessage(curMsg);
+                        //Set recycler view to bottom so that users can see most recent message
                         mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
                         Log.d("SENT_MSG", nickname + " " + msg);
                     }

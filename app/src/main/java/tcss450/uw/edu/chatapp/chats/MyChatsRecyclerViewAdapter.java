@@ -22,6 +22,8 @@ import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 import java.util.List;
 
 /**
+ * Benjamin Yuen
+ *
  * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
  * specified {@link OnChatListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
