@@ -68,7 +68,7 @@ public class ContactsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mContacts = new ArrayList<>(Arrays.asList((Contacts[]) getArguments().getSerializable("contacts")));
+            //mContacts = new ArrayList<>(Arrays.asList((Contacts[]) getArguments().getSerializable("contacts")));
             mEmail = getArguments().getSerializable("email").toString();
         }
         //getContacts();
@@ -89,8 +89,7 @@ public class ContactsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            mAdapter = new MyContactsRecyclerViewAdapter(recyclerView, mEmail, mContacts, mListener);
-            recyclerView.setAdapter(mAdapter);
+            getContacts();
 
 //            mSwipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.contacts_swipe);
 //            mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -107,50 +106,57 @@ public class ContactsFragment extends Fragment {
         return view;
     }
 
-//    private void getContacts() {
-//        Uri uri = new Uri.Builder()
-//                .scheme("https")
-//                .appendPath(getString(R.string.ep_base_url))
-//                .appendPath(getString(R.string.ep_contacts))
-//                .appendPath(getString(R.string.ep_contacts_getAllContacts))
-//                .build();
-//        JSONObject messageJson = new JSONObject();
-//        try {
-//            messageJson.put("email", mEmail);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-//                //.onPreExecute(this::onWaitFragmentInteractionShow)
-//                .onPostExecute(this::handleContactsGetOnPostExecute)
-//                .onCancelled(error -> Log.e("SEND_TAG", error))
-//                .build().execute();
-//    }
-//
-//    private void handleContactsGetOnPostExecute(final String result) {
-//        //parse JSON
-//        try {
-//            JSONObject root = new JSONObject(result);
-//            if (root.has("success") && root.getBoolean("success")) {
-//                JSONArray data = root.getJSONArray("data");
-//                mContacts = new ArrayList<>();
-//                for (int i = 0; i < data.length(); i++) {
-//                    JSONObject jsonContacts = data.getJSONObject(i);
-//                    mContacts.add(new Contacts.Builder(jsonContacts.getString("username"),
-//                            jsonContacts.getString("email"))
-//                            .addFirstName(jsonContacts.getString("firstname"))
-//                            .addLastName(jsonContacts.getString("lastname"))
-//                            .build());
-//                }
-//                //onWaitFragmentInteractionHide();
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            Log.e("ContactsFragment handleContactsGetOnPostExecute: ", e.getMessage());
-//            //notify user
-//            //onWaitFragmentInteractionHide();
-//        }
-//    }
+    private void getContacts() {
+        //Log.e("CONTACTS FRAGMENT TAB", "HIT GET-CONTACTS");
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_contacts))
+                .appendPath(getString(R.string.ep_contacts_getAllContacts))
+                .build();
+        //Log.e("CONTACTS FRAGMENT TAB", "URI EP: " + uri.toString());
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put("email", mEmail);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //Log.e("CONTACTS FRAGMENT TAB", "SENDING ASNYC mEmail: " + mEmail);
+        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
+                //.onPreExecute(this::onWaitFragmentInteractionShow)
+                .onPostExecute(this::handleContactsGetOnPostExecute)
+                .onCancelled(error -> Log.e("SEND_TAG", error))
+                .build().execute();
+    }
+
+    private void handleContactsGetOnPostExecute(final String result) {
+        //Log.e("CONTACTS FRAGMENT TAB", "HIT POST-EXECUTE");
+        //parse JSON
+        try {
+            JSONObject root = new JSONObject(result);
+            if (root.has("success") && root.getBoolean("success")) {
+                //Log.e("CONTACTS FRAGMENT TAB", "SUCCESS");
+                JSONArray data = root.getJSONArray("data");
+                mContacts = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonContacts = data.getJSONObject(i);
+                    mContacts.add(new Contacts.Builder(jsonContacts.getString("username"),
+                            jsonContacts.getString("email"))
+                            .addFirstName(jsonContacts.getString("firstname"))
+                            .addLastName(jsonContacts.getString("lastname"))
+                            .build());
+                }
+                //onWaitFragmentInteractionHide();
+                mAdapter = new MyContactsRecyclerViewAdapter(recyclerView, mEmail, mContacts, mListener);
+                recyclerView.setAdapter(mAdapter);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("ContactsFragment handleContactsGetOnPostExecute: ", e.getMessage());
+            //notify user
+            //onWaitFragmentInteractionHide();
+        }
+    }
 
 //    @Override
 //    public void onWaitFragmentInteractionShow() {

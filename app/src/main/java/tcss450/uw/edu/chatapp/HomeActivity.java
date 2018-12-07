@@ -118,7 +118,7 @@ public class HomeActivity extends AppCompatActivity implements
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getContacts();
+                //getContacts();
             }
         });
         mFab.hide();
@@ -260,7 +260,12 @@ public class HomeActivity extends AppCompatActivity implements
                     .onCancelled(error -> Log.e("SEND_TAG", error))
                     .build().execute();
         } else if (id == R.id.nav_contacts) {
-            getContacts();
+            Bundle args = new Bundle();
+            args.putSerializable("email", mEmail);
+            Intent contactIntent = new Intent(HomeActivity.this, ContactsTabActivity.class);
+            contactIntent.putExtras(args);
+            HomeActivity.this.startActivity(contactIntent);
+            //getContacts();
         } else if (id == R.id.nav_logout) {
             AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
             builder.setCancelable(true);
@@ -292,62 +297,6 @@ public class HomeActivity extends AppCompatActivity implements
         return true;
     }
 
-    private void getContacts() {
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_contacts))
-                .appendPath(getString(R.string.ep_contacts_getAllContacts))
-                .build();
-        JSONObject messageJson = new JSONObject();
-        try {
-            messageJson.put("email", mEmail);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        new SendPostAsyncTask.Builder(uri.toString(), messageJson)
-                .onPreExecute(this::onWaitFragmentInteractionShow)
-                .onPostExecute(this::handleContactsGetOnPostExecute)
-                .onCancelled(error -> Log.e("SEND_TAG", error))
-                .build().execute();
-    }
-
-    private void handleContactsGetOnPostExecute(final String result) {
-        //parse JSON
-        try {
-            JSONObject root = new JSONObject(result);
-            if (root.has("success") && root.getBoolean("success")) {
-                JSONArray data = root.getJSONArray("data");
-                mContacts = new ArrayList<>();
-                for (int i = 0; i < data.length(); i++) {
-                    JSONObject jsonContacts = data.getJSONObject(i);
-                    mContacts.add(new Contacts.Builder(jsonContacts.getString("username"),
-                            jsonContacts.getString("email"))
-                            .addFirstName(jsonContacts.getString("firstname"))
-                            .addLastName(jsonContacts.getString("lastname"))
-                            .build());
-                }
-                Contacts[] contactsAsArray = new Contacts[mContacts.size()];
-                contactsAsArray = mContacts.toArray(contactsAsArray);
-
-                Bundle args = new Bundle();
-                args.putSerializable("email", mEmail);
-                args.putSerializable("contacts", contactsAsArray);
-
-                Intent contactIntent = new Intent(HomeActivity.this, ContactsTabActivity.class);
-                contactIntent.putExtras(args);
-
-                HomeActivity.this.startActivity(contactIntent);
-
-                onWaitFragmentInteractionHide();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("ERROR!", e.getMessage());
-            //notify user
-            onWaitFragmentInteractionHide();
-        }
-    }
 
     private void handleChatsPostExecute(final String result) {
         try {

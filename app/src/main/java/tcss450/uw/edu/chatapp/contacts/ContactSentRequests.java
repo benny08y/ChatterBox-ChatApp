@@ -70,6 +70,7 @@ public class ContactSentRequests extends Fragment {
                 .appendPath(/*getString(R.string.ep_contacts)*/"contacts")
                 .appendPath("contact_request_sent_by_user")
                 .build();
+        //Log.d("CONTACTS SENT REQUEST", "uri ep: " + uri.toString());
         JSONObject messageJson = new JSONObject();
         try {
             messageJson.put("email", mEmail);
@@ -98,7 +99,7 @@ public class ContactSentRequests extends Fragment {
                             .addFirstName(jsonContacts.getString("firstname"))
                             .addLastName(jsonContacts.getString("lastname"))
                             .build());
-                    Log.e("ContactSentRequests: ", "received a sent contact request");
+                    //Log.e("ContactSentRequests: ", "received a sent contact request");
                 }
 
                 // Set the adapter

@@ -40,7 +40,7 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
     private OnSearchContactsFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
     private View view;
-    private List<Contacts> mContacts;
+    //private List<Contacts> mContacts;
     private String mEmail;
     private AutoCompleteTextView mAutoCompleteTextView;
 
@@ -52,8 +52,7 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mContacts = new ArrayList<>(
-                    Arrays.asList((Contacts[]) getArguments().getSerializable("contacts")));
+            //mContacts = new ArrayList<>(Arrays.asList((Contacts[]) getArguments().getSerializable("contacts")));
             mEmail = getArguments().getSerializable("email").toString();
         }
     }
