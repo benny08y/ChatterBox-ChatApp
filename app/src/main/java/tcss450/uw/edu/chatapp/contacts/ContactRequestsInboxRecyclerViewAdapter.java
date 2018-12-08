@@ -20,17 +20,14 @@ import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
 public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapter<ContactRequestsInboxRecyclerViewAdapter.ViewHolder> {
 
-    private final ContactRequestsInbox.OnContactRequestsInboxFragmentInteractionListener mListener;
     private String mEmail;
     private final List<Contacts> mValues;
     private RecyclerView mRecyclerView;
 
     public ContactRequestsInboxRecyclerViewAdapter(RecyclerView recyclerView,
                                                    String email,
-                                                   List<Contacts> items,
-                                                   ContactRequestsInbox.OnContactRequestsInboxFragmentInteractionListener listener) {
+                                                   List<Contacts> items) {
         mValues = items;
-        mListener = listener;
         mEmail = email;
         mRecyclerView = recyclerView;
     }
@@ -147,17 +144,6 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
 
         holder.mRejectButton.setOnClickListener(e -> {
             onRejectButtonPress(holder, position);
-        });
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onContactRequestsInboxFragmentInteraction(holder.mItem);
-                }
-            }
         });
     }
 

@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +41,6 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
     private final int TWO = 2;
 
     private int mColumnCount = 1;
-    private OnSearchContactsFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
     private View view;
     //private List<Contacts> mContacts;
@@ -246,12 +244,12 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
                 Contacts[] resultsArray = new Contacts[membersArray.size()];
                 //resultsArray = membersArray.toArray(resultsArray);
                 List<Contacts> results = membersArray;
-                recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(getActivity(), mEmail, results, mListener));
+                recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(getActivity(), mEmail, results));
 
                 //onWaitFragmentInteractionHide();
             } else {
                 List<Contacts> results = new ArrayList<>();
-                recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(getActivity(), mEmail, results, mListener));
+                recyclerView.setAdapter(new SearchContactFragmentRecyclerViewAdapter(getActivity(), mEmail, results));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -285,35 +283,4 @@ public class SearchContactsFragment extends Fragment { //implements WaitFragment
     }
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnSearchContactsFragmentInteractionListener) {
-            mListener = (OnSearchContactsFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnSearchContactsFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onSearchContactsFragmentInteraction(Contacts contact);
-    }
 }

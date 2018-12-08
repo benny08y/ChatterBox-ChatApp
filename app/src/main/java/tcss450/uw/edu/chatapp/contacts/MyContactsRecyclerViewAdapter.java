@@ -13,31 +13,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import tcss450.uw.edu.chatapp.R;
-import tcss450.uw.edu.chatapp.contacts.ContactsFragment.OnContactListFragmentInteractionListener;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link Contacts} and makes a call to the
- * specified {@link OnContactListFragmentInteractionListener}.
- */
 public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContactsRecyclerViewAdapter.ViewHolder> {
 
     private final List<Contacts> mValues;
-    private final OnContactListFragmentInteractionListener mListener;
     private String mEmail;
     private String mRemovedEmail;
     private RecyclerView mRecyclerView;
 
     public MyContactsRecyclerViewAdapter(RecyclerView recyclerView,
                                          String email,
-                                         List<Contacts> items,
-                                         ContactsFragment.OnContactListFragmentInteractionListener listener) {
+                                         List<Contacts> items) {
         mValues = items;
-        mListener = listener;
         mEmail = email;
         mRecyclerView = recyclerView;
     }
@@ -109,16 +100,6 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
             onRemoveButtonPress(holder, position);
         });
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onContactListFragmentInteraction(holder.mItem);
-                }
-            }
-        });
     }
 
 //    public void clear() {

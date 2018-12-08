@@ -16,13 +16,7 @@ import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.model.Contacts;
 
-public class ContactsTabActivity extends AppCompatActivity implements
-        ContactPageFragment.OnContactPageFragmentInteractionListener,
-        ContactsFragment.OnContactListFragmentInteractionListener,
-        SearchContactsFragment.OnSearchContactsFragmentInteractionListener,
-        AddContactsFragment.OnFragmentInteractionListener,
-        ContactRequestsInbox.OnContactRequestsInboxFragmentInteractionListener,
-        ContactSentRequests.OnContactSentRequestsFragmentInteractionListener {
+public class ContactsTabActivity extends AppCompatActivity {
 
     private ContactsPagerAdapter mContactsPagerAdapter;
     private ViewPager mViewPager;
@@ -94,67 +88,4 @@ public class ContactsTabActivity extends AppCompatActivity implements
 //        return super.onOptionsItemSelected(item);
 //    }
 
-    @Override
-    public void onContactPageFragmentInteraction(String name) {
-//        MessageFragment messageFragment = new MessageFragment();
-////        messageFragment.setName(name);
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.contacts_container, messageFragment)
-//                .addToBackStack(null)
-//                .commit();
-    }
-
-    @Override
-    public void onContactListFragmentInteraction(Contacts contact) {
-//        ContactPageFragment contactPageFragment = new ContactPageFragment();
-//
-//        Bundle args = new Bundle();
-//        args.putString("nickname", contact.getNickname());
-//        args.putString("email", contact.getEmail());
-//        args.putString("firstName", contact.getFirstName());
-//        args.putString("lastName", contact.getLastName());
-//        args.putString("currEmail", mEmail);
-//        contactPageFragment.setArguments(args);
-//
-//        FragmentTransaction transaction = getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.contacts_container, contactPageFragment)
-//                .addToBackStack(null);
-//        transaction.commit();
-    }
-
-    @Override
-    public void onSearchContactsFragmentInteraction(Contacts contact) {
-//        AddContactsFragment addContactPageFragment = new AddContactsFragment();
-//        //contactPageFragment.setContacts(contact);
-//        Bundle args = new Bundle();
-//        args.putString("nickname", contact.getNickname());
-//        args.putString("email", contact.getEmail());
-//        args.putString("firstName", contact.getFirstName());
-//        args.putString("lastName", contact.getLastName());
-//        args.putString("currEmail", mEmail);
-//
-//        addContactPageFragment.setArguments(args);
-//        FragmentTransaction transaction = getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.contacts_container, addContactPageFragment)
-//                .addToBackStack(null);
-//        transaction.commit();
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onContactRequestsInboxFragmentInteraction(Contacts contacts) {
-        
-    }
-
-    @Override
-    public void onContactSentRequestsFragmentInteraction(Contacts contacts) {
-
-    }
 }

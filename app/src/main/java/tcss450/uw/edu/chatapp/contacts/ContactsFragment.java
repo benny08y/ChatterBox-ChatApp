@@ -27,17 +27,10 @@ import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnContactListFragmentInteractionListener}
- * interface.
- */
 public class ContactsFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
-    private OnContactListFragmentInteractionListener mListener;
 
     public static final String ARG_CONTACTS_LIST = "contacts list";
     private List<Contacts> mContacts;
@@ -147,7 +140,7 @@ public class ContactsFragment extends Fragment {
                             .build());
                 }
                 //onWaitFragmentInteractionHide();
-                mAdapter = new MyContactsRecyclerViewAdapter(recyclerView, mEmail, mContacts, mListener);
+                mAdapter = new MyContactsRecyclerViewAdapter(recyclerView, mEmail, mContacts);
                 recyclerView.setAdapter(mAdapter);
             }
         } catch (JSONException e) {
@@ -176,34 +169,4 @@ public class ContactsFragment extends Fragment {
 //    }
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnContactListFragmentInteractionListener) {
-            mListener = (OnContactListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnContactListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnContactListFragmentInteractionListener {
-        void onContactListFragmentInteraction(Contacts contact);
-    }
 }
