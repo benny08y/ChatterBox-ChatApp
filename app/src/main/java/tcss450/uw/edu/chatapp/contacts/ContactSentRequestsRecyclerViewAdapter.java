@@ -11,6 +11,11 @@ import java.util.List;
 import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
 
+/**
+ * Aaron Bardsley
+ *
+ * This class is a RecycleView for displaying all contact requests sent out by the user.
+ */
 public class ContactSentRequestsRecyclerViewAdapter extends RecyclerView.Adapter<ContactSentRequestsRecyclerViewAdapter.ViewHolder> {
 
     private final List<Contacts> mValues;

@@ -16,6 +16,11 @@ import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.chats.MessageFragment;
 import tcss450.uw.edu.chatapp.model.Contacts;
 
+/**
+ * Aaron Bardsley
+ *
+ * This activity is for giving the user a tab layout flow for contacts
+ */
 public class ContactsTabActivity extends AppCompatActivity {
 
     private ContactsPagerAdapter mContactsPagerAdapter;
@@ -49,6 +54,8 @@ public class ContactsTabActivity extends AppCompatActivity {
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+
 //        ContactsViewPager contactsViewPager = new ContactsViewPager();
 //        Bundle args = new Bundle();
 //        args.putSerializable("email", mEmail);

@@ -23,6 +23,12 @@ import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
+/**
+ * Aaron Bardsley
+ *
+ * This fragment is for handling contact requests sent to the user which can either
+ * be confirmed (added as an existing contact) or rejected.
+ */
 public class ContactRequestsInbox extends Fragment {
 
     private ContactRequestsInboxRecyclerViewAdapter mAdapter;
@@ -52,6 +58,12 @@ public class ContactRequestsInbox extends Fragment {
 
     }
 
+    /**
+     * Aaron Bardsley
+     * end point: contacts/contact_request_sent_to_user
+     *
+     * retrieve pending contact requests sent to the user
+     */
     private void getRequests() {
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -73,6 +85,12 @@ public class ContactRequestsInbox extends Fragment {
                 .build().execute();
     }
 
+    /**
+     * Aaron Bardsley
+     * end point: contacts/contact_request_sent_to_user
+     *
+     * Build the contact requests using RecyclerView
+     */
     private void handleRequestsInboxOnPostExecute(final String result) {
         //parse JSON
         try {
@@ -114,6 +132,7 @@ public class ContactRequestsInbox extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_contact_requests_inbox_list, container, false);
+
 
         getRequests();
 

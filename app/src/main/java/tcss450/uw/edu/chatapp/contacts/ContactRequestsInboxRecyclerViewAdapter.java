@@ -18,6 +18,11 @@ import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
+/**
+ * Aaron Bardsley
+ *
+ * This class is a RecyclerView for pending contact requests sent to the user
+ */
 public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapter<ContactRequestsInboxRecyclerViewAdapter.ViewHolder> {
 
     private String mEmail;
@@ -39,6 +44,12 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
         return new ViewHolder(view);
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * end point: contacts/handle_request
+     * response value of 1 for confirm
+     */
     private void onConfirmButtonPress(final ViewHolder holder, int position) {
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -69,13 +80,18 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
         this.notifyItemRangeChanged(position, mValues.size());
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * Simple response from server
+     */
     private void handleConfirmOnPostExecute(final String result) {
         try {
             Log.e("Inbox Recycler: ", "reached after confirmed send async");
             JSONObject root = new JSONObject(result);
             boolean success = root.getBoolean("success");
             if (success) {
-                Log.d("Inbox Recycler: ", "Successfully confirmed");
+                //Log.d("Inbox Recycler: ", "Successfully confirmed");
             } else {
 
                 Log.e("Inbox Recycler: ", "Failed to confirm");
@@ -89,6 +105,12 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
         }
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * end point: contacts/handle_request
+     * response value of 0 for reject
+     */
     private void onRejectButtonPress(final ViewHolder holder, int position) {
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -98,8 +120,8 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
                 .build();
         JSONObject messageJson = new JSONObject();
         try {
-            messageJson.put("senderEmail", mValues.get(position).getEmail());
-            messageJson.put("receiverEmail", mEmail);
+            messageJson.put("senderEmail", mEmail);
+            messageJson.put("receiverEmail", mValues.get(position).getEmail());
             messageJson.put("response", 0);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -116,6 +138,11 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
         this.notifyItemRangeChanged(position, mValues.size());
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * Simple response from server
+     */
     private void handleRejectOnPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
@@ -146,16 +173,6 @@ public class ContactRequestsInboxRecyclerViewAdapter extends RecyclerView.Adapte
             onRejectButtonPress(holder, position);
         });
     }
-
-//    public void clear() {
-//        mValues.clear();
-//        notifyDataSetChanged();
-//    }
-//
-//    public void addAll(List<Contacts> contacts) {
-//        mValues.addAll(contacts);
-//        notifyDataSetChanged();
-//    }
 
     @Override
     public int getItemCount() {

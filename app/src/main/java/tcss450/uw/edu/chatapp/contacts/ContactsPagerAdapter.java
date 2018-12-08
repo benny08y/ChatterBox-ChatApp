@@ -11,6 +11,11 @@ import java.util.List;
 
 import tcss450.uw.edu.chatapp.model.Contacts;
 
+/**
+ * Aaron Bardsley
+ *
+ * This class is for handling the tab fragments for the Tabbed Activity for contacts
+ */
 public class ContactsPagerAdapter extends FragmentPagerAdapter {
 
     private int mTabCount;
@@ -62,6 +67,11 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
 //        return POSITION_UNCHANGED;
 //    }
 
+    /**
+     * Aaron Bardsley
+     *
+     * Returns a fragment at the given position, used for displaying tabs
+     */
     @Override
     public Fragment getItem(int position) {
         switch(position) {

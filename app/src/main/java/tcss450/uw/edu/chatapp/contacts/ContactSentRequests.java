@@ -26,6 +26,12 @@ import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
+/**
+ * Aaron Bardsley
+ *
+ * This fragment is for viewing pending contact requests sent by the user awaiting confirm/reject
+ * from the other user.
+ */
 public class ContactSentRequests extends Fragment {
 
     private ContactSentRequestsRecyclerViewAdapter mAdapter;
@@ -56,6 +62,12 @@ public class ContactSentRequests extends Fragment {
 
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * end point: contacts/contact_request_sent_by_user
+     * retrieve all pending contact requests sent by the user to other users.
+     */
     private void getRequests() {
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -78,6 +90,12 @@ public class ContactSentRequests extends Fragment {
                 .build().execute();
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * Build a RecycleView to display all pending contact requests
+     * sent by the users to other users.
+     */
     private void handleSentRequestsOnPostExecute(final String result) {
         //parse JSON
         try {

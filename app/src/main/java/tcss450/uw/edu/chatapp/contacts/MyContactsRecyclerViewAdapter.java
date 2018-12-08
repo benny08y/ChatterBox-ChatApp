@@ -18,6 +18,11 @@ import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
 import java.util.List;
 
+/**
+ * Aaron Bardsley
+ *
+ * This class is a RecyclerView used for displaying the user's existing contacts.
+ */
 public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContactsRecyclerViewAdapter.ViewHolder> {
 
     private final List<Contacts> mValues;
@@ -40,6 +45,12 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
         return new ViewHolder(view);
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * end point: contacts/delete_contact
+     * remove contact from existing contacts
+     */
     private void onRemoveButtonPress(final ViewHolder holder, int position) {
         mRemovedEmail = mValues.get(position).getEmail();
 
@@ -72,12 +83,17 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
         }
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * Simple response for removed contact
+     */
     private void handleContactRemoveOnPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
             boolean success = root.getBoolean("success");
             if (success) {
-                Log.d("ContactsFragment: ", "Successfully sent");
+                //Log.d("ContactsFragment: ", "Successfully sent");
             }
             //onWaitFragmentInteractionHide();
         } catch (JSONException e) {
@@ -101,16 +117,6 @@ public class MyContactsRecyclerViewAdapter extends RecyclerView.Adapter<MyContac
         });
 
     }
-
-//    public void clear() {
-//        mValues.clear();
-//        notifyDataSetChanged();
-//    }
-//
-//    public void addAll(List<Contacts> contacts) {
-//        mValues.addAll(contacts);
-//        notifyDataSetChanged();
-//    }
 
     @Override
     public int getItemCount() {

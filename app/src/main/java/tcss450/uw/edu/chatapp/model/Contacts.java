@@ -3,7 +3,7 @@ package tcss450.uw.edu.chatapp.model;
 import java.io.Serializable;
 
 /**
- * Class to encapsulate a ChatApp contact. Building a contact requires a nickname and email.
+ * Class to encapsulate a Chatterbox contact. Building a contact requires a nickname and email.
  * Optional fields include first name and last name.
  *
  * @author Aaron Bardsley

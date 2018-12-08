@@ -21,7 +21,7 @@ import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
 /**
- * Chris Kim,
+ * Chris Kim, Aaron Bardsley
  * Sets the recycler view inside of the fragmenr_search_contacts fragment
  */
 public class SearchContactFragmentRecyclerViewAdapter extends RecyclerView.Adapter<SearchContactFragmentRecyclerViewAdapter.ViewHolder> {
@@ -60,6 +60,12 @@ public class SearchContactFragmentRecyclerViewAdapter extends RecyclerView.Adapt
 
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * end point: contacts/send_request
+     * send a contact request for a user to confirm or reject
+     */
     private void onAddContactPressed(int position) {
         //send contact request using curremail and memail
         //have popup saying that the request was sent
@@ -89,14 +95,19 @@ public class SearchContactFragmentRecyclerViewAdapter extends RecyclerView.Adapt
         Toast.makeText(mActivity, successMessage, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * Simple response for contact request sent with toast
+     */
     private void handleContactsGetOnPostExecute(final String result) {
         try {
             JSONObject root = new JSONObject(result);
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
-                Log.e("Successfully sent", "Success");
-                //Toast.makeText(getActivity(), successMessage, Toast.LENGTH_SHORT).show();
+                //Log.e("Successfully sent", "Success");
+                Toast.makeText(mActivity, successMessage, Toast.LENGTH_SHORT).show();
 
             } else {
                 //Toast.makeText(getActivity(), failedMessage, Toast.LENGTH_SHORT).show();

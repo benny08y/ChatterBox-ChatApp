@@ -27,6 +27,11 @@ import tcss450.uw.edu.chatapp.R;
 import tcss450.uw.edu.chatapp.model.Contacts;
 import tcss450.uw.edu.chatapp.utils.SendPostAsyncTask;
 
+/**
+ * Aaron Bardsley
+ *
+ * This fragment is for handling existing contacts
+ */
 public class ContactsFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -99,6 +104,12 @@ public class ContactsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * end point: contacts/getAllContacts
+     * retrieve all existing contacts associated with the user.
+     */
     private void getContacts() {
         //Log.e("CONTACTS FRAGMENT TAB", "HIT GET-CONTACTS");
         Uri uri = new Uri.Builder()
@@ -122,6 +133,11 @@ public class ContactsFragment extends Fragment {
                 .build().execute();
     }
 
+    /**
+     * Aaron Bardsley
+     *
+     * Build a RecyclerView to display all existing contacts for the user
+     */
     private void handleContactsGetOnPostExecute(final String result) {
         //Log.e("CONTACTS FRAGMENT TAB", "HIT POST-EXECUTE");
         //parse JSON
@@ -150,23 +166,5 @@ public class ContactsFragment extends Fragment {
             //onWaitFragmentInteractionHide();
         }
     }
-
-//    @Override
-//    public void onWaitFragmentInteractionShow() {
-//        getActivity().getSupportFragmentManager()
-//                .beginTransaction()
-//                .add(R.id.content_home_container, new WaitFragment(), "WAIT")
-//                .addToBackStack(null)
-//                .commit();
-//    }
-//
-//    @Override
-//    public void onWaitFragmentInteractionHide() {
-//        getActivity().getSupportFragmentManager()
-//                .beginTransaction()
-//                .remove(getActivity().getSupportFragmentManager().findFragmentByTag("WAIT"))
-//                .commit();
-//    }
-
 
 }
