@@ -63,6 +63,10 @@ import tcss450.uw.edu.chatapp.weather.MapsActivity;
 import tcss450.uw.edu.chatapp.weather.WeatherFragment;
 import tcss450.uw.edu.chatapp.weather.ZipCodeFragment;
 
+/**
+ * This activity is loaded after login. The navigation menu on the top left is main way of
+ * navigating to other fragments/activity.
+ */
 public class HomeActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ChatsFragment.OnChatListFragmentInteractionListener,
